@@ -219,6 +219,9 @@ export abstract class Core extends EventEmitter {
 }
 
 export * from './lib/HttpException'
+export * from './lib/Context'
+export * from './lib/Request'
+export * from './lib/Response'
 export interface Options {
     port?: number;
     host?: string;
@@ -228,9 +231,6 @@ export interface Options {
     subdomainOffset?: number;
     silent?: boolean;
 }
-export type ServerContext = Context
-export type ServerResponse = Response
-export type ServerRequest = Request
 export type Env = 'development' | 'production'
 
 export default Core

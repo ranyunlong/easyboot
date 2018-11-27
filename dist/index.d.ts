@@ -10,8 +10,6 @@ import { ListenOptions } from 'net';
 import { IncomingMessage, ServerResponse } from 'http';
 import { Http2ServerRequest, Http2ServerResponse } from 'http2';
 import { Context } from './lib/Context';
-import { Response } from './lib/Response';
-import { Request } from './lib/Request';
 export declare abstract class Core extends EventEmitter {
     options: Options;
     proxy: boolean;
@@ -64,6 +62,9 @@ export declare abstract class Core extends EventEmitter {
     protected createContext(req: IncomingMessage | Http2ServerRequest, res: ServerResponse | Http2ServerResponse): Context;
 }
 export * from './lib/HttpException';
+export * from './lib/Context';
+export * from './lib/Request';
+export * from './lib/Response';
 export interface Options {
     port?: number;
     host?: string;
@@ -73,8 +74,5 @@ export interface Options {
     subdomainOffset?: number;
     silent?: boolean;
 }
-export declare type ServerContext = Context;
-export declare type ServerResponse = Response;
-export declare type ServerRequest = Request;
 export declare type Env = 'development' | 'production';
 export default Core;

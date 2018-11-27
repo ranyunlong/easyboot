@@ -188,4 +188,7 @@ class Core extends EventEmitter {
 }
 exports.Core = Core;
 __export(require("./lib/HttpException"));
+__export(require("./lib/Context"));
+__export(require("./lib/Request"));
+__export(require("./lib/Response"));
 exports.default = Core;
