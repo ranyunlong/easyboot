@@ -34,7 +34,8 @@ export class Response {
         public res: ServerResponse | Http2ServerResponse,
         public app: TkServer
     ) {
-        this.set('Server', 'LONGJS:CORE/' + require('../../package.json').version)
+        const { version, name } = require('../../package.json').version
+        this.set('Server',  `${name}:${version}`)
         this.vary('Accept-Encoding')
     }
 

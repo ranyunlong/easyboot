@@ -23,7 +23,8 @@ class Response {
         this.req = req;
         this.res = res;
         this.app = app;
-        this.set('Server', 'LONGJS:CORE/' + require('../../package.json').version);
+        const { version, name } = require('../../package.json').version;
+        this.set('Server', `${name}:${version}`);
         this.vary('Accept-Encoding');
     }
     /**

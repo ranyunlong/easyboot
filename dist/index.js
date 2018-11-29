@@ -27,10 +27,10 @@ class Core extends EventEmitter {
         this.options = options;
         this.subdomainOffset = 2;
         this.env = process.env.NODE_ENV || 'development';
-        const { port = 3000, host = 'localhost', keys = ['esboot:sess'], subdomainOffset = 2, env = 'development' } = options;
+        const { port, host = 'localhost', keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development' } = options;
         this.keys = keys;
         this.subdomainOffset = subdomainOffset;
-        this.env = env || process.env.NODE_ENV;
+        this.env = env;
         process.env.NODE_ENV = env;
         // Start server listen port
         if (port) {
