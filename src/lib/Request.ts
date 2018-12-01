@@ -17,7 +17,6 @@ import * as net from 'net'
 import { Accepts } from 'accepts'
 import { URL, format } from 'url'
 import { IncomingMessage, ServerResponse, IncomingHttpHeaders } from 'http'
-import { Http2ServerRequest, Http2ServerResponse } from 'http2'
 import { Context } from './Context';
 import { Response } from './Response';
 
@@ -30,8 +29,8 @@ export class Request {
     public ctx: Context;
     public response: Response;
     constructor(
-        public req: IncomingMessage | Http2ServerRequest,
-        public res: ServerResponse | Http2ServerResponse,
+        public req: IncomingMessage,
+        public res: ServerResponse,
         public app: TkServer
     ) {
         // originalUrl

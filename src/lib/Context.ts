@@ -13,7 +13,6 @@ import * as statuses from 'statuses'
 import * as httpAssert from 'http-assert'
 import * as httpErrors from 'http-errors'
 import { IncomingMessage, ServerResponse } from 'http'
-import { Http2ServerRequest, Http2ServerResponse } from 'http2'
 import { Request } from './Request';
 import { Response } from './Response';
 const COOKIES = Symbol('context#cookies');
@@ -28,8 +27,8 @@ export class Context {
      * @param response Response
      */
     constructor(
-        public req: IncomingMessage | Http2ServerRequest,
-        public res: ServerResponse | Http2ServerResponse,
+        public req: IncomingMessage,
+        public res: ServerResponse,
         public request: Request,
         public response: Response,
         public app: Server

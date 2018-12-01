@@ -7,9 +7,10 @@
 
 import * as EventEmitter from 'events'
 import * as statuses from 'statuses'
+import * as https from 'https'
 import { ListenOptions } from 'net'
 import { IncomingMessage, ServerResponse, createServer } from 'http'
-import { Http2ServerRequest, Http2ServerResponse } from 'http2'
+import { ServerOptions } from 'https'
 import { Context } from './lib/Context'
 import { Response } from './lib/Response'
 import { Request } from './lib/Request'
@@ -17,7 +18,7 @@ import { Stream } from 'stream'
 import { isJSON } from './lib/utils'
 import { HttpException } from './lib/HttpException';
 
-export abstract class Core extends EventEmitter {
+export abstract class EasyBootServlet extends EventEmitter {
     public proxy: boolean;
     public subdomainOffset: number = 2
     public env: Env = process.env.NODE_ENV as Env || 'development'
@@ -27,21 +28,15 @@ export abstract class Core extends EventEmitter {
     /**
      * constructor
      */
-    constructor(public options: Options = {}) {
+    constructor(public configs: Options = {}) {
         super()
-        const { port, host = 'localhost', keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development' } = options
+        const { port, host, keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development' } = configs
         this.keys = keys
         this.subdomainOffset = subdomainOffset
         this.env = env
         process.env.NODE_ENV = env
         // Start server listen port
-        if (port) {
-            if (host) {
-                this.listen(port, host)
-            } else {
-                this.listen(port)
-            }
-        }
+        if (port) this.listen(port, host)
     }
 
     /**
@@ -49,7 +44,7 @@ export abstract class Core extends EventEmitter {
      * Handler custom http proccess
      */
     public callback() {
-        return (request: IncomingMessage | Http2ServerRequest, response: ServerResponse | Http2ServerResponse) => {
+        return (request: IncomingMessage, response: ServerResponse) => {
             this.start(request, response)
         }
     }
@@ -68,8 +63,16 @@ export abstract class Core extends EventEmitter {
     public listen(handle: any, backlog?: number, listeningListener?: () => void): this;
     public listen(handle: any, listeningListener?: () => void): this;
     public listen(...args: any[]): this {
-        createServer(this.callback())
-        .listen(...args)
+        const [ port, host = 'localhost' ] = args
+        const { ssl } = this.configs
+        // ssl
+        if (ssl) {
+            https.createServer(ssl, this.callback())
+            .listen(port, host)
+        } else {
+            createServer(this.callback())
+            .listen(port, host)
+        }
         return this;
     }
 
@@ -80,8 +83,8 @@ export abstract class Core extends EventEmitter {
      * Application start method
      */
     private async start(
-        request: IncomingMessage | Http2ServerRequest,
-        response: ServerResponse | Http2ServerResponse
+        request: IncomingMessage,
+        response: ServerResponse
     ): Promise<any>  {
         // Create http/https context
         const context = this.createContext(request, response)
@@ -205,8 +208,8 @@ export abstract class Core extends EventEmitter {
      * Server context create method
      */
     protected createContext(
-        req: IncomingMessage | Http2ServerRequest,
-        res: ServerResponse | Http2ServerResponse,
+        req: IncomingMessage,
+        res: ServerResponse,
     ): Context {
         const request = new Request(req, res, this)
         const response = new Response(req, res, this)
@@ -226,6 +229,7 @@ export interface Options {
     port?: number;
     host?: string;
     keys?: string[];
+    ssl?: ServerOptions;
     env?: Env;
     proxy?: boolean;
     subdomainOffset?: number;
@@ -233,4 +237,4 @@ export interface Options {
 }
 export type Env = 'development' | 'production'
 
-export default Core
+export default EasyBootServlet

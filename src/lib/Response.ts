@@ -6,7 +6,6 @@
  */
 
 import { IncomingMessage, ServerResponse } from 'http'
-import { Http2ServerRequest, Http2ServerResponse } from 'http2'
 import { ensureErrorHandler } from './utils';
 import { Socket } from 'net'
 import { Stream } from 'stream'
@@ -30,8 +29,8 @@ export class Response {
     public request: Request;
     public _explicitStatus: boolean;
     constructor(
-        public req: IncomingMessage | Http2ServerRequest,
-        public res: ServerResponse | Http2ServerResponse,
+        public req: IncomingMessage,
+        public res: ServerResponse,
         public app: TkServer
     ) {
         const { version, name } = require('../../package.json').version
@@ -44,7 +43,7 @@ export class Response {
      * Return the request socket.
      */
     public get socket(): Socket {
-        return (this.res as Http2ServerResponse).socket
+        return (this.res as any).socket
     }
 
     /**
