@@ -19,6 +19,7 @@ import { URL, format } from 'url'
 import { IncomingMessage, ServerResponse, IncomingHttpHeaders } from 'http'
 import { Context } from './Context';
 import { Response } from './Response';
+import { Propertys } from './Router';
 
 export class Request {
     public originalUrl: string;
@@ -526,4 +527,46 @@ export class Request {
         return this.accept.encodings(...args)
     }
 
+}
+
+export function RequestParam(Entity: EntityConstructor): ParameterDecorator {
+    return (target: any, propertyKey: string, parameterIndex: number): void => {
+        const propertys: Propertys = target.$propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const property = propertys.get(propertyKey)
+            const params = property.params || new Map()
+            params.set(parameterIndex, Entity)
+            property.params = params
+        } else {
+            const params = new Map()
+            params.set(parameterIndex, Entity)
+            propertys.set(propertyKey, {
+                params
+            })
+        }
+        target.$propertys = propertys
+    }
+}
+
+export function RequestBody(Entity: EntityConstructor): ParameterDecorator {
+    return (target: any, propertyKey: string, parameterIndex: number): void => {
+        const propertys: Propertys = target.$propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const property = propertys.get(propertyKey)
+            const bodys = property.params || new Map()
+            bodys.set(parameterIndex, Entity)
+            property.bodys = bodys
+        } else {
+            const bodys = new Map()
+            bodys.set(parameterIndex, Entity)
+            propertys.set(propertyKey, {
+                bodys
+            })
+        }
+        target.$propertys = propertys
+    }
+}
+
+export interface EntityConstructor {
+    new(...args: any[]): any
 }

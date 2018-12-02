@@ -7,18 +7,25 @@
 export function Module(config: ModuleInterface): ClassDecorator {
     return (target): void => {
         const options = target.prototype
-        options.controllers = config.controllers || new Set<TClass>()
-        options.providers = config.providers || new Set<TClass>()
-        options.models = config.models || new Set<TClass>()
-        options.configs = config.configs || new Set<TClass>()
+        options.$controllers = config.controllers || []
+        options.$providers = config.providers || []
+        options.$entity = config.entity || []
+        options.$configs = config.configs || []
+    }
+}
+
+export function Modules(modules: TClass[]): ClassDecorator {
+    return (target): void => {
+        const options = target.prototype
+        options.modules = modules
     }
 }
 
 export interface ModuleInterface {
-    controllers: Set<TClass>;
-    providers: Set<TClass>;
-    models: Set<TClass>;
-    configs: Set<TClass>
+    controllers?: TClass[];
+    providers?: TClass[];
+    entity?: TClass[];
+    configs?: TClass[];
 }
 
 export interface TClass<O = any, T = any> {

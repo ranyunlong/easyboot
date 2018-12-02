@@ -17,6 +17,9 @@ import { Request } from './lib/Request'
 import { Stream } from 'stream'
 import { isJSON } from './lib/utils'
 import { HttpException } from './lib/HttpException';
+import { Router } from './lib/Router';
+import { ModuleInterface, TClass } from './lib/Module';
+import * as pathToRegexp from 'path-to-regexp';
 
 export abstract class EasyBootServlet extends EventEmitter {
     public proxy: boolean;
@@ -24,6 +27,8 @@ export abstract class EasyBootServlet extends EventEmitter {
     public env: Env = process.env.NODE_ENV as Env || 'development'
     public silent: boolean
     public keys: string[];
+    public router: Router;
+    public modules: Array<TClass<any, ModuleInterface>>;
 
     /**
      * constructor
@@ -37,6 +42,10 @@ export abstract class EasyBootServlet extends EventEmitter {
         process.env.NODE_ENV = env
         // Start server listen port
         if (port) this.listen(port, host)
+        this.router = new Router({
+            modules: this.modules,
+            ...this.configs.router
+        })
     }
 
     /**
@@ -90,6 +99,7 @@ export abstract class EasyBootServlet extends EventEmitter {
         const context = this.createContext(request, response)
         try {
             if (typeof this.response === 'function') await this.response(context)
+            await this.router.handle(context)
             await this.respond(context)
             /**
              * Handler not found
@@ -225,6 +235,10 @@ export * from './lib/HttpException'
 export * from './lib/Context'
 export * from './lib/Request'
 export * from './lib/Response'
+export * from './lib/Module'
+export * from './lib/Router'
+export * from './lib/Controller'
+export * from './lib/Service'
 export interface Options {
     port?: number;
     host?: string;
@@ -234,6 +248,7 @@ export interface Options {
     proxy?: boolean;
     subdomainOffset?: number;
     silent?: boolean;
+    router?: pathToRegexp.RegExpOptions;
 }
 export type Env = 'development' | 'production'
 
