@@ -29,13 +29,15 @@ export abstract class EasyBootServlet extends EventEmitter {
     public keys: string[];
     public router: Router;
     public modules: Array<TClass<any, ModuleInterface>>;
+    public configs: Options;
 
     /**
      * constructor
      */
-    constructor(public configs: Options = {}) {
+    constructor(configs: Options = {}) {
         super()
-        const { port, host, keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development' } = configs
+        this.configs = {...this.configs, ...configs}
+        const { port, host, keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development' } = this.configs
         this.keys = keys
         this.subdomainOffset = subdomainOffset
         this.env = env
@@ -239,6 +241,13 @@ export * from './lib/Module'
 export * from './lib/Router'
 export * from './lib/Controller'
 export * from './lib/Service'
+export * from './lib/EasyBootServletConfiguration'
+export * from './lib/Configuration'
+export * from './lib/Inject'
+export * from './lib/EasyBootEntity'
+export * from './lib/Entity'
+export * from './lib/EasyBootRequestArguments'
+export * from './lib/EasyBootValidators'
 export interface Options {
     port?: number;
     host?: string;

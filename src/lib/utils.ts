@@ -32,3 +32,11 @@ export function getType(type: string): string {
     }
     return mimeType as string;
 }
+
+export function getUnderline(length: number) {
+    let str = ''
+    for (let i = 0; i < length - 1; i++) {
+        str += '^'
+    }
+    return str
+}

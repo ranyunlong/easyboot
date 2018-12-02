@@ -20,6 +20,9 @@ import { IncomingMessage, ServerResponse, IncomingHttpHeaders } from 'http'
 import { Context } from './Context';
 import { Response } from './Response';
 import { Propertys } from './Router';
+import { EasyBootEntityConstructor } from './EasyBootEntity';
+import { DecoratorException } from './DecoratorException';
+import chalk from 'chalk';
 
 export class Request {
     public originalUrl: string;
@@ -529,8 +532,11 @@ export class Request {
 
 }
 
-export function RequestParam(Entity: EntityConstructor): ParameterDecorator {
+export function RequestParam(Entity: EasyBootEntityConstructor): ParameterDecorator {
     return (target: any, propertyKey: string, parameterIndex: number): void => {
+        if (Entity.prototype.$type !== 'entity') {
+            throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+        }
         const propertys: Propertys = target.$propertys || new Map()
         if (propertys.has(propertyKey)) {
             const property = propertys.get(propertyKey)
@@ -548,8 +554,11 @@ export function RequestParam(Entity: EntityConstructor): ParameterDecorator {
     }
 }
 
-export function RequestBody(Entity: EntityConstructor): ParameterDecorator {
+export function RequestBody(Entity: EasyBootEntityConstructor): ParameterDecorator {
     return (target: any, propertyKey: string, parameterIndex: number): void => {
+        if (Entity.prototype.$type !== 'entity') {
+            throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+        }
         const propertys: Propertys = target.$propertys || new Map()
         if (propertys.has(propertyKey)) {
             const property = propertys.get(propertyKey)
@@ -565,8 +574,4 @@ export function RequestBody(Entity: EntityConstructor): ParameterDecorator {
         }
         target.$propertys = propertys
     }
-}
-
-export interface EntityConstructor {
-    new(...args: any[]): any
 }

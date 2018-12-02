@@ -5,8 +5,10 @@
  * @license MIT
  */
 import { ElementType } from './ElementType'
-import { EntityConstructor } from '../Request';
 import * as assert from 'assert'
+import chalk from 'chalk';
+import { DecoratorException } from '../DecoratorException';
+import { EasyBootEntityConstructor } from '../EasyBootEntity';
 
 /**
  * @method RequestMapping
@@ -24,17 +26,20 @@ export function RequestMapping(path: string, method: ElementType.METHOD = Elemen
         } else {
             const propertys: Propertys = target.$propertys || new Map()
             if (propertys.has(propertyKey)) {
-               const property = propertys.get(propertyKey)
-               const routes = property.routes || new Map()
-               const methodName = method.split('')
-               const [ first, ...more ] = methodName
-               assert(!routes.has(method), `Invalid decorator: ^@${first + more.join('').toLowerCase()}Mapping('${path}').`)
-               routes.set(method, {
-                    path,
-                    method,
+                const property = propertys.get(propertyKey)
+                const routes = property.routes || new Map()
+                const methodName = method.split('')
+                const [ first, ...more ] = methodName
+                if (!/^async/.test(descriptor.value.toString())) {
+                    throw new DecoratorException('Response handle must be async function.', descriptor.value.toString())
+                }
+                assert(!routes.has(method), `Invalid decorator: ^@${first + more.join('').toLowerCase()}Mapping('${path}').`)
+                routes.set(method, {
+                        path,
+                        method,
                     propertyKey
                 })
-               property.routes = routes
+                property.routes = routes
             } else {
                 const routes = new Map() as Routes
                 routes.set(method, {
@@ -203,6 +208,6 @@ export type Routes = Map<Method, {
 
 export type Propertys = Map<PropertyKey, {
     routes?: Routes;
-    params?: Map<number, EntityConstructor>;
-    bodys?: Map<number, EntityConstructor>;
+    params?: Map<number, EasyBootEntityConstructor>;
+    bodys?: Map<number, EasyBootEntityConstructor>;
 }>

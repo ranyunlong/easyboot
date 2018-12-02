@@ -5,9 +5,9 @@
  * @license MIT
  */
 import { TClass } from '../Module';
-import { EntityConstructor } from '../Request';
 import * as pathToRegexp from 'path-to-regexp'
 import { ElementType } from './ElementType';
+import { EasyBootEntityConstructor } from '../EasyBootEntity';
 
 export class Layer {
     // 路由地址
@@ -62,7 +62,7 @@ interface Options {
     target: TClass;
     metadata: TClass[];
     rootPath: string;
-    params: Map<number, EntityConstructor>;
-    bodys: Map<number, EntityConstructor>;
+    params: Map<number, EasyBootEntityConstructor>;
+    bodys: Map<number, EasyBootEntityConstructor>;
     config: pathToRegexp.RegExpOptions;
 }

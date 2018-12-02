@@ -10,3 +10,7 @@ export function Controller(target: { new (...args: any[]): any }): void {
     options.$metadata = Reflect.getMetadata('design:paramtypes', target)
     options.$type = 'controller'
 }
+
+export interface Controller {
+    test: number;
+}

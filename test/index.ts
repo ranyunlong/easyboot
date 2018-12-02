@@ -1,5 +1,3 @@
 import { MyApplication } from './Application/MyApplication'
 
-new MyApplication({
-    port: 3000
-})
+new MyApplication()

@@ -7,6 +7,7 @@
         "emitDecoratorMetadata":true,
         "declaration": true,   // 生成相关的d.ts
         "alwaysStrict": true, // 严格模式编译每个文件
+        "importHelpers": false,
         "target": "esnext",
         "outDir": "./dist",
         "sourceMap": true,

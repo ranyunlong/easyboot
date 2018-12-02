@@ -7,11 +7,11 @@
 import { RegExpOptions } from 'path-to-regexp'
 import { TClass } from '../Module';
 import { Propertys, Routes } from './RequestMapping';
-import { EntityConstructor } from '../Request';
 import { Layer } from './Layer';
 import { ElementType } from './ElementType';
 import { Context } from '../Context';
 import { Stack } from './Stack';
+import { EasyBootEntityConstructor } from '../EasyBootEntity';
 export class Router {
     public config: RegExpOptions;
     public layers: Layer[] = []
@@ -28,8 +28,8 @@ export class Router {
                     $method = '',
                     $propertys = new Map<string, {
                         routes: Routes;
-                        params: Map<number, EntityConstructor>;
-                        bodys: Map<number, EntityConstructor>;
+                        params: Map<number, EasyBootEntityConstructor>;
+                        bodys: Map<number, EasyBootEntityConstructor>;
                     }>(),
                     $route = ''
                 } = options
