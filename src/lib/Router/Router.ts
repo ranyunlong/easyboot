@@ -30,15 +30,20 @@ export class Router {
                         routes: Routes;
                         params: Map<number, EasyBootEntityConstructor>;
                         bodys: Map<number, EasyBootEntityConstructor>;
+                        pathParams: Map<number, {
+                            Entity: EasyBootEntityConstructor;
+                            keys: string[];
+                        }>;
                     }>(),
                     $route = ''
                 } = options
+
                 $propertys.forEach((property) => {
                     const { routes = new Map<string, {
                         path: string;
                         propertyKey: string;
                         method: ElementType.METHOD;
-                    }>(), params, bodys } = property
+                    }>(), params, pathParams, bodys } = property
                     routes.forEach((route) => {
                         this.layers.push(new Layer({
                             ...route,
@@ -46,8 +51,10 @@ export class Router {
                             metadata: $metadata,
                             rootPath: $route,
                             params,
+                            pathParams,
                             bodys,
-                            config
+                            config,
+                            _module: Module
                         }))
                     })
                 })
@@ -65,9 +72,32 @@ export class Router {
 
     private async handleResponse(layers: Layer[], context: Context) {
         for (let value of layers ) {
-            const { target, metadata, propertyKey, params } = value
+            if (!context.response.writable || typeof context.response.body !== 'undefined') return;
+            // exec context path
+            const execPathData = value.regexp.exec(context.path)
+            const pathParams = new Map<string | number, any>()
+            value.PathParamskeys.forEach((k, i) => {
+                pathParams.set(k.name, execPathData[i + 1])
+            })
+
+            const params: any = []
+
+            value._decoratorBodys.forEach((k) => {
+                // console.log(k)
+            })
+            value._decoratorParams.forEach((k, i) => {
+                console.log(k)
+            })
+            value._decoratorpathParams.forEach((k, i) => {
+                const p: any = {}
+                k.keys.forEach((key) => {
+                    p[key] = pathParams.get(key)
+                })
+                params[i] = p
+            })
+            const { target, metadata, propertyKey } = value
             const controller = new target(...metadata.map((k) => new k(context)))
-            const data = await controller[propertyKey]()
+            const data = await controller[propertyKey](...params)
             if (data) {
                 context.body = data
             }

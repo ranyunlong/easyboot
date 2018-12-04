@@ -18,14 +18,26 @@ export function baseValidator(validatorType: keyof ValidatorJS.ValidatorStatic, 
         if (rules.has(propertyKey)) {
             const rule = rules.get(propertyKey)
             rule.add({
-                validator: validator[validatorType],
+                validator: function(value: string) {
+                    if (options) {
+                        return (validator[validatorType]  as any)(value, options)
+                    } else {
+                        return (validator[validatorType]  as any)(value)
+                    }
+                },
                 options,
                 message
             })
         } else {
             const rule: Rule = new Set()
             rule.add({
-                validator: validator[validatorType],
+                validator: function(value: string) {
+                    if (options) {
+                        return (validator[validatorType]  as any)(value, options)
+                    } else {
+                        return (validator[validatorType]  as any)(value)
+                    }
+                },
                 options,
                 message
             })

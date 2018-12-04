@@ -6,7 +6,6 @@
  */
 import { ElementType } from './ElementType'
 import * as assert from 'assert'
-import chalk from 'chalk';
 import { DecoratorException } from '../DecoratorException';
 import { EasyBootEntityConstructor } from '../EasyBootEntity';
 
@@ -33,7 +32,9 @@ export function RequestMapping(path: string, method: ElementType.METHOD = Elemen
                 if (!/^async/.test(descriptor.value.toString())) {
                     throw new DecoratorException('Response handle must be async function.', descriptor.value.toString())
                 }
-                assert(!routes.has(method), `Invalid decorator: ^@${first + more.join('').toLowerCase()}Mapping('${path}').`)
+                if (routes.has(method)) {
+                    throw new DecoratorException(`Decorator is repeat.`, `@${first + more.join('').toLowerCase()}Mapping('${path}')`)
+                }
                 routes.set(method, {
                         path,
                         method,
@@ -210,4 +211,8 @@ export type Propertys = Map<PropertyKey, {
     routes?: Routes;
     params?: Map<number, EasyBootEntityConstructor>;
     bodys?: Map<number, EasyBootEntityConstructor>;
+    pathParams?: Map<number, {
+        Entity: EasyBootEntityConstructor;
+        keys: string[];
+    }>;
 }>

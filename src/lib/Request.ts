@@ -532,10 +532,12 @@ export class Request {
 
 }
 
-export function RequestParam(Entity: EasyBootEntityConstructor): ParameterDecorator {
+export function RequestParams(Entity?: EasyBootEntityConstructor): ParameterDecorator {
     return (target: any, propertyKey: string, parameterIndex: number): void => {
-        if (Entity.prototype.$type !== 'entity') {
-            throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+        if (Entity) {
+            if (Entity.prototype.$type !== 'entity') {
+                throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+            }
         }
         const propertys: Propertys = target.$propertys || new Map()
         if (propertys.has(propertyKey)) {
@@ -554,10 +556,12 @@ export function RequestParam(Entity: EasyBootEntityConstructor): ParameterDecora
     }
 }
 
-export function RequestBody(Entity: EasyBootEntityConstructor): ParameterDecorator {
+export function RequestBody(Entity?: EasyBootEntityConstructor): ParameterDecorator {
     return (target: any, propertyKey: string, parameterIndex: number): void => {
-        if (Entity.prototype.$type !== 'entity') {
-            throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+        if (Entity) {
+            if (Entity.prototype.$type !== 'entity') {
+                throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+            }
         }
         const propertys: Propertys = target.$propertys || new Map()
         if (propertys.has(propertyKey)) {
@@ -575,3 +579,35 @@ export function RequestBody(Entity: EasyBootEntityConstructor): ParameterDecorat
         target.$propertys = propertys
     }
 }
+
+export function RequestPathParams(param: string[], Entity?: EasyBootEntityConstructor): ParameterDecorator {
+    return (target: any, propertyKey: string, parameterIndex: number): void => {
+        if (Entity) {
+            if (Entity.prototype.$type !== 'entity') {
+                throw new DecoratorException(`Invalid Entity, you must be use ${chalk.yellowBright('@Entity')} decorator in class${Entity.name}.`, `${Entity.name}`)
+            }
+        }
+        const propertys: Propertys = target.$propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const property = propertys.get(propertyKey)
+            const pathParams = property.pathParams || new Map()
+            pathParams.set(parameterIndex, {
+                Entity,
+                keys: param
+            })
+            property.pathParams = pathParams
+        } else {
+            const pathParams = new Map()
+            pathParams.set(parameterIndex, {
+                Entity,
+                keys: param
+            })
+            propertys.set(propertyKey, {
+                pathParams
+            })
+        }
+        target.$propertys = propertys
+    }
+}
+
+export type MapParams<Params = any> = Params

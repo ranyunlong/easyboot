@@ -20,12 +20,18 @@ export class Layer {
     public propertyKey: string;
     // 元数据
     public metadata: TClass[];
-    // 参数装饰器数据
-    public params: { [index: number]: any };
     // 路由正则
     public regexp: RegExp;
     // 路由正则keys
-    public keys: pathToRegexp.Key[];
+    public PathParamskeys: pathToRegexp.Key[];
+    public _decoratorParams: Map<string, EasyBootEntityConstructor>;
+    public _decoratorBodys: Map<string, EasyBootEntityConstructor>;
+    public _decoratorpathParams: Map<string, {
+        Entity: EasyBootEntityConstructor;
+        keys: string[];
+    }>;
+    // 所属模块
+    public _module: TClass;
     constructor(options: Options) {
         const {
             path = '',
@@ -36,22 +42,21 @@ export class Layer {
             rootPath = '',
             params = new Map(),
             bodys = new Map(),
-            config
+            pathParams = new Map(),
+            config,
+            _module,
         } = options
         this.path = `/${rootPath}/${path}`.replace(/[\/]{2,}/g, '/')
         this.method = method
         this.target = target
         this.propertyKey = propertyKey
         this.metadata = metadata
-        this.params = []
-        params.forEach((value, i) => {
-            this.params[i] = value
-        })
-        bodys.forEach((value, i) => {
-            this.params[i] = value
-        })
-        this.keys = []
-        this.regexp = pathToRegexp(this.path, this.keys, config)
+        this._module = _module
+        this._decoratorParams = params
+        this._decoratorBodys = bodys
+        this._decoratorpathParams = pathParams
+        this.PathParamskeys = []
+        this.regexp = pathToRegexp(this.path, this.PathParamskeys, config)
     }
 }
 
@@ -63,6 +68,11 @@ interface Options {
     metadata: TClass[];
     rootPath: string;
     params: Map<number, EasyBootEntityConstructor>;
+    pathParams: Map<number, {
+        Entity: EasyBootEntityConstructor;
+        keys: string| string[];
+    }>;
     bodys: Map<number, EasyBootEntityConstructor>;
     config: pathToRegexp.RegExpOptions;
+    _module: TClass;
 }

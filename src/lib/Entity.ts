@@ -9,5 +9,4 @@ import { EasyBootEntityConstructor } from './EasyBootEntity';
 
 export function Entity<T extends EasyBootEntityConstructor>(target: T): void {
     target.prototype.$type = 'entity'
-    console.log(target.prototype.$rules)
 }
