@@ -1,3 +1,4 @@
+import * as statuses from 'statuses'
 /**
  * @class HttpException
  * @author ranyunlong<549510622@qq.com>
@@ -10,6 +11,7 @@ export class HttpException extends Error {
     constructor(options: Options) {
         super(options.message)
         this.statusCode = options.statusCode || 500
+        this.message = this.message || statuses[this.statusCode]
         this.data = options.data
     }
 }

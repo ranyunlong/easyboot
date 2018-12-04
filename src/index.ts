@@ -37,16 +37,17 @@ export abstract class EasyBootServlet extends EventEmitter {
     constructor(configs: Options = {}) {
         super()
         this.configs = {...this.configs, ...configs}
-        const { port, host, keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development' } = this.configs
+        const { port, host, keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development', router = {} } = this.configs
         this.keys = keys
         this.subdomainOffset = subdomainOffset
         this.env = env
         process.env.NODE_ENV = env
         // Start server listen port
         if (port) this.listen(port, host)
+        const { modules } = this
         this.router = new Router({
-            modules: this.modules,
-            ...this.configs.router
+            modules,
+            ...router
         })
     }
 
@@ -101,7 +102,7 @@ export abstract class EasyBootServlet extends EventEmitter {
         const context = this.createContext(request, response)
         try {
             if (typeof this.response === 'function') await this.response(context)
-            await this.router.handle(context)
+            await this.router.handleResponse(context)
             await this.respond(context)
             /**
              * Handler not found
@@ -239,13 +240,10 @@ export * from './lib/Request'
 export * from './lib/Response'
 export * from './lib/Module'
 export * from './lib/Router'
-export * from './lib/Controller'
-export * from './lib/Service'
 export * from './lib/EasyBootServletConfiguration'
 export * from './lib/Configuration'
-export * from './lib/Inject'
+export * from './lib/Controller'
 export * from './lib/EasyBootEntity'
-export * from './lib/Entity'
 export * from './lib/EasyBootRequestArguments'
 export * from './lib/EasyBootValidators'
 export interface Options {

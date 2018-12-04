@@ -7,8 +7,10 @@
 import { EasyBootRequestArguments } from './EasyBootRequestArguments'
 import { HttpException } from './HttpException';
 
-export abstract class EasyBootEntity {
-    public abstract transform(value: string, requestArgument: EasyBootRequestArguments): HttpException | any;
+export class EasyBootEntity {
+    public transform(value: string, requestArgument: EasyBootRequestArguments): HttpException | any {
+        return;
+    }
 }
 
 export interface EasyBootEntityConstructor {

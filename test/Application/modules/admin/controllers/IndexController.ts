@@ -1,36 +1,26 @@
-import { RequestMapping, Controller, GetMapping, RequestParams, RequestBody, PostMapping, RequestPathParams, MapParams } from '../../../../../src'
+import { RequestMapping, Controller, GetMapping, RequestParam, RequestBody, PostMapping, RequestQuery, isInt, isRequired } from '../../../../../src'
 import { UserService } from '../../home/services/UserServices';
 import { UserEntity } from '../entitys/UserEntity';
+import { TestService } from '../services/TestService';
 
 @Controller
 @RequestMapping('admin')
 export class IndexController {
-    constructor(private userService: UserService) {}
-    @GetMapping('users')
+    constructor(private userService: UserService, public testService: TestService) {}
     @PostMapping('users')
     public async index(
-        @RequestParams() user: UserEntity
+        @RequestBody user: UserEntity
     ) {
         return 10;
     }
 
     @GetMapping(':id')
-    @PostMapping(':id')
     public async id(
-        @RequestBody(UserEntity) user: UserEntity,
-        @RequestPathParams(['id', 'name']) pathParams: MapParams<{
-            name: string;
-            id: number;
-        }>
+        @RequestParam({
+            id: isInt('id必须为整数')
+        }) params: any,
+        @RequestQuery(UserEntity) query: UserEntity
     ) {
-        return pathParams
-    }
-
-    @GetMapping(':id/:date')
-    public async news(@RequestPathParams(['id', 'date']) pathParams: MapParams<{
-        name: string;
-        id: number;
-    }>) {
-        return pathParams
+        return '22'
     }
 }

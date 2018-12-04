@@ -4,75 +4,159 @@
  * @copyright Ranyunlong
  * @license MIT
  */
+import { Route, IModule, MappingDataParams, Validator } from './Route';
+import { Context } from '../Context';
 import { TClass } from '../Module';
-import * as pathToRegexp from 'path-to-regexp'
-import { ElementType } from './ElementType';
-import { EasyBootEntityConstructor } from '../EasyBootEntity';
+import { createHash } from 'crypto'
+import { HttpException } from '../HttpException';
 
 export class Layer {
-    // 路由地址
+    // Route path
     public path: string;
-    // 请求方法
-    public method: ElementType.METHOD;
-    // 控制器类
-    public target: TClass;
-    // 对应控制器方法key
-    public propertyKey: string;
-    // 元数据
-    public metadata: TClass[];
-    // 路由正则
+    // Route Regexp
     public regexp: RegExp;
-    // 路由正则keys
-    public PathParamskeys: pathToRegexp.Key[];
-    public _decoratorParams: Map<string, EasyBootEntityConstructor>;
-    public _decoratorBodys: Map<string, EasyBootEntityConstructor>;
-    public _decoratorpathParams: Map<string, {
-        Entity: EasyBootEntityConstructor;
-        keys: string[];
-    }>;
-    // 所属模块
-    public _module: TClass;
-    constructor(options: Options) {
-        const {
-            path = '',
-            method,
-            propertyKey = '',
-            target,
-            metadata = [],
-            rootPath = '',
-            params = new Map(),
-            bodys = new Map(),
-            pathParams = new Map(),
-            config,
-            _module,
-        } = options
-        this.path = `/${rootPath}/${path}`.replace(/[\/]{2,}/g, '/')
-        this.method = method
-        this.target = target
-        this.propertyKey = propertyKey
-        this.metadata = metadata
-        this._module = _module
-        this._decoratorParams = params
-        this._decoratorBodys = bodys
-        this._decoratorpathParams = pathParams
-        this.PathParamskeys = []
-        this.regexp = pathToRegexp(this.path, this.PathParamskeys, config)
+    // Controller handle key
+    public handleKey: string;
+    // Http request url
+    public requestUrl: string;
+    // Http request path
+    public requestPath: string;
+    // Http request method
+    public requestMethod: string;
+    // controller
+    public controller: object;
+    public arguments: any[] = []
+    // metadata
+    public metadata: object[];
+    constructor(options: Route, context: Context) {
+        this.requestPath = context.path
+        this.requestUrl = context.url
+        this.requestMethod = context.method
+        this.path = options.path
+        this.regexp = options.regexp
+        this.handleKey = options.handleKey
+        this.createMetaData(options.decorators.metadata, options.module)
+        this.createController(options.controller)
+        this.parseParam(options, context)
     }
-}
 
-interface Options {
-    path: string;
-    method: ElementType.METHOD;
-    propertyKey: string;
-    target: TClass;
-    metadata: TClass[];
-    rootPath: string;
-    params: Map<number, EasyBootEntityConstructor>;
-    pathParams: Map<number, {
-        Entity: EasyBootEntityConstructor;
-        keys: string| string[];
-    }>;
-    bodys: Map<number, EasyBootEntityConstructor>;
-    config: pathToRegexp.RegExpOptions;
-    _module: TClass;
+    /**
+     * Create MetaData
+     */
+    private createMetaData(metadata: TClass[] = [], imodule: IModule) {
+        const provides = imodule.providers || []
+        this.metadata = metadata.map((Service) => {
+            const token = createHash('md5').update(Service.toString()).digest('hex')
+            const data = provides.find((service) => {
+                return service.token === token && service.provide === Service.name
+            })
+
+            if (!data) {
+                throw new Error(`${imodule.name} does not have '${Service.name}' service .`)
+            }
+
+            return data.value
+        })
+    }
+
+    /**
+     * Create Controller
+     */
+    private createController(Controller: TClass) {
+        this.controller = new Controller(...this.metadata)
+    }
+
+    /**
+     * Parse params
+     */
+    private parseParam(options: Route, context: Context) {
+        const { pathParamsKeys = [], regexp } = options
+        if (options.decorators.params && options.decorators.params.size > 0) {
+            const params: any = {}
+            if (pathParamsKeys.length > 0) {
+                const execParams = regexp.exec(context.path)
+                pathParamsKeys.forEach((k, i) => {
+                    params[k.name] = execParams[i + 1]
+                })
+            }
+            options.decorators.params.forEach((opts = {}, index) => {
+                const { Entity, keys, validators, rule } = opts
+                if (!Entity && !keys && !validators && !rule) {
+                    this.arguments[index] = params
+                } else if (Entity) {
+                    console.log(Entity)
+                } else if (keys && validators) {
+                    const value = params[keys as string]
+                    const validates = validators as Validator[]
+                    validates.forEach((validator) => {
+                        if (validator) {
+                            let result: boolean = true
+                            if (validator.options) {
+                                result = (validator as any).validator(value, validator.options)
+                            } else {
+                                result = (validator as any).validator(value)
+                            }
+                            if (!result) {
+                                throw new HttpException({
+                                    data: validator.message || `Invalid ${keys}`
+                                })
+                            }
+                        }
+                    })
+                    this.arguments[index] = value
+                } else if (rule) {
+                    const data: any = {}
+                    Object.keys(rule).forEach((k) => {
+                        const value = params[k]
+                        const validators = rule[k]
+                        if (Array.isArray(validators)) {
+                            validators.forEach((validator) => {
+                                let result = true;
+                                if (validator.options) {
+                                    result = (validator as any).validator(value, validator.options)
+                                } else {
+                                    result = (validator as any).validator(value)
+                                }
+                                if (!result) {
+                                    throw new HttpException({
+                                        data: validator.message || `Invalid ${k}`
+                                    })
+                                }
+                            })
+                        } else {
+                            let result = true;
+                                if (validators.options) {
+                                    result = (validators as any).validator(value, validators.options)
+                                } else {
+                                    result = (validators as any).validator(value)
+                                }
+                                if (!result) {
+                                    throw new HttpException({
+                                        data: validators.message || `Invalid ${k}`
+                                    })
+                                }
+                        }
+                        data[k] = value
+                    })
+                    this.arguments[index] = data
+                } else if (keys) {
+                    if (Array.isArray(keys)) {
+                        const data: any = {}
+                        keys.forEach((k) => {
+                            data[k] = params[k]
+                        })
+                    } else {
+                        this.arguments[index] = params[keys]
+                    }
+                }
+            })
+        }
+    }
+
+    /**
+     * parseQuery
+     */
+    private parseQuery(params: MappingDataParams = new Map(), context: Context) {
+        return;
+    }
 }

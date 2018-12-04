@@ -1,4 +1,5 @@
 import * as validator from 'validator'
+import { Validator } from '../Router/Route';
 
 (validator as any).isString = function(value: string) {
     return typeof value === 'string'
@@ -44,6 +45,15 @@ export function baseValidator(validatorType: keyof ValidatorJS.ValidatorStatic, 
             rules.set(propertyKey, rule)
         }
         target.$rules = rules
+    }
+}
+
+export function baseTestValidator(validatorType: keyof ValidatorJS.ValidatorStatic, message: string, options: any = null): Validator {
+    return {
+        message,
+        options,
+        validator: validator[validatorType],
+        validatorType
     }
 }
 

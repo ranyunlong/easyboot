@@ -4,4 +4,4 @@
  * @copyright Ranyunlong
  * @license MIT
  */
-export class Stack extends Array {}
+export class Stack<T> extends Array<T> {}
