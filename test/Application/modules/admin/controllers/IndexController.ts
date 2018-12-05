@@ -16,7 +16,7 @@ export class IndexController {
 
     @GetMapping(':id')
     public async id(
-        @RequestParam('id', isInt('必须为整数')) id: number,
+        @RequestParam('id', [isInt]) id: number,
         @RequestQuery(UserEntity) query: UserEntity
     ) {
         return query

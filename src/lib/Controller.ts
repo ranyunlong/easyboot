@@ -4,6 +4,7 @@ import { EasyBootEntityConstructor } from './EasyBootEntity';
 import { Validator } from './Router/Route';
 import { ElementType } from './Router/ElementType';
 import { DecoratorException } from './DecoratorException';
+import { TestValidator } from './EasyBootValidators';
 
 /**
  * Controller decorator
@@ -124,7 +125,17 @@ export function createRequestParameterDecorator(type: 'query' | 'body' | 'param'
             }
             target.propertys = propertys
         } else if (args.length === 2) {
-            const [keys, validators] = args
+            let [keys, validators] = args
+            if (Array.isArray(validators)) {
+                validators = validators.map((validator) => {
+                    if (typeof validator === 'function') {
+                        return validator()
+                    }
+                    return validator
+                })
+            } else {
+                if (typeof validators === 'function') validators = validators()
+            }
             return createRequestParameterDecorator(type, {
                 keys,
                 validators
@@ -606,11 +617,14 @@ interface TController {
     new (...args: any[]): any;
 }
 
+type TestValidatorKey = keyof TestValidator
+type TestValidatorFn = TestValidator[TestValidatorKey]
+
 interface RequestParameterDecorator {
     (Entity: EasyBootEntityConstructor): ParameterDecorator;
-    (rule: { [key: string]: Validator | Validator[] | null }): ParameterDecorator;
+    (rule: { [key: string]: TestValidator | Validator[] | null }): ParameterDecorator;
     (keys: string | string[]): ParameterDecorator;
-    (key: string, validator?: Validator | Validator[] | null): ParameterDecorator;
+    (key: string, validator?: TestValidatorFn | TestValidatorFn[] | Validator | Validator[]): ParameterDecorator;
     (target: any, propertyKey: string, parameterIndex: number): void;
 }
 
