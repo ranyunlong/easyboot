@@ -22,7 +22,7 @@ export class EasyBootEntity {
     }
     public validator(value: string, rule: RuleItem) {
         if (rule) {
-            return rule.validator(value, rule.options)
+            return rule.validator(String(value), rule.options)
         }
         return true
     }

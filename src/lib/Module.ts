@@ -11,7 +11,18 @@ import { EasyBootEntityConstructor } from './EasyBootEntity'
 import { createHash } from 'crypto'
 
 /**
- * @decorator Module
+ * Module decorator
+ *
+ * The decorator apply to EasyBoot module.
+ *
+ * Example
+ * ```
+ * @Module({
+ *     controllers: [ IndexController ],
+ *     providers: [ UserService, TestService ]
+ * })
+ * export class AdminModule {}
+ * ```
  */
 export function Module(config: ModuleInterface): ClassDecorator {
     return (target): void => {
@@ -36,7 +47,16 @@ export function Module(config: ModuleInterface): ClassDecorator {
 }
 
 /**
- * @decorator Modules
+ * Modules decorator
+ *
+ * The decorator apply to EasyBoot Module.
+ *
+ * Example
+ * ```
+ * @Modules([ AdminModule, HomeModule ])
+ * export class MyApplication extends EasyBootServlet {
+ * }
+ * ```
  */
 export function Modules(modules: TClass[]) {
     return <T extends ModuleTargetClass>(target: T): void => {
@@ -46,14 +66,35 @@ export function Modules(modules: TClass[]) {
 }
 
 /**
- * @decorator Modules
+ * Entity decorator
+ *
+ * The decorator apply to EasyBootEntity.
+ *
+ * Example
+ * ```
+ * @Entity
+ * export class UserEntity extends EasyBootEntity {
+ *     @IsLength('账号必须3-6位', { min: 3, max: 6})
+ *     @IsString('账号必须为字符串')
+ *     @IsRequired('账号必须')
+ *     public username: string;
+ * }
+ * ```
  */
 export function Entity<T extends EasyBootEntityConstructor>(target: T): void {
     target.prototype.type = 'entity'
 }
 
 /**
- * @decorator Service
+ * Entity decorator
+ *
+ * The decorator apply to EasyBootService.
+ *
+ * Example
+ * ```
+ * @Service
+ * export class UserService {}
+ * ```
  */
 export function Service<T extends TClass>(target: T): void {
     target.prototype.type = 'service'

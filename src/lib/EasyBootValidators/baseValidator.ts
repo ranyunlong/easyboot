@@ -7,6 +7,7 @@
 
 import * as validator from 'validator'
 import { Validator } from '../Router/Route';
+import { TClass } from '../Module';
 
 (validator as any).isString = function(value: string) {
     return typeof value === 'string'
@@ -22,6 +23,7 @@ import { Validator } from '../Router/Route';
 
 export function baseValidator(validatorType: keyof ValidatorJS.ValidatorStatic, message: string, options: any = null): PropertyDecorator {
     return (target: any, propertyKey: string): void => {
+        const type = Reflect.getMetadata('design:type', target, propertyKey)
         const rules: Rules = target.$rules || new Map<string, Set<ValidatorFn>>()
         if (rules.has(propertyKey)) {
             const rule = rules.get(propertyKey)
@@ -34,7 +36,9 @@ export function baseValidator(validatorType: keyof ValidatorJS.ValidatorStatic, 
                     }
                 },
                 options,
-                message
+                message,
+                propertyKey,
+                type
             })
         } else {
             const rule: Rule = new Set()
@@ -47,7 +51,9 @@ export function baseValidator(validatorType: keyof ValidatorJS.ValidatorStatic, 
                     }
                 },
                 options,
-                message
+                message,
+                propertyKey,
+                type
             })
             rules.set(propertyKey, rule)
         }
@@ -74,6 +80,9 @@ export type Rule = Set<{
     validator: ValidatorFn;
     options: any;
     message: string;
+    propertyKey: string;
+    type: TClass;
+
 }>;
 export type Rules = Map<string, Rule>;
 export type ValidatorType = keyof ValidatorJS.ValidatorStatic;

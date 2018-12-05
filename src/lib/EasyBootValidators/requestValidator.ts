@@ -10,8 +10,9 @@ import { HttpException } from '../HttpException';
 import { Rules } from './baseValidator';
 import { EasyBootRequestArguments } from '../EasyBootRequestArguments';
 
-export function requestValidator(type: 'query' | 'body' | 'param', data: any = {}, opts: RequestParameterDecoratorOptions): any {
-    const { Entity, keys, rule, validators } = opts
+export function requestValidator(type: 'query' | 'body' | 'param', data: any = {}, opts: RequestParameterDecoratorOptions, index: number): any {
+    const { Entity, keys, rule, validators, parameterTypes = [] } = opts
+    const parameterType = parameterTypes[index]
     if (!Entity && !keys && !rule && validators) return data
     if (keys && validators) {
         const key = keys as string;
@@ -49,6 +50,25 @@ export function requestValidator(type: 'query' | 'body' | 'param', data: any = {
                     data: error
                 })
             }
+            if (parameterType) {
+                if (/Number/.test(parameterType.name)) {
+                    if (typeof value !== 'number') {
+                        return Number(value)
+                    }
+                }
+
+                if (/String/.test(parameterType.name)) {
+                    if (typeof value !== 'string') {
+                        return String(value)
+                    }
+                }
+
+                if (/Boolean/.test(parameterType.name)) {
+                    if (typeof value !== 'boolean') {
+                        return Boolean(value)
+                    }
+                }
+            }
             return value
         }
     }
@@ -58,11 +78,24 @@ export function requestValidator(type: 'query' | 'body' | 'param', data: any = {
         rules.forEach((ruleCollection = new Set(), key) => {
             const value = data[key] || ''
             ruleCollection.forEach((rule) => {
-                (entity as any)[key] = entity.transform(String(value), new EasyBootRequestArguments({
+                let d: any = entity.transform(value, new EasyBootRequestArguments({
                     rule: rule as any,
                     key,
                     type
-                }))
+                }));
+                if (rule.type) {
+                     // 格式化数据类型 针对number&string 类型不能识别
+                    if (/Number/.test(rule.type.name)) {
+                        if (typeof d !== 'number') d = Number(d)
+                    }
+                    if (/String/.test(rule.type.name)) {
+                        if (typeof d !== 'string') d = String(d)
+                    }
+                    if (/Boolean/.test(rule.type.name)) {
+                        if (typeof d !== 'boolean') d = Boolean(d)
+                    }
+                    ; (entity as any)[key] = d
+                }
             })
         })
         if (entity.getError()) {

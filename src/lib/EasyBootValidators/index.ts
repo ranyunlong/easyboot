@@ -1,12 +1,15 @@
 import { baseValidator, baseTestValidator } from './baseValidator'
 
 /**
- * IsAfter
+ * IsAfter decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a date that's after the specified date (defaults to now).
  *
  * Example
  * ```
- * @IsAfter('invalid message')
- * @IsAfter('invalid message', '2018-10-11')
+ * @IsAfter('message')
+ * @IsAfter('message', '2018-10-11')
  * ```
  */
 export function IsAfter(message: string, date?: string) {
@@ -14,120 +17,547 @@ export function IsAfter(message: string, date?: string) {
 }
 
 /**
- * IsAfter
+ * isAfter
  *
- * Example
+ * check if the string is a date that's after the specified date (defaults to now).
+ *
+ * Example:
  * ```
- * @RequestBody('id', isAfter('invalid message'))
- * @RequestBody('id', isAfter('invalid message', '2018-10-11'))
- * @RequestParam(..., isAfter(...))
- * @RequestQuery(..., isAfter(...))
+ * @RequestBody('id', isAfter('message'))
+ * @RequestBody('id', [isAfter('message')])
+ * @RequestBody('id', isAfter('message', '2018-10-11'))
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
  * ```
  */
 export function isAfter(message: string, date?: string) {
     return baseTestValidator('isAfter', message, date)
 }
 
+/**
+ * IsAlpha decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string contains only letters (a-zA-Z).
+ *
+ * Example
+ * ```
+ * @IsAlpha('message')
+ * @IsAlpha('message', 'en-US')
+ * ```
+ */
+
 export function IsAlpha(message: string, locale?: ValidatorJS.AlphaLocale) {
     return baseValidator('isAlpha', message, locale)
 }
 
-export function isAlpha(message: string, date?: string) {
-    return baseTestValidator('isAlpha', message, date)
+/**
+ * isAlpha
+ *
+ * check if the string contains only letters (a-zA-Z).
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isAlpha('message'))
+ * @RequestBody('id', [isAlpha('message')])
+ * @RequestBody('id', isAlpha('message', 'en-US'))
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
+export function isAlpha(message: string, locale?: ValidatorJS.AlphaLocale) {
+    return baseTestValidator('isAlpha', message, locale)
 }
 
+/**
+ * IsAlphanumeric decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string contains only letters and numbers.
+ *
+ * Example
+ * ```
+ * @IsAlphanumeric('message')
+ * @IsAlphanumeric('message', 'en-US')
+ * ```
+ */
 export function IsAlphanumeric(message: string, locale?: ValidatorJS.AlphanumericLocale) {
     return baseValidator('isAlphanumeric', message, locale)
 }
 
+/**
+ * isAlphanumeric
+ *
+ * check if the string contains only letters and numbers.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isAlphanumeric('message'))
+ * @RequestBody('id', [isAlphanumeric('message')])
+ * @RequestBody('id', isAlphanumeric('message', 'en-US'))
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isAlphanumeric(message: string, locale?: ValidatorJS.AlphanumericLocale) {
     return baseTestValidator('isAlphanumeric', message, locale)
 }
 
+/**
+ * IsAscii decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string contains ASCII chars only.
+ *
+ * Example
+ * ```
+ * @IsAscii('message')
+ * ```
+ */
 export function IsAscii(message: string) {
     return baseValidator('isAscii', message)
 }
 
+/**
+ * isAscii
+ *
+ * check if the string contains ASCII chars only.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isAscii('message'))
+ * @RequestBody('id', [isAscii('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isAscii(message: string) {
     return baseTestValidator('isAscii', message)
 }
 
+/**
+ * IsBase64 decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if a string is base64 encoded.
+ *
+ * Example
+ * ```
+ * @IsBase64('message')
+ * ```
+ */
 export function IsBase64(message: string) {
     return baseValidator('isBase64', message)
 }
 
+/**
+ * isBase64
+ *
+ * check if a string is base64 encoded.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', [isBase64('message')])
+ * @RequestBody('id', isBase64('message'))
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isBase64(message: string) {
     return baseTestValidator('isBase64', message)
 }
 
+/**
+ * IsBefore decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a date that's before the specified date.
+ *
+ * Example
+ * ```
+ * @IsBefore('message', '2018-02-01')
+ * ```
+ */
 export function IsBefore(message: string, date?: string) {
     return baseValidator('isBefore', message, date)
 }
 
+/**
+ * isBefore
+ *
+ * check if the string is a date that's before the specified date.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isBefore('message', '2018-02-01'))
+ * @RequestBody('id', [isBefore('message', '2018-02-01')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isBefore(message: string, date?: string) {
     return baseTestValidator('isBefore', message, date)
 }
 
+/**
+ * IsBoolean decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if a string is a boolean.
+ *
+ * Example
+ * ```
+ * @IsBoolean('message')
+ * ```
+ */
 export function IsBoolean(message: string) {
     return baseValidator('isBoolean', message)
 }
 
+/**
+ * isBoolean
+ *
+ * check if a string is a boolean.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isBoolean('message'))
+ * @RequestBody('id', [isBoolean('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isBoolean(message: string) {
     return baseTestValidator('isBoolean', message)
 }
 
+/**
+ * IsByteLength decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string's length (in UTF-8 bytes) falls in a range.
+ *
+ * Example
+ * ```
+ * @IsByteLength('message')
+ * @IsByteLength('message', {min:0, max: undefined})
+ * ```
+ */
 export function IsByteLength(message: string, options?: ValidatorJS.IsByteLengthOptions) {
     return baseValidator('isByteLength', message, options)
 }
 
+/**
+ * isByteLength
+ *
+ * check if the string's length (in UTF-8 bytes) falls in a range.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isByteLength('message'))
+ * @RequestBody('id', [isByteLength('message')])
+ * @RequestBody('id', isByteLength('message', {min:0, max: undefined}))
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isByteLength(message: string, options?: ValidatorJS.IsByteLengthOptions) {
     return baseTestValidator('isByteLength', message, options)
 }
 
+/**
+ * IsCreditCard decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a credit card.
+ *
+ * Example
+ * ```
+ * @IsCreditCard('message')
+ * ```
+ */
 export function IsCreditCard(message: string) {
     return baseValidator('isCreditCard', message)
 }
 
+/**
+ * isCreditCard
+ *
+ * check if the string is a credit card.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isCreditCard('message'))
+ * @RequestBody('id', [isCreditCard('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isCreditCard(message: string) {
     return baseTestValidator('isCreditCard', message)
 }
 
+/**
+ * IsCurrency decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a valid currency amount.
+ *
+ * Example
+ * ```
+ * @IsCurrency('message')
+ * @IsCurrency('message',{})
+ * ```
+ */
 export function IsCurrency(message: string, options?: ValidatorJS.IsCurrencyOptions) {
     return baseValidator('isCurrency', message, options)
 }
 
+/**
+ * isCurrency
+ *
+ * check if the string is a valid currency amount.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isCurrency('message'))
+ * @RequestBody('id', isCurrency('message', {}))
+ * @RequestBody('id', [isCurrency('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isCurrency(message: string, options?: ValidatorJS.IsCurrencyOptions) {
     return baseTestValidator('isCurrency', message, options)
 }
 
-export function isDataURI(message: string) {
+/**
+ * IsDataURI decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a data uri format.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+ *
+ * Example
+ * ```
+ * @IsDataURI('message')
+ * ```
+ */
+export function IsDataURI(message: string) {
     return baseValidator('isDataURI', message)
 }
 
-export function IsDataURI(message: string) {
+/**
+ * isDataURI
+ *
+ * check if the string is a data uri format.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isDataURI('message'))
+ * @RequestBody('id', [isDataURI('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
+export function isDataURI(message: string) {
     return baseTestValidator('isDataURI', message)
 }
 
+/**
+ * IsMagnetURI decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a data uri format.
+ *
+ * https://en.wikipedia.org/wiki/Magnet_URI_scheme
+ *
+ * Example
+ * ```
+ * @IsMagnetURI('message')
+ * ```
+ */
+export function IsMagnetURI(message: string) {
+    return baseValidator('isDecimal', message)
+}
+
+/**
+ * isMagnetURI
+ *
+ * check if the string is a data uri format.
+ *
+ * https://en.wikipedia.org/wiki/Magnet_URI_scheme
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isMagnetURI('message'))
+ * @RequestBody('id', [isMagnetURI('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
+export function isMagnetURI(message: string) {
+    return baseTestValidator('isDecimal', message)
+}
+
+/**
+ * IsDecimal decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc.
+ *
+ * Example
+ * ```
+ * @IsDecimal('message')
+ * @IsDecimal('message', 'en-US')
+ * ```
+ */
 export function IsDecimal(message: string, options?: ValidatorJS.IsDecimalOptions) {
     return baseValidator('isDecimal', message, options)
 }
 
+/**
+ * isDecimal
+ *
+ * check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isDecimal('message'))
+ * @RequestBody('id', isDecimal('message', 'en-US'))
+ * @RequestBody('id', [isDecimal('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isDecimal(message: string, options?: ValidatorJS.IsDecimalOptions) {
     return baseTestValidator('isDecimal', message, options)
 }
 
+/**
+ * IsDivisibleBy decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is a number that's divisible by another.
+ *
+ * Example
+ * ```
+ * @IsDivisibleBy('message')
+ * ```
+ */
 export function IsDivisibleBy(message: string) {
     return baseValidator('isDivisibleBy', message)
 }
 
+/**
+ * isDivisibleBy
+ *
+ * check if the string is a number that's divisible by another.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isDivisibleBy('message'))
+ * @RequestBody('id', [isDivisibleBy('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isDivisibleBy(message: string) {
     return baseTestValidator('isDivisibleBy', message)
 }
 
+/**
+ * IsEmail decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * check if the string is an email.
+ *
+ * Example
+ * ```
+ * @IsEmail('message')
+ * ```
+ */
 export function IsEmail(message: string, options?: ValidatorJS.IsEmailOptions) {
     return baseValidator('isEmail', message, options)
 }
 
+/**
+ * isEmail
+ *
+ * check if the string is an email.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isEmail('message'))
+ * @RequestBody('id', isEmail('message', {}))
+ * @RequestBody('id', [isEmail('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestBody()
+ * @RequestParam()
+ * @RequestQuery()
+ * ```
+ */
 export function isEmail(message: string, options?: ValidatorJS.IsEmailOptions) {
     return baseTestValidator('isEmail', message, options)
 }

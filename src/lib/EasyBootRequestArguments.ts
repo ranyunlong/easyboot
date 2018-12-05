@@ -6,6 +6,7 @@
  */
 
 import { RuleItem } from './EasyBootValidators/baseValidator'
+import { TClass } from './Module';
 
 export class EasyBootRequestArguments {
     constructor(options: Options = {}) {

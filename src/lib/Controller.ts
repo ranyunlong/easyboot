@@ -1,11 +1,22 @@
 import chalk from 'chalk'
 import { TClass } from './Module'
 import { EasyBootEntityConstructor } from './EasyBootEntity';
-import { MappingDataParams, Validator } from './Router/Route';
+import { Validator } from './Router/Route';
 import { ElementType } from './Router/ElementType';
 import { DecoratorException } from './DecoratorException';
 
-export function Controller(target: { new (...args: any[]): any }): void {
+/**
+ * Controller decorator
+ *
+ * The decorator apply to Contorllor.
+ *
+ * Example
+ * ```
+ * @Controller
+ * export class IndexController {}
+ * ```
+ */
+export function Controller(target: TController): void {
     const options = target.prototype
     options.metadata = Reflect.getMetadata('design:paramtypes', target) || []
     options.metadata.forEach((Service: TClass) => {
@@ -44,18 +55,16 @@ export function Controller(target: { new (...args: any[]): any }): void {
     })
 }
 
-interface RequestParameterDecorator {
-    (Entity: EasyBootEntityConstructor): ParameterDecorator;
-    (rule: { [key: string]: Validator | Validator[] | null }): ParameterDecorator;
-    (keys: string | string[]): ParameterDecorator;
-    (key: string, validator?: Validator | Validator[] | null): ParameterDecorator;
-    (target: any, propertyKey: string, parameterIndex: number): void;
-}
-
+/**
+ * @function createRequestParameterDecorator
+ * @param type
+ * @param opts
+ */
 export function createRequestParameterDecorator(type: 'query' | 'body' | 'param', opts: RequestParameterDecoratorOptions = {}): RequestParameterDecorator {
     return function decorator(...args: any) {
         if (args.length === 3) {
             const [target, propertyKey, parameterIndex] = args
+            const parameterType = Reflect.getMetadata('design:paramtypes', target, propertyKey)
             const propertys: Propertys = target.propertys || new Map()
             if (propertys.has(propertyKey)) {
                 const options = propertys.get(propertyKey) || {}
@@ -65,31 +74,49 @@ export function createRequestParameterDecorator(type: 'query' | 'body' | 'param'
                     params = new Map<number, RequestParameterDecoratorOptions>()
                 } = options
                 if (type === 'query') {
-                    querys.set(parameterIndex, opts)
+                    querys.set(parameterIndex, {
+                        ...opts,
+                        parameterTypes: parameterType
+                    })
                     options.querys = querys
                 } else if (type === 'body') {
-                    bodys.set(parameterIndex, opts)
+                    bodys.set(parameterIndex, {
+                        ...opts,
+                        parameterTypes: parameterType
+                    })
                     options.bodys = bodys
                 } else if (type === 'param') {
-                    params.set(parameterIndex, opts)
+                    params.set(parameterIndex, {
+                        ...opts,
+                        parameterTypes: parameterType
+                    })
                     options.params = params
                 }
             } else {
                 if (type === 'query') {
                     const querys = new Map()
-                    querys.set(parameterIndex, opts)
+                    querys.set(parameterIndex, {
+                        ...opts,
+                        parameterType: parameterType
+                    })
                     propertys.set(propertyKey, {
                         querys
                     })
                 } else if (type === 'body') {
                     const bodys = new Map()
-                    bodys.set(parameterIndex, opts)
+                    bodys.set(parameterIndex, {
+                        ...opts,
+                        parameterType: parameterType
+                    })
                     propertys.set(propertyKey, {
                         bodys
                     })
                 } else if (type === 'param') {
                     const params = new Map()
-                    params.set(parameterIndex, opts)
+                    params.set(parameterIndex, {
+                        ...opts,
+                        parameterType: parameterType
+                    })
                     propertys.set(propertyKey, {
                         params
                     })
@@ -124,15 +151,112 @@ export function createRequestParameterDecorator(type: 'query' | 'body' | 'param'
     } as any
 }
 
+/**
+ * RequestQuery decorator
+ *
+ * The decorator apply to Contorllor handle function parameter.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     // not validated
+ *     @GetMapping('admin')
+ *     public async index(@RequestQuery() query: any){}
+ *
+ *     // use Entity class validate
+ *     @GetMapping('test')
+ *     public async test(@RequestQuery(UserEntity) query: UserEntity){}
+ *
+ *     // use custom validate
+ *     @GetMapping('test')
+ *     public async test(@RequestQuery('name', isString('必须为字符串')) query: UserEntity){}
+ * }
+ * ```
+ */
 export const RequestQuery = createRequestParameterDecorator('query')
+
+/**
+ * RequestParam decorator
+ *
+ * The decorator apply to Contorllor handle function parameter.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     // not validated
+ *     @GetMapping('admin')
+ *     public async index(@RequestParam() query: any){}
+ *
+ *     // use Entity class validate
+ *     @GetMapping('test')
+ *     public async test(@RequestParam(UserEntity) query: UserEntity){}
+ *
+ *     // use custom validate
+ *     @GetMapping('test')
+ *     public async test(@RequestParam('id', isInt('必须为整数')) query: UserEntity){}
+ * }
+ * ```
+ */
 export const RequestParam = createRequestParameterDecorator('param')
+
+/**
+ * RequestParam decorator
+ *
+ * The decorator apply to Contorllor handle function parameter.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     // not validated
+ *     @GetMapping('admin')
+ *     public async index(@RequestBody() query: any){}
+ *
+ *     // use Entity class validate
+ *     @GetMapping('test')
+ *     public async test(@RequestBody(UserEntity) query: UserEntity){}
+ *
+ *     // use custom validate
+ *     @GetMapping('test')
+ *     public async test(@RequestBody('username', isString('必须为字符串')) query: UserEntity){}
+ * }
+ * ```
+ */
 export const RequestBody = createRequestParameterDecorator('body')
 
 /**
- * @method RequestMapping
- * @param path
- * @param method
- * @author ranyunlong<549510622@qq.com>
+ * RequestMapping decorator
+ *
+ * The decorator apply to Contorllor or Contorllor propertys, Used to route.
+ * Request method ALL (any)
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {}
+ *
+ * @Controller
+ * @RequestMapping('admin/:id')
+ * export class IndexController {}
+ *
+ * @Controller
+ * @RequestMapping('admin/:id')
+ * export class IndexController {}
+ *
+ * @Controller
+ * @RequestMapping(':id')
+ * export class IndexController {}
+ *
+ * @Controller
+ * @RequestMapping(':id/:name')
+ * export class IndexController {}
+ * ```
  */
 export function RequestMapping(path: string, method: ElementType.METHOD = ElementType.METHOD.ALL): RequestMappingDecorator {
     function decorator(...args: any[]): any {
@@ -142,6 +266,7 @@ export function RequestMapping(path: string, method: ElementType.METHOD = Elemen
             options.path = path
             options.method = method
         } else {
+            // const returnType = Reflect.getMetadata('design:returntype', target, propertyKey);
             const propertys: Propertys = target.propertys || new Map()
             if (propertys.has(propertyKey)) {
                 const property = propertys.get(propertyKey)
@@ -178,138 +303,315 @@ export function RequestMapping(path: string, method: ElementType.METHOD = Elemen
 }
 
 /**
- * @method GetMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * GetMapping decorator
+ *
+ * The decorator apply  Contorllor propertys, Used to route.
+ * Request method GET
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function GetMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.GET)
 }
 
 /**
- * @method PostMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * PostMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method POST
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PostMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function PostMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.POST)
 }
 
 /**
- * @method DeleteMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * DeleteMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method DELETE
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @DeleteMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function DeleteMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.DELETE)
 }
 
 /**
- * @method CopyMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * CopyMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method COPY
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @CopyMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function CopyMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.COPY)
 }
 
 /**
- * @method HeadMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * HeadMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method HEAD
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @HeadMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function HeadMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.HEAD)
 }
 
 /**
- * @method LinkMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * LinkMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method LINK
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @LinkMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function LinkMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.LINK)
 }
 
 /**
- * @method LinkMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * UnlinkMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method UNLINK
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @UnlinkMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function UnlinkMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.UNLINK)
 }
 
 /**
- * @method OptionsMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * OptionsMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method OPTIONS
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @OptionsMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function OptionsMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.OPTIONS)
 }
 
 /**
- * @method PatchMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * PatchMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method PATCH
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PatchMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function PatchMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.PATCH)
 }
 
 /**
- * @method PropfindMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * PropfindMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method PROPFIND
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PropfindMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function PropfindMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.PROPFIND)
 }
 
 /**
- * @method PurgeMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * PurgeMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method PURGE
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PurgeMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function PurgeMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.PURGE)
 }
 
 /**
- * @method PutMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * PutMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method PUT
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PutMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function PutMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.PUT)
 }
 
 /**
- * @method LockMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * LockMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method LOCK
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @LockMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function LockMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.LOCK)
 }
 
 /**
- * @method UnlockMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * UnlockMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method UNLOCK
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @UnlockMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function UnlockMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.UNLOCK)
 }
 
 /**
- * @method ViewMapping
- * @param path
- * @author ranyunlong<549510622@qq.com>
+ * ViewMapping decorator
+ *
+ * The decorator apply to Contorllor propertys, Used to route.
+ * Request method VIEW
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @ViewMapping('admin')
+ *     public async index(){}
+ * }
+ * ```
  */
 export function ViewMapping(path: string): MethodDecorator {
     return RequestMapping(path, ElementType.METHOD.VIEW)
+}
+
+interface TController {
+    new (...args: any[]): any;
+}
+
+interface RequestParameterDecorator {
+    (Entity: EasyBootEntityConstructor): ParameterDecorator;
+    (rule: { [key: string]: Validator | Validator[] | null }): ParameterDecorator;
+    (keys: string | string[]): ParameterDecorator;
+    (key: string, validator?: Validator | Validator[] | null): ParameterDecorator;
+    (target: any, propertyKey: string, parameterIndex: number): void;
 }
 
 interface RequestMappingDecorator {
@@ -351,6 +653,7 @@ export interface ControllerOptions {
 }
 
 export interface RequestParameterDecoratorOptions {
+    parameterTypes?: TClass[];
     Entity?: EasyBootEntityConstructor;
     keys?: string | string[];
     validators?: Validator | Validator[];

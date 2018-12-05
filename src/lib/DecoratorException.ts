@@ -7,7 +7,7 @@
 import chalk from 'chalk'
 import * as fs from 'fs'
 
- export class DecoratorException extends Error {
+export class DecoratorException extends Error {
     constructor(message: string, code: string = '') {
         super(message)
         let stack = this.stack.split('\n')
@@ -38,9 +38,9 @@ import * as fs from 'fs'
             if (match) {
                 // k = k.replace(RegExp(match[0].replace('@', ''), 'g'), chalk.yellowBright(match[0].replace('@', '')))
             }
-            return '    ' + i +  fLen.join('') + '    ' + k
+            return '    ' + i + fLen.join('') + '    ' + k
         })
 
         this.stack = this.stack + `\n    ${chalk.bold.yellowBright('ErrorCode')}:\n` + file.join('\n')
     }
- }
+}

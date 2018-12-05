@@ -85,7 +85,7 @@ export class Layer {
                 })
             }
             options.decorators.params.forEach((opts = {}, index) => {
-                const result = requestValidator('query', params, opts)
+                const result = requestValidator('query', params, opts, index)
                 this.handleArguments[index] = result
             })
         }
@@ -99,7 +99,7 @@ export class Layer {
         const requestQuerys = context.query
         const querys = options.decorators.querys || new Map()
         querys.forEach((query, index) => {
-           const result = requestValidator('query', requestQuerys, query)
+           const result = requestValidator('query', requestQuerys, query, index)
            this.handleArguments[index] = result
         })
     }
@@ -113,7 +113,7 @@ export class Layer {
         const { bodys = new Map<number, RequestParameterDecoratorOptions>() } = decorators
         const requestBody = await service.parseBody(context)
         bodys.forEach((body, index) => {
-            const result = requestValidator('body', requestBody, body)
+            const result = requestValidator('body', requestBody, body, index)
             this.handleArguments[index] = result
         })
     }

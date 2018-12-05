@@ -6,7 +6,7 @@ import { TestService } from '../services/TestService';
 @Controller
 @RequestMapping('admin')
 export class IndexController {
-    constructor(private userService: UserService, public testService: TestService) {}
+    constructor(private userService: UserService, private testService: TestService) {}
     @PostMapping('users')
     public async index(
         @RequestBody(UserEntity) user: UserEntity
