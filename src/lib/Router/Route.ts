@@ -1,8 +1,6 @@
 import { ElementType } from './ElementType';
-import { TClass, ModuleInterface } from '../Module';
-import { EasyBootEntityConstructor } from '../EasyBootEntity';
+import { TClass } from '../Module';
 import * as pathToRegexp from 'path-to-regexp'
-import * as validatorJs from 'validator'
 import { RequestParameterDecoratorOptions } from '../Controller';
 
 export class Route {
