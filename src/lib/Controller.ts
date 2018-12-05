@@ -5,6 +5,7 @@ import { Validator } from './Router/Route';
 import { ElementType } from './Router/ElementType';
 import { DecoratorException } from './DecoratorException';
 import { TestValidator } from './EasyBootValidators';
+import { HttpExceptionConstructor, HttpException } from './HttpException';
 
 /**
  * Controller decorator
@@ -54,6 +55,221 @@ export function Controller(target: TController): void {
             }
         }
     })
+}
+
+// AuthHeader = ClassDecorator && MethodDecorator
+// AuthHeader()
+// RequestHeader
+// RequestFile
+
+/**
+ * StatusCode decorator
+ * The decorator apply to Contorllor handle function.
+ * If no exception occurs before the response, the decorator code is used.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @StatusCode(200)
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function StatusCode(code: number): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            options.statusCode = code
+        } else {
+            propertys.set(propertyKey, { statusCode: code })
+        }
+    }
+}
+
+/**
+ * StatusMessage decorator
+ * The decorator apply to Contorllor handle function.
+ * If no exception occurs before the response, the decorator message is used.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @StatusMessage('Not Found')
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function StatusMessage(message: string): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            options.statusMessage = message
+        } else {
+            propertys.set(propertyKey, { statusMessage: message })
+        }
+    }
+}
+
+/**
+ * SetHeaders decorator
+ * The decorator apply to Contorllor handle function.
+ * Set response headers
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @SetHeaders({ 'Content-Type': 'application/json' })
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function SetHeaders(headers: { [key: string]: string }): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            const { setHeaders = new Map<string, string>() } = options
+            Object.keys(headers).forEach((key) => {
+                setHeaders.set(key, headers[key])
+            })
+            options.setHeaders = setHeaders
+        } else {
+            const setHeaders = new Map<string, string>()
+            Object.keys(headers).forEach((key) => {
+                setHeaders.set(key, headers[key])
+            })
+            propertys.set(propertyKey, { setHeaders })
+        }
+    }
+}
+
+/**
+ * SetHeader decorator
+ * The decorator apply to Contorllor handle function.
+ * Set response header
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @SetHeaders('Content-Type', 'application/json')
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function SetHeader(key: string, value: string): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            const { setHeaders = new Map<string, string>() } = options
+            setHeaders.set(key, value)
+            options.setHeaders = setHeaders
+        } else {
+            const setHeaders = new Map<string, string>()
+            setHeaders.set(key, value)
+            propertys.set(propertyKey, { setHeaders })
+        }
+    }
+}
+
+/**
+ * ContentType decorator
+ * The decorator apply to Contorllor handle function.
+ * If no exception occurs before the response, the decorator type is used.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @ContentType('application/json')
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function ContentType(type: string): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            const { contentType } = options
+            options.contentType = type
+            options.contentType = contentType
+        } else {
+            propertys.set(propertyKey, { contentType: type })
+        }
+    }
+}
+
+/**
+ * ExceptionCatch decorator
+ * The decorator apply to Contorllor handle function.
+ * If no exception occurs before the response, the decorator type is used.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @ExceptionCatch(MyException)
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function ExceptionCatch(HttpException: HttpExceptionConstructor): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            options.exceptionCatch = HttpException
+        } else {
+            propertys.set(propertyKey, { exceptionCatch: HttpException })
+        }
+    }
+}
+
+/**
+ * ExceptionCatch decorator
+ * The decorator apply to Contorllor handle function.
+ * If no exception occurs before the response, the decorator type is used.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping('admin')
+ *     @Exception(new MyException())
+ *     public async index(@RequestQuery() query: any){}
+ * }
+ * ```
+ */
+export function Exception(HttpException: HttpException): MethodDecorator {
+    return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
+        const propertys: Propertys = target.propertys || new Map()
+        if (propertys.has(propertyKey)) {
+            const options = propertys.get(propertyKey)
+            options.exception = HttpException
+        } else {
+            propertys.set(propertyKey, { exception: HttpException })
+        }
+    }
 }
 
 /**
@@ -648,14 +864,15 @@ export interface Property {
     querys?: Map<number, RequestParameterDecoratorOptions>;
     bodys?: Map<number, RequestParameterDecoratorOptions>;
     params?: Map<number, RequestParameterDecoratorOptions>;
+    authHeaders?: Map<string, string>;
     setHeaders?: Map<string, string>;
     getHeaders?: Map<string, string>;
     statusCode?: number;
     routes?: Routes;
     statusMessage?: string;
     contentType?: string;
-    exception?: any;
-    exceptionCatch?: any;
+    exception?: HttpException;
+    exceptionCatch?: HttpExceptionConstructor;
 }
 
 export interface ControllerOptions {

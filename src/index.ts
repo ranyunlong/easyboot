@@ -53,6 +53,7 @@ export abstract class EasyBootServlet extends EventEmitter {
             ...router,
             bodyService
         })
+        this.router.application = this
     }
 
     /**
@@ -193,9 +194,9 @@ export abstract class EasyBootServlet extends EventEmitter {
      * exception
      * Exception handler method
      */
-    private exception(context: Context, error: HttpException) {
+    public exception(context: Context, error: HttpException) {
         if (this.listeners('err').length > 0) {
-            this.emit('err', error)
+            return this.emit('err', error)
         } else {
             if (this.env === 'development') console.error(error.stack)
         }

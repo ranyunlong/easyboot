@@ -8,7 +8,7 @@ import { Route, IModule, MappingDataParams, Validator } from './Route';
 import { Context } from '../Context';
 import { TClass } from '../Module';
 import { createHash } from 'crypto'
-import { HttpException } from '../HttpException';
+import { HttpException, HttpExceptionConstructor } from '../HttpException';
 import { Rules } from '../EasyBootValidators/baseValidator';
 import { EasyBootRequestArguments } from '../EasyBootRequestArguments';
 import { requestValidator } from '../EasyBootValidators/requestValidator';
@@ -28,8 +28,20 @@ export class Layer {
     public requestPath: string;
     // Http request method
     public requestMethod: string;
+    // Http response status code
+    public statusCode: number;
+    // Http response status message
+    public statusMessage: string;
+    // Http response set headers;
+    public setHeaders: { [key: string]: string };
+    // Http response set content type;
+    public contentType: string;
+    // Http response HttpException;
+    public exception: HttpException;
+    public exceptionCatch: HttpExceptionConstructor;
     // controller
     public controller: { [key: string]: any };
+    // Contrllor handler inject arguments
     public handleArguments: any[] = []
     // metadata
     public metadata: object[];
@@ -40,6 +52,17 @@ export class Layer {
         this.path = options.path
         this.regexp = options.regexp
         this.handleKey = options.handleKey
+        this.statusCode = options.decorators.statusCode
+        this.statusMessage = options.decorators.statusMessage
+        this.contentType = options.decorators.contentType
+        this.exception = options.decorators.exception
+        this.exceptionCatch = options.decorators.exceptionCatch
+        if (options.decorators.setHeaders) {
+            this.setHeaders = this.setHeaders || {}
+            options.decorators.setHeaders.forEach((value, key) => {
+                this.setHeaders[key] = value
+            })
+        }
         this.createMetaData(options.decorators.metadata, options.module)
         this.createController(options.controller)
     }

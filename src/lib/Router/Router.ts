@@ -13,7 +13,9 @@ import { ElementType } from './ElementType';
 import { Context } from '../Context';
 import { Stack } from './Stack';
 import { BodyParserService } from '../BodyParserService';
+import EasyBootServlet from 'src';
 export class Router {
+    public application: EasyBootServlet;
     public config: RegExpOptions;
     public routes: Route[] = [];
     public bodyService: BodyParserService;
@@ -132,6 +134,24 @@ export class Router {
         const matchRoutes = this.matchRoute(context)
         for (let route of matchRoutes) {
             const { controller, handleKey, handleArguments } = route
+            const { statusCode, statusMessage, setHeaders, contentType, exception, exceptionCatch } = route
+            if (statusCode) context.status = statusCode
+            if (statusMessage) context.message = statusMessage
+            if (setHeaders) context.response.set(setHeaders)
+            if (contentType) context.response.type = contentType
+            // use exception
+            if (exception) {
+                this.application.once('err', (err) => {
+                    this.application.exception(context, exception)
+                })
+            }
+
+            // use catch exception
+            if (exceptionCatch) {
+                this.application.once('err', (err) => {
+                    this.application.exception(context, new exceptionCatch(err))
+                })
+            }
             // Parse path params
             await route.parseParam(context)
             // Parse query params
