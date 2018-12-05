@@ -4,7 +4,22 @@
  * @copyright Ranyunlong
  * @license MIT
  */
+
+import { RuleItem } from './EasyBootValidators/baseValidator'
+
 export class EasyBootRequestArguments {
-    public readonly type: 'body' | 'query' | 'path';
-    public readonly data: any;
+    constructor(options: Options = {}) {
+        this.key = options.key
+        this.rule = options.rule
+        this.type = options.type
+    }
+    public readonly type: 'body' | 'query' | 'param';
+    public readonly rule: RuleItem;
+    public readonly key: string;
+}
+
+interface Options {
+    type?: 'body' | 'query' | 'param';
+    rule?: RuleItem | null;
+    key?: string;
 }

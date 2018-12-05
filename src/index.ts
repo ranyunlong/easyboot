@@ -20,6 +20,7 @@ import { HttpException } from './lib/HttpException';
 import { Router } from './lib/Router';
 import { ModuleInterface, TClass } from './lib/Module';
 import * as pathToRegexp from 'path-to-regexp';
+import { BodyParserService } from './lib/BodyParserService';
 
 export abstract class EasyBootServlet extends EventEmitter {
     public proxy: boolean;
@@ -30,6 +31,7 @@ export abstract class EasyBootServlet extends EventEmitter {
     public router: Router;
     public modules: Array<TClass<any, ModuleInterface>>;
     public configs: Options;
+    public bodyParseService: BodyParserService;
 
     /**
      * constructor
@@ -45,9 +47,11 @@ export abstract class EasyBootServlet extends EventEmitter {
         // Start server listen port
         if (port) this.listen(port, host)
         const { modules } = this
+        const bodyService = this.bodyParseService = new BodyParserService()
         this.router = new Router({
             modules,
-            ...router
+            ...router,
+            bodyService
         })
     }
 

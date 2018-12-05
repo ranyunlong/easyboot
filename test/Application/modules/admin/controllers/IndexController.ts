@@ -1,4 +1,4 @@
-import { RequestMapping, Controller, GetMapping, RequestParam, RequestBody, PostMapping, RequestQuery, isInt, isRequired } from '../../../../../src'
+import { RequestMapping, Controller, GetMapping, RequestParam, RequestBody, PostMapping, RequestQuery, isInt, isRequired, isBase64 } from '../../../../../src'
 import { UserService } from '../../home/services/UserServices';
 import { UserEntity } from '../entitys/UserEntity';
 import { TestService } from '../services/TestService';
@@ -9,18 +9,16 @@ export class IndexController {
     constructor(private userService: UserService, public testService: TestService) {}
     @PostMapping('users')
     public async index(
-        @RequestBody user: UserEntity
+        @RequestBody(UserEntity) user: UserEntity
     ) {
-        return 10;
+        return user;
     }
 
     @GetMapping(':id')
     public async id(
-        @RequestParam({
-            id: isInt('id必须为整数')
-        }) params: any,
+        @RequestParam('id', isInt('必须为整数')) id: number,
         @RequestQuery(UserEntity) query: UserEntity
     ) {
-        return '22'
+        return query
     }
 }

@@ -1,9 +1,29 @@
 import { baseValidator, baseTestValidator } from './baseValidator'
 
+/**
+ * IsAfter
+ *
+ * Example
+ * ```
+ * @IsAfter('invalid message')
+ * @IsAfter('invalid message', '2018-10-11')
+ * ```
+ */
 export function IsAfter(message: string, date?: string) {
     return baseValidator('isAfter', message, date)
 }
 
+/**
+ * IsAfter
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isAfter('invalid message'))
+ * @RequestBody('id', isAfter('invalid message', '2018-10-11'))
+ * @RequestParam(..., isAfter(...))
+ * @RequestQuery(..., isAfter(...))
+ * ```
+ */
 export function isAfter(message: string, date?: string) {
     return baseTestValidator('isAfter', message, date)
 }

@@ -95,7 +95,7 @@ export type MappingDataParams = Map<number, RequestParameterDecoratorOptions>;
 
 export interface Validator {
     message?: string;
-    validator?: ValidatorJS.ValidatorStatic[keyof ValidatorJS.ValidatorStatic]
+    validator?: ValidatorJS.ValidatorStatic[keyof ValidatorJS.ValidatorStatic];
     validatorType: string;
     options?: any;
 }

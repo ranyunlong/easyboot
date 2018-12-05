@@ -12,11 +12,14 @@ import { ControllerOptions, Property, RequestParameterDecoratorOptions } from '.
 import { ElementType } from './ElementType';
 import { Context } from '../Context';
 import { Stack } from './Stack';
+import { BodyParserService } from '../BodyParserService';
 export class Router {
     public config: RegExpOptions;
     public routes: Route[] = [];
+    public bodyService: BodyParserService;
     constructor(options: Options) {
-        const { modules, ...config } = options
+        const { modules, bodyService, ...config } = options
+        this.bodyService = bodyService
         this.config = config
         this.paraseModule(modules)
     }
@@ -100,6 +103,11 @@ export class Router {
                             this.routes.push(iRoute)
                         })
                     })
+                    delete controller.prototype.propertys
+                    delete controller.prototype.metadata
+                    delete controller.prototype.type
+                    delete controller.prototype.method
+                    delete controller.prototype.path
                 }
             })
         })
@@ -120,11 +128,28 @@ export class Router {
     /**
      * handleResponse
      */
-    public handleResponse(context: Context) {
+    public async handleResponse(context: Context) {
         const matchRoutes = this.matchRoute(context)
+        for (let route of matchRoutes) {
+            const { controller, handleKey, handleArguments } = route
+            // Parse path params
+            await route.parseParam(context)
+            // Parse query params
+            await route.parseQuery(context)
+            // Parse body params
+            await route.parseBody(context, this.bodyService)
+            // Parse file params
+            await route.parseFile(context, this.bodyService)
+            // Handle response
+            const data = await controller[handleKey](...handleArguments)
+            if (data) {
+                context.body = data
+            }
+        }
     }
 }
 
 interface Options extends RegExpOptions {
     modules: TClass[];
+    bodyService: BodyParserService;
 }

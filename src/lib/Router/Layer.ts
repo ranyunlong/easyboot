@@ -9,6 +9,11 @@ import { Context } from '../Context';
 import { TClass } from '../Module';
 import { createHash } from 'crypto'
 import { HttpException } from '../HttpException';
+import { Rules } from '../EasyBootValidators/baseValidator';
+import { EasyBootRequestArguments } from '../EasyBootRequestArguments';
+import { requestValidator } from '../EasyBootValidators/requestValidator';
+import { BodyParserService } from '../BodyParserService';
+import { RequestParameterDecoratorOptions } from '../Controller';
 
 export class Layer {
     // Route path
@@ -24,11 +29,11 @@ export class Layer {
     // Http request method
     public requestMethod: string;
     // controller
-    public controller: object;
-    public arguments: any[] = []
+    public controller: { [key: string]: any };
+    public handleArguments: any[] = []
     // metadata
     public metadata: object[];
-    constructor(options: Route, context: Context) {
+    constructor(private options: Route, context: Context) {
         this.requestPath = context.path
         this.requestUrl = context.url
         this.requestMethod = context.method
@@ -37,13 +42,12 @@ export class Layer {
         this.handleKey = options.handleKey
         this.createMetaData(options.decorators.metadata, options.module)
         this.createController(options.controller)
-        this.parseParam(options, context)
     }
 
     /**
      * Create MetaData
      */
-    private createMetaData(metadata: TClass[] = [], imodule: IModule) {
+    private async createMetaData(metadata: TClass[] = [], imodule: IModule) {
         const provides = imodule.providers || []
         this.metadata = metadata.map((Service) => {
             const token = createHash('md5').update(Service.toString()).digest('hex')
@@ -67,9 +71,10 @@ export class Layer {
     }
 
     /**
-     * Parse params
+     * Parse Param
      */
-    private parseParam(options: Route, context: Context) {
+    public async parseParam(context: Context) {
+        const { options } = this
         const { pathParamsKeys = [], regexp } = options
         if (options.decorators.params && options.decorators.params.size > 0) {
             const params: any = {}
@@ -80,83 +85,43 @@ export class Layer {
                 })
             }
             options.decorators.params.forEach((opts = {}, index) => {
-                const { Entity, keys, validators, rule } = opts
-                if (!Entity && !keys && !validators && !rule) {
-                    this.arguments[index] = params
-                } else if (Entity) {
-                    console.log(Entity)
-                } else if (keys && validators) {
-                    const value = params[keys as string]
-                    const validates = validators as Validator[]
-                    validates.forEach((validator) => {
-                        if (validator) {
-                            let result: boolean = true
-                            if (validator.options) {
-                                result = (validator as any).validator(value, validator.options)
-                            } else {
-                                result = (validator as any).validator(value)
-                            }
-                            if (!result) {
-                                throw new HttpException({
-                                    data: validator.message || `Invalid ${keys}`
-                                })
-                            }
-                        }
-                    })
-                    this.arguments[index] = value
-                } else if (rule) {
-                    const data: any = {}
-                    Object.keys(rule).forEach((k) => {
-                        const value = params[k]
-                        const validators = rule[k]
-                        if (Array.isArray(validators)) {
-                            validators.forEach((validator) => {
-                                let result = true;
-                                if (validator.options) {
-                                    result = (validator as any).validator(value, validator.options)
-                                } else {
-                                    result = (validator as any).validator(value)
-                                }
-                                if (!result) {
-                                    throw new HttpException({
-                                        data: validator.message || `Invalid ${k}`
-                                    })
-                                }
-                            })
-                        } else {
-                            let result = true;
-                                if (validators.options) {
-                                    result = (validators as any).validator(value, validators.options)
-                                } else {
-                                    result = (validators as any).validator(value)
-                                }
-                                if (!result) {
-                                    throw new HttpException({
-                                        data: validators.message || `Invalid ${k}`
-                                    })
-                                }
-                        }
-                        data[k] = value
-                    })
-                    this.arguments[index] = data
-                } else if (keys) {
-                    if (Array.isArray(keys)) {
-                        const data: any = {}
-                        keys.forEach((k) => {
-                            data[k] = params[k]
-                        })
-                    } else {
-                        this.arguments[index] = params[keys]
-                    }
-                }
+                const result = requestValidator('query', params, opts)
+                this.handleArguments[index] = result
             })
         }
     }
 
     /**
-     * parseQuery
+     * Parse Query
      */
-    private parseQuery(params: MappingDataParams = new Map(), context: Context) {
-        return;
+    public async parseQuery(context: Context) {
+        const { options } = this
+        const requestQuerys = context.query
+        const querys = options.decorators.querys || new Map()
+        querys.forEach((query, index) => {
+           const result = requestValidator('query', requestQuerys, query)
+           this.handleArguments[index] = result
+        })
+    }
+
+    /**
+     * Parse Body
+     */
+    public async parseBody(context: Context, service: BodyParserService) {
+        const { options} = this
+        const { decorators = {} } = options
+        const { bodys = new Map<number, RequestParameterDecoratorOptions>() } = decorators
+        const requestBody = await service.parseBody(context)
+        bodys.forEach((body, index) => {
+            const result = requestValidator('body', requestBody, body)
+            this.handleArguments[index] = result
+        })
+    }
+
+    /**
+     * Parse File
+     */
+    public async parseFile(context: Context, service: BodyParserService) {
+        //
     }
 }

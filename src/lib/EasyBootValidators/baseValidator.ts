@@ -1,3 +1,10 @@
+/**
+ * @module baseValidator
+ * @author ranyunlong<549510622@qq.com>
+ * @license MIT
+ * @copyright Ranyunlong 2018-09-23 19:07
+ */
+
 import * as validator from 'validator'
 import { Validator } from '../Router/Route';
 
@@ -57,11 +64,17 @@ export function baseTestValidator(validatorType: keyof ValidatorJS.ValidatorStat
     }
 }
 
-type Rule = Set<{
+export interface RuleItem {
+    validator: (value: string, options: any) => boolean;
+    options: any;
+    message: string;
+}
+
+export type Rule = Set<{
     validator: ValidatorFn;
     options: any;
     message: string;
 }>;
-type Rules = Map<string, Rule>;
-type ValidatorType = keyof ValidatorJS.ValidatorStatic;
-type ValidatorFn = ValidatorJS.ValidatorStatic[ValidatorType]
+export type Rules = Map<string, Rule>;
+export type ValidatorType = keyof ValidatorJS.ValidatorStatic;
+export type ValidatorFn = ValidatorJS.ValidatorStatic[ValidatorType]

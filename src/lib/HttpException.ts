@@ -10,7 +10,7 @@ export class HttpException extends Error {
     public data: any;
     constructor(options: Options) {
         super(options.message)
-        this.statusCode = options.statusCode || 500
+        this.statusCode = options.statusCode || 404
         this.message = this.message || statuses[this.statusCode]
         this.data = options.data
     }
