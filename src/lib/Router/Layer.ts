@@ -4,7 +4,7 @@
  * @copyright Ranyunlong
  * @license MIT
  */
-import { Route, IModule, MappingDataParams, Validator } from './Route';
+import { Route, IModule} from './Route';
 import { Context } from '../Context';
 import { TClass } from '../Module';
 import { createHash } from 'crypto'

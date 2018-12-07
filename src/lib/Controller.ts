@@ -57,8 +57,6 @@ export function Controller(target: TController): void {
     })
 }
 
-// AuthHeader = ClassDecorator && MethodDecorator
-// AuthHeader()
 // RequestHeader
 // RequestFile
 
@@ -134,7 +132,7 @@ export function StatusMessage(message: string): MethodDecorator {
  * }
  * ```
  */
-export function SetHeaders(headers: { [key: string]: string }): MethodDecorator {
+export function ResponseHeaders(headers: { [key: string]: string }): MethodDecorator {
     return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
         const propertys: Propertys = target.propertys || new Map()
         if (propertys.has(propertyKey)) {
@@ -170,7 +168,7 @@ export function SetHeaders(headers: { [key: string]: string }): MethodDecorator 
  * }
  * ```
  */
-export function SetHeader(key: string, value: string): MethodDecorator {
+export function ResponseHeader(key: string, value: string): MethodDecorator {
     return (target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<any>): void => {
         const propertys: Propertys = target.propertys || new Map()
         if (propertys.has(propertyKey)) {
@@ -880,7 +878,9 @@ export interface ControllerOptions {
     path?: string;
     method?: Method;
     type?: 'controller';
-    propertys: Propertys;
+    propertys?: Propertys;
+    setHeaders?: Map<string, string>;
+    authHeaders?: Map<string, string>;
 }
 
 export interface RequestParameterDecoratorOptions {
