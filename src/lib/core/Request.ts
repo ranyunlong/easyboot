@@ -6,7 +6,7 @@
  */
 
 // dependencies
-import TkServer from '..'
+import EasyBootServlet from './EasyBootServlet'
 import * as accepts from 'accepts'
 import * as qs from 'querystring'
 import * as fresh from 'fresh'
@@ -31,7 +31,7 @@ export class Request {
     constructor(
         public req: IncomingMessage,
         public res: ServerResponse,
-        public app: TkServer
+        public app: EasyBootServlet
     ) {
         // originalUrl
         this.originalUrl  = req.url || ''

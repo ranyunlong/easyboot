@@ -18,7 +18,7 @@ import * as statuses from 'statuses'
 import * as onFinish from 'on-finished'
 import * as escape from 'escape-html'
 import destroy = require('destroy')
-import TkServer from '..';
+import EasyBootServlet from './EasyBootServlet';
 import { getType } from './utils';
 import { Context } from './Context';
 import { Request } from './Request';
@@ -31,9 +31,9 @@ export class Response {
     constructor(
         public req: IncomingMessage,
         public res: ServerResponse,
-        public app: TkServer
+        public app: EasyBootServlet
     ) {
-        const { version, name } = require('../../package.json').version
+        const { version, name } = require('../../../package.json').version
         this.set('Server',  `${name}:${version}`)
         this.vary('Accept-Encoding')
     }

@@ -6,7 +6,7 @@
  */
 
 // dependencies
-import Server from '..'
+import EasyBootServlet from './EasyBootServlet'
 import * as util from 'util'
 import * as Cookies from 'cookies'
 import * as statuses from 'statuses'
@@ -18,7 +18,6 @@ import { Response } from './Response';
 const COOKIES = Symbol('context#cookies');
 
 export class Context {
-
     /**
      * constructor
      * @param req IncomingMessage
@@ -31,7 +30,7 @@ export class Context {
         public res: ServerResponse,
         public request: Request,
         public response: Response,
-        public app: Server
+        public app: EasyBootServlet
     ) {}
 
     public [COOKIES]: Cookies;

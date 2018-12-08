@@ -16,7 +16,7 @@ export class HttpException extends Error {
 
 HttpException.prototype.name = 'HttpException'
 
-export interface Options {
+interface Options {
     statusCode?: number;
     message?: string;
     data?: any;
