@@ -1,4 +1,28 @@
-import { baseTestValidator, Validator } from './base'
+/**
+ * @module validations
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
+import { createValidation } from './createValidation'
+import * as validators from 'validator'
+
+interface ValidatorStatic extends  ValidatorJS.ValidatorStatic {
+    isMagnetURI(value: string): boolean;
+    isIdentityCard(value: string): boolean;
+    isIPRange(value: string): boolean;
+    isRFC3339(value: string): boolean;
+    isISO31661Alpha3(value: string): boolean;
+    isJWT(value: string): boolean;
+    isRequired(value: string): boolean;
+}
+
+const validator = validators as ValidatorStatic
+
+validator.isRequired = function isRequired(value: string) {
+    return !validator.isEmpty(value)
+}
 
 /**
  * isAfter
@@ -21,7 +45,7 @@ import { baseTestValidator, Validator } from './base'
  * ```
  */
 export function isAfter(message: string, date?: string) {
-    return baseTestValidator('isAfter', message, date)
+    return createValidation<ValidatorStatic['isAfter']>(message, validator.isAfter, date)
 }
 
 /**
@@ -45,7 +69,7 @@ export function isAfter(message: string, date?: string) {
  * ```
  */
 export function isAlpha(message: string, locale?: ValidatorJS.AlphaLocale) {
-    return baseTestValidator('isAlpha', message, locale)
+    return createValidation<ValidatorStatic['isAlpha']>(message, validator.isAfter, locale)
 }
 
 /**
@@ -69,7 +93,7 @@ export function isAlpha(message: string, locale?: ValidatorJS.AlphaLocale) {
  * ```
  */
 export function isAlphanumeric(message: string, locale?: ValidatorJS.AlphanumericLocale) {
-    return baseTestValidator('isAlphanumeric', message, locale)
+    return createValidation<ValidatorStatic['isAlphanumeric']>(message, validator.isAlphanumeric, locale)
 }
 
 /**
@@ -92,7 +116,7 @@ export function isAlphanumeric(message: string, locale?: ValidatorJS.Alphanumeri
  * ```
  */
 export function isAscii(message: string) {
-    return baseTestValidator('isAscii', message)
+    return createValidation<ValidatorStatic['isAscii']>(message, validator.isAscii)
 }
 
 /**
@@ -115,7 +139,7 @@ export function isAscii(message: string) {
  * ```
  */
 export function isBase64(message: string) {
-    return baseTestValidator('isBase64', message)
+    return createValidation<ValidatorStatic['isBase64']>(message, validator.isBase64)
 }
 
 /**
@@ -138,7 +162,7 @@ export function isBase64(message: string) {
  * ```
  */
 export function isBefore(message: string, date?: string) {
-    return baseTestValidator('isBefore', message, date)
+    return createValidation<ValidatorStatic['isBefore']>(message, validator.isBefore, date)
 }
 
 /**
@@ -161,7 +185,7 @@ export function isBefore(message: string, date?: string) {
  * ```
  */
 export function isBoolean(message: string) {
-    return baseTestValidator('isBoolean', message)
+    return createValidation<ValidatorStatic['isBoolean']>(message, validator.isBoolean)
 }
 
 /**
@@ -185,7 +209,7 @@ export function isBoolean(message: string) {
  * ```
  */
 export function isByteLength(message: string, options?: ValidatorJS.IsByteLengthOptions) {
-    return baseTestValidator('isByteLength', message, options)
+    return createValidation<ValidatorStatic['isByteLength']>(message, validator.isByteLength, options)
 }
 
 /**
@@ -208,7 +232,7 @@ export function isByteLength(message: string, options?: ValidatorJS.IsByteLength
  * ```
  */
 export function isCreditCard(message: string) {
-    return baseTestValidator('isCreditCard', message)
+    return createValidation<ValidatorStatic['isCreditCard']>(message, validator.isCreditCard)
 }
 
 /**
@@ -232,7 +256,7 @@ export function isCreditCard(message: string) {
  * ```
  */
 export function isCurrency(message: string, options?: ValidatorJS.IsCurrencyOptions) {
-    return baseTestValidator('isCurrency', message, options)
+    return createValidation<ValidatorStatic['isCurrency']>(message, validator.isCurrency, options)
 }
 
 /**
@@ -257,7 +281,7 @@ export function isCurrency(message: string, options?: ValidatorJS.IsCurrencyOpti
  * ```
  */
 export function isDataURI(message: string) {
-    return baseTestValidator('isDataURI', message)
+    return createValidation<ValidatorStatic['isDataURI']>(message, validator.isDataURI)
 }
 
 /**
@@ -282,7 +306,7 @@ export function isDataURI(message: string) {
  * ```
  */
 export function isMagnetURI(message: string) {
-    return baseTestValidator('isMagnetURI' as any, message)
+    return createValidation<ValidatorStatic['isMagnetURI']>(message, validator.isMagnetURI)
 }
 
 /**
@@ -306,7 +330,7 @@ export function isMagnetURI(message: string) {
  * ```
  */
 export function isDecimal(message: string, options?: ValidatorJS.IsDecimalOptions) {
-    return baseTestValidator('isDecimal', message, options)
+    return createValidation<ValidatorStatic['isDecimal']>(message, validator.isDecimal, options)
 }
 
 /**
@@ -329,7 +353,7 @@ export function isDecimal(message: string, options?: ValidatorJS.IsDecimalOption
  * ```
  */
 export function isDivisibleBy(message: string) {
-    return baseTestValidator('isDivisibleBy', message)
+    return createValidation<ValidatorStatic['isDivisibleBy']>(message, validator.isDivisibleBy)
 }
 
 /**
@@ -353,7 +377,7 @@ export function isDivisibleBy(message: string) {
  * ```
  */
 export function isEmail(message: string, options?: ValidatorJS.IsEmailOptions) {
-    return baseTestValidator('isEmail', message, options)
+    return createValidation<ValidatorStatic['isEmail']>(message, validator.isEmail, options)
 }
 
 /**
@@ -376,7 +400,7 @@ export function isEmail(message: string, options?: ValidatorJS.IsEmailOptions) {
  * ```
  */
 export function isEmpty(message: string) {
-    return baseTestValidator('isEmpty', message)
+    return createValidation<ValidatorStatic['isEmpty']>(message, validator.isEmpty)
 }
 
 /**
@@ -400,7 +424,7 @@ export function isEmpty(message: string) {
  * ```
  */
 export function isFQDN(message: string, options?: ValidatorJS.IsFQDNOptions) {
-    return baseTestValidator('isFQDN', message, options)
+    return createValidation<ValidatorStatic['isFQDN']>(message, validator.isFQDN, options)
 }
 
 /**
@@ -424,7 +448,7 @@ export function isFQDN(message: string, options?: ValidatorJS.IsFQDNOptions) {
  * ```
  */
 export function isFloat(message: string, options?: ValidatorJS.IsFloatOptions) {
-    return baseTestValidator('isFloat', message, options)
+    return createValidation<ValidatorStatic['isFloat']>(message, validator.isFloat, options)
 }
 
 /**
@@ -447,7 +471,7 @@ export function isFloat(message: string, options?: ValidatorJS.IsFloatOptions) {
  * ```
  */
 export function isFullWidth(message: string) {
-    return baseTestValidator('isFullWidth', message)
+    return createValidation<ValidatorStatic['isFullWidth']>(message, validator.isFullWidth)
 }
 
 /**
@@ -470,7 +494,7 @@ export function isFullWidth(message: string) {
  * ```
  */
 export function isHalfWidth(message: string) {
-    return baseTestValidator('isHalfWidth', message)
+    return createValidation<ValidatorStatic['isHalfWidth']>(message, validator.isHalfWidth)
 }
 
 /**
@@ -495,7 +519,7 @@ export function isHalfWidth(message: string) {
  * ```
  */
 export function isHash(message: string, options?: ValidatorJS.HashAlgorithm) {
-    return baseTestValidator('isHash', message, options)
+    return createValidation<ValidatorStatic['isHash']>(message, validator.isHash, options)
 }
 
 /**
@@ -518,7 +542,7 @@ export function isHash(message: string, options?: ValidatorJS.HashAlgorithm) {
  * ```
  */
 export function isHexColor(message: string) {
-    return baseTestValidator('isHexColor', message)
+    return createValidation<ValidatorStatic['isHexColor']>(message, validator.isHexColor)
 }
 
 /**
@@ -541,7 +565,7 @@ export function isHexColor(message: string) {
  * ```
  */
 export function isHexadecimal(message: string) {
-    return baseTestValidator('isHexadecimal', message)
+    return createValidation<ValidatorStatic['isHexadecimal']>(message, validator.isHexadecimal)
 }
 
 /**
@@ -564,7 +588,7 @@ export function isHexadecimal(message: string) {
  * ```
  */
 export function isIdentityCard(message: string) {
-    return baseTestValidator('isIdentityCard' as any, message)
+    return createValidation<ValidatorStatic['isIdentityCard']>(message, validator.isIdentityCard)
 }
 
 /**
@@ -589,7 +613,7 @@ export function isIdentityCard(message: string) {
  * ```
  */
 export function isIP(message: string, version?: '4' | '6' | 4 | 6) {
-    return baseTestValidator('isIP', message, version)
+    return createValidation<ValidatorStatic['isIP']>(message, validator.isIP, version)
 }
 
 /**
@@ -612,7 +636,7 @@ export function isIP(message: string, version?: '4' | '6' | 4 | 6) {
  * ```
  */
 export function isIPRange(message: string) {
-    return baseTestValidator('isIPRange' as any, message)
+    return createValidation<ValidatorStatic['isIPRange']>(message, validator.isIPRange)
 }
 
 /**
@@ -637,7 +661,7 @@ export function isIPRange(message: string) {
  * ```
  */
 export function isISBN(message: string, version?: '10' | '13' | 10 | 13) {
-    return baseTestValidator('isISBN', message, version)
+    return createValidation<ValidatorStatic['isISBN']>(message, validator.isISBN, version)
 }
 
 /**
@@ -662,7 +686,7 @@ export function isISBN(message: string, version?: '10' | '13' | 10 | 13) {
  * ```
  */
 export function isISSN(message: string, options?: ValidatorJS.IsISSNOptions) {
-    return baseTestValidator('isISSN', message, options)
+    return createValidation<ValidatorStatic['isISSN']>(message, validator.isISSN, options)
 }
 
 /**
@@ -686,7 +710,7 @@ export function isISSN(message: string, options?: ValidatorJS.IsISSNOptions) {
  * ```
  */
 export function isISIN(message: string) {
-    return baseTestValidator('isISIN', message)
+    return createValidation<ValidatorStatic['isISIN']>(message, validator.isISIN)
 }
 
 /**
@@ -710,7 +734,7 @@ export function isISIN(message: string) {
  * ```
  */
 export function isISO8601(message: string) {
-    return baseTestValidator('isISO8601', message)
+    return createValidation<ValidatorStatic['isISO8601']>(message, validator.isISO8601)
 }
 
 /**
@@ -734,7 +758,7 @@ export function isISO8601(message: string) {
  * ```
  */
 export function isRFC3339(message: string) {
-    return baseTestValidator('isRFC3339' as any, message)
+    return createValidation<ValidatorStatic['isRFC3339']>(message, validator.isRFC3339)
 }
 
 /**
@@ -758,7 +782,7 @@ export function isRFC3339(message: string) {
  * ```
  */
 export function isISO31661Alpha2(message: string) {
-    return baseTestValidator('isISO31661Alpha2', message)
+    return createValidation<ValidatorStatic['isISO31661Alpha2']>(message, validator.isISO31661Alpha2)
 }
 
 /**
@@ -782,7 +806,7 @@ export function isISO31661Alpha2(message: string) {
  * ```
  */
 export function isISO31661Alpha3(message: string) {
-    return baseTestValidator('isISO31661Alpha3' as any, message)
+    return createValidation<ValidatorStatic['isISO31661Alpha3']>(message, validator.isISO31661Alpha3)
 }
 
 /**
@@ -806,7 +830,7 @@ export function isISO31661Alpha3(message: string) {
  * ```
  */
 export function isISRC(message: string) {
-    return baseTestValidator('isISRC', message)
+    return createValidation<ValidatorStatic['isISRC']>(message, validator.isISRC)
 }
 
 /**
@@ -828,8 +852,8 @@ export function isISRC(message: string) {
  * @RequestQuery()
  * ```
  */
-export function isIn(message: string, values: any[]) {
-    return baseTestValidator('isIn', message, values)
+export function isIn(message: string, values?: any[]) {
+    return createValidation<ValidatorStatic['isIn']>(message, validator.isIn, values)
 }
 
 /**
@@ -852,7 +876,7 @@ export function isIn(message: string, values: any[]) {
  * ```
  */
 export function isInt(message: string, options?: ValidatorJS.IsIntOptions) {
-    return baseTestValidator('isInt', message, options)
+    return createValidation<ValidatorStatic['isInt']>(message, validator.isInt, options)
 }
 
 /**
@@ -875,7 +899,7 @@ export function isInt(message: string, options?: ValidatorJS.IsIntOptions) {
  * ```
  */
 export function isJSON(message: string) {
-    return baseTestValidator('isJSON', message)
+    return createValidation<ValidatorStatic['isJSON']>(message, validator.isJSON)
 }
 
 /**
@@ -898,7 +922,7 @@ export function isJSON(message: string) {
  * ```
  */
 export function isJWT(message: string) {
-    return baseTestValidator('isJWT' as any, message)
+    return createValidation<ValidatorStatic['isJWT']>(message, validator.isJWT)
 }
 
 /**
@@ -921,7 +945,7 @@ export function isJWT(message: string) {
  * ```
  */
 export function isLatLong(message: string) {
-    return baseTestValidator('isLatLong', message)
+    return createValidation<ValidatorStatic['isLatLong']>(message, validator.isLatLong)
 }
 
 /**
@@ -944,7 +968,7 @@ export function isLatLong(message: string) {
  * ```
  */
 export function isLength(message: string, options?: ValidatorJS.IsByteLengthOptions) {
-    return baseTestValidator('isLength', message, options)
+    return createValidation<ValidatorStatic['isLength']>(message, validator.isLength, options)
 }
 
 /**
@@ -967,7 +991,7 @@ export function isLength(message: string, options?: ValidatorJS.IsByteLengthOpti
  * ```
  */
 export function isLowercase(message: string) {
-    return baseTestValidator('isLowercase', message)
+    return createValidation<ValidatorStatic['isLowercase']>(message, validator.isLowercase)
 }
 
 /**
@@ -990,7 +1014,7 @@ export function isLowercase(message: string) {
  * ```
  */
 export function isMACAddress(message: string) {
-    return baseTestValidator('isMACAddress', message)
+    return createValidation<ValidatorStatic['isMACAddress']>(message, validator.isMACAddress)
 }
 
 /**
@@ -1013,7 +1037,7 @@ export function isMACAddress(message: string) {
  * ```
  */
 export function isMD5(message: string) {
-    return baseTestValidator('isMD5', message)
+    return createValidation<ValidatorStatic['isMD5']>(message, validator.isMD5)
 }
 
 /**
@@ -1037,7 +1061,7 @@ export function isMD5(message: string) {
  * ```
  */
 export function isMimeType(message: string) {
-    return baseTestValidator('isMimeType', message)
+    return createValidation<ValidatorStatic['isMimeType']>(message, validator.isMimeType)
 }
 
 /**
@@ -1059,8 +1083,8 @@ export function isMimeType(message: string) {
  * @RequestQuery()
  * ```
  */
-export function isMobilePhone(message: string, options?: ValidatorJS.MobilePhoneLocale) {
-    return baseTestValidator('isMobilePhone', message, options)
+export function isMobilePhone(message: string, locale?: ValidatorJS.MobilePhoneLocale) {
+    return createValidation<ValidatorStatic['isMobilePhone']>(message, validator.isMobilePhone, locale)
 }
 
 /**
@@ -1084,7 +1108,7 @@ export function isMobilePhone(message: string, options?: ValidatorJS.MobilePhone
  * ```
  */
 export function isMongoId(message: string) {
-    return baseTestValidator('isMongoId', message)
+    return createValidation<ValidatorStatic['isMongoId']>(message, validator.isMongoId)
 }
 
 /**
@@ -1107,7 +1131,7 @@ export function isMongoId(message: string) {
  * ```
  */
 export function isMultibyte(message: string) {
-    return baseTestValidator('isMultibyte', message)
+    return createValidation<ValidatorStatic['isMultibyte']>(message, validator.isMultibyte)
 }
 
 /**
@@ -1130,7 +1154,7 @@ export function isMultibyte(message: string) {
  * ```
  */
 export function isNumeric(message: string, options?: ValidatorJS.IsNumericOptions) {
-    return baseTestValidator('isNumeric', message, options)
+    return createValidation<ValidatorStatic['isNumeric']>(message, validator.isNumeric, options)
 }
 
 /**
@@ -1153,7 +1177,7 @@ export function isNumeric(message: string, options?: ValidatorJS.IsNumericOption
  * ```
  */
 export function isPort(message: string) {
-    return baseTestValidator('isPort', message)
+    return createValidation<ValidatorStatic['isPort']>(message, validator.isPort)
 }
 
 /**
@@ -1176,7 +1200,7 @@ export function isPort(message: string) {
  * ```
  */
 export function isPostalCode(message: string, locale?: ValidatorJS.PostalCodeLocale) {
-    return baseTestValidator('isPostalCode', message, locale)
+    return createValidation<ValidatorStatic['isPostalCode']>(message, validator.isPostalCode, locale)
 }
 
 /**
@@ -1199,7 +1223,7 @@ export function isPostalCode(message: string, locale?: ValidatorJS.PostalCodeLoc
  * ```
  */
 export function isSurrogatePair(message: string) {
-    return baseTestValidator('isSurrogatePair', message)
+    return createValidation<ValidatorStatic['isSurrogatePair']>(message, validator.isSurrogatePair)
 }
 
 /**
@@ -1223,7 +1247,7 @@ export function isSurrogatePair(message: string) {
  * ```
  */
 export function isURL(message: string, options?: ValidatorJS.IsURLOptions) {
-    return baseTestValidator('isURL', message, options)
+    return createValidation<ValidatorStatic['isURL']>(message, validator.isURL, options)
 }
 
 /**
@@ -1249,7 +1273,7 @@ export function isURL(message: string, options?: ValidatorJS.IsURLOptions) {
  * ```
  */
 export function isUUID(message: string, version?: '3' | '4' | '5' | 3 | 4 | 5 ) {
-    return baseTestValidator('isUUID', message, version)
+    return createValidation<ValidatorStatic['isUUID']>(message, validator.isUUID, version)
 }
 
 /**
@@ -1272,7 +1296,7 @@ export function isUUID(message: string, version?: '3' | '4' | '5' | 3 | 4 | 5 ) 
  * ```
  */
 export function isUppercase(message: string) {
-    return baseTestValidator('isUppercase', message)
+    return createValidation<ValidatorStatic['isUppercase']>(message, validator.isUppercase)
 }
 
 /**
@@ -1295,7 +1319,7 @@ export function isUppercase(message: string) {
  * ```
  */
 export function isVariableWidth(message: string) {
-    return baseTestValidator('isVariableWidth', message)
+    return createValidation<ValidatorStatic['isVariableWidth']>(message, validator.isVariableWidth)
 }
 
 /**
@@ -1318,30 +1342,7 @@ export function isVariableWidth(message: string) {
  * ```
  */
 export function isWhitelisted(message: string, chars?: string | string[]) {
-    return baseTestValidator('isWhitelisted', message, chars)
-}
-
-/**
- * isString
- *
- * checks value is String.
- *
- * Example
- * ```
- * @RequestBody('id', isString)
- * @RequestBody('id', [isString])
- * @RequestBody('id', isString('message'))
- * @RequestBody('id', [isString('message')])
- * ```
- * Also applies to the following decorators:
- * ```
- * @RequestBody()
- * @RequestParam()
- * @RequestQuery()
- * ```
- */
-export function isString(message: string) {
-    return baseTestValidator('isString' as any, message)
+    return createValidation<ValidatorStatic['isWhitelisted']>(message, validator.isWhitelisted, chars)
 }
 
 /**
@@ -1364,92 +1365,5 @@ export function isString(message: string) {
  * ```
  */
 export function isRequired(message: string) {
-    return baseTestValidator('isRequired' as any, message)
+    return createValidation<ValidatorStatic['isRequired']>(message, validator.isRequired)
 }
-
-/**
- * isArray
- *
- * checks value is array.
- *
- * Example
- * ```
- * @RequestBody('id', isArray)
- * @RequestBody('id', [isArray])
- * @RequestBody('id', isArray('message'))
- * @RequestBody('id', [isArray('message')])
- * ```
- * Also applies to the following decorators:
- * ```
- * @RequestBody()
- * @RequestParam()
- * @RequestQuery()
- * ```
- */
-export function isArray(message: string) {
-    return baseTestValidator('isArray' as any, message)
-}
-
-export interface ValidatorFns {
-    isAfter(message: string, date?: string): Validator;
-    isAlpha(message: string, locale?: ValidatorJS.AlphaLocale): Validator;
-    isAlphanumeric(message: string, locale?: ValidatorJS.AlphanumericLocale): Validator;
-    isAscii(message: string): Validator;
-    isBase64(message: string): Validator;
-    isBefore(message: string, date?: string): Validator;
-    isBoolean(message: string): Validator;
-    isByteLength(message: string, options?: ValidatorJS.IsByteLengthOptions): Validator;
-    isCreditCard(message: string): Validator;
-    isCurrency(message: string, options?: ValidatorJS.IsCurrencyOptions): Validator;
-    isDataURI(message: string): Validator;
-    isMagnetURI(message: string): Validator;
-    isDecimal(message: string, options?: ValidatorJS.IsDecimalOptions): Validator;
-    isDivisibleBy(message: string): Validator;
-    isEmail(message: string, options?: ValidatorJS.IsEmailOptions): Validator;
-    isEmpty(message: string): Validator;
-    isFQDN(message: string, options?: ValidatorJS.IsFQDNOptions): Validator;
-    isFloat(message: string, options?: ValidatorJS.IsFloatOptions): Validator;
-    isFullWidth(message: string): Validator;
-    isHalfWidth(message: string): Validator;
-    isHash(message: string, options?: ValidatorJS.HashAlgorithm): Validator;
-    isHexColor(message: string): Validator;
-    isHexadecimal(message: string): Validator;
-    isIdentityCard(message: string): Validator;
-    isIP(message: string, version?: '4' | '6' | 4 | 6): Validator;
-    isIPRange(message: string): Validator;
-    isISBN(message: string, version?: '10' | '13' | 10 | 13): Validator;
-    isISSN(message: string, options?: ValidatorJS.IsISSNOptions): Validator;
-    isISIN(message: string): Validator;
-    isISO8601(message: string): Validator;
-    isRFC3339(message: string): Validator;
-    isISO31661Alpha2(message: string): Validator;
-    isISO31661Alpha3(message: string): Validator;
-    isISRC(message: string): Validator;
-    isIn(message: string, values: any[]): Validator;
-    isInt(message: string, options?: ValidatorJS.IsIntOptions): Validator;
-    isJSON(message: string): Validator;
-    isJWT(message: string): Validator;
-    isLatLong(message: string): Validator;
-    isLength(message: string, options?: ValidatorJS.IsByteLengthOptions): Validator;
-    isLowercase(message: string): Validator;
-    isMACAddress(message: string): Validator;
-    isMD5(message: string): Validator;
-    isMimeType(message: string): Validator;
-    isMobilePhone(message: string, options?: ValidatorJS.MobilePhoneLocale): Validator;
-    isMongoId(message: string): Validator;
-    isMultibyte(message: string): Validator;
-    isNumeric(message: string, options?: ValidatorJS.IsNumericOptions): Validator;
-    isPort(message: string): Validator;
-    isPostalCode(message: string, locale?: ValidatorJS.PostalCodeLocale): Validator;
-    isSurrogatePair(message: string): Validator;
-    isURL(message: string, options?: ValidatorJS.IsURLOptions): Validator;
-    isUUID(message: string, version?: '3' | '4' | '5' | 3 | 4 | 5 ): Validator;
-    isUppercase(message: string): Validator;
-    isVariableWidth(message: string): Validator;
-    isWhitelisted(message: string, chars?: string | string[]): Validator;
-    isString(message: string): Validator;
-    isRequired(message: string): Validator;
-    isArray(message: string): Validator;
-}
-
-export type ValidatorFn = ValidatorFns[keyof ValidatorFns]

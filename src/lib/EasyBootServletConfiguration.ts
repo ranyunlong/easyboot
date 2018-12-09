@@ -7,6 +7,7 @@
 import { Env } from './core/EasyBootServlet'
 import { ServerOptions } from 'https'
 import { RegExpOptions } from 'path-to-regexp'
+import { BodyParserService } from './core/BodyParserService';
 
 export class EasyBootServletConfiguration {
     // Server http port config
@@ -34,5 +35,8 @@ export class EasyBootServletConfiguration {
     public silent?: boolean;
 
     // Server router RegExp config
-    public router?: RegExpOptions;
+    public router?: RegExpOptions = {}
+
+    // Server body parse config;
+    public bodyparse?: BodyParserService.Options = {}
 }

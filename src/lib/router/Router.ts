@@ -52,7 +52,10 @@ export class Router {
     public async handleResponse(context: Context) {
         const stack = this.matchRoute(context.path, context.method as RequestElementTypes.METHOD)
         for (let layer of stack) {
-            layer.parseParam(context)
+            if (context.response.body) return;
+            await layer.parseParam(context)
+            await layer.parseQuery(context)
+            await layer.parseBody(this.application.bodyParserService, context)
             const { Controller, propertyKey, Mod } = layer
             let metadata = Reflect.getMetadata(MetadataElementTypes.Metadata.PARAMTYPES, Controller)
             if (Array.isArray(metadata)) {
@@ -60,7 +63,7 @@ export class Router {
                     return this.application.metadataManager.queryProviders(Mod, Service)
                 })
             }
-            const data = await new Controller(...metadata)[propertyKey]()
+            const data = await new Controller(...metadata)[propertyKey](...layer.handleMetadatas)
             if (data) {
                 context.body = data
             }

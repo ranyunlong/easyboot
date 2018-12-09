@@ -1,20 +1,23 @@
 export namespace MetadataElementTypes {
     export enum Metadata {
-        MODULES = 'modules',
-        IMPORTS = 'imports',
-        COMPONENTS = 'components',
-        PROVIDERS = 'providers',
-        CONTROLLERS = 'controllers',
-        EXPORTS = 'exports',
-        CONTROLLER = 'controller',
-        REQUEST_MAPPING = 'request:mapping',
-        REQUEST_PARAM = 'request:param',
-        REQUEST_BODY = 'request:body',
-        REQUEST_FILE = 'request:file',
-        REQUEST_QUERY = 'request:query',
+        MODULES = 'easyboot:modules',
+        IMPORTS = 'easyboot:imports',
+        COMPONENTS = 'easyboot:components',
+        PROVIDERS = 'easyboot:providers',
+        CONTROLLERS = 'easyboot:controllers',
+        EXPORTS = 'easyboot:exports',
+        CONTROLLER = 'easyboot:controller',
+        REQUEST_MAPPING = 'easyboot:request:mapping',
+        REQUEST_PARAM = 'easyboot:request:param',
+        REQUEST_BODY = 'easyboot:request:body',
+        REQUEST_FILE = 'easyboot:request:file',
+        REQUEST_QUERY = 'easyboot:request:query',
         PARAMTYPES = 'design:paramtypes',
-        CONFIGURATION = 'configuration',
-        EASYBOOTMODULE= 'boot:module',
-        VALIDATORS = 'validators'
+        TYPE = 'design:type',
+        RETURNTYPES = 'design:returntype',
+        CONFIGURATION = 'easyboot:configuration',
+        EASYBOOTMODULE= 'easyboot:module',
+        VALIDATORS = 'easyboot:validators',
+        PREFIX = 'easyboot:'
     }
 }

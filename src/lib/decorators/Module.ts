@@ -8,18 +8,18 @@
 import { MetadataElementTypes } from '../enums'
 import { DecoratorException } from '../exception';
 
-const { COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES } = MetadataElementTypes.Metadata
+const { COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES, PREFIX } = MetadataElementTypes.Metadata
 const metadataKeys = [COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES]
 
 export function Module(metadata: ModuleMetadata): ClassDecorator {
     return (target): void => {
         const propsKeys = Object.keys(metadata)
         propsKeys.forEach((property) => {
-            const result = metadataKeys.find((key) => property === key)
+            const result = metadataKeys.find((key) => PREFIX + property === key)
             if (!result) {
                 throw new DecoratorException(`Invalid property '${property}' in @Module() decorator.`, property)
             }
-            Reflect.defineMetadata(property, (metadata as any)[property], target)
+            Reflect.defineMetadata(PREFIX + property, (metadata as any)[property], target)
         })
     }
 }
