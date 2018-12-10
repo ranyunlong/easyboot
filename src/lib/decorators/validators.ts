@@ -1060,12 +1060,12 @@ export function IsMimeType(...args: any[]): any {
  * @IsMobilePhone('message', 'zh-CN')
  * ```
  */
+export function IsMobilePhone(message: string, locale?: ValidatorJS.MobilePhoneLocale): PropertyDecorator;
 export function IsMobilePhone(target: Object, propertyKey: string): void;
-export function IsMobilePhone(message: string, options?: ValidatorJS.MobilePhoneLocale): PropertyDecorator;
 export function IsMobilePhone(...args: any[]): any {
-    const [ message, options ] = args;
+    const [ message, locale ] = args;
     if (typeof message === 'string') {
-        return createValidatorDecorator(isMobilePhone(message, options))
+        return createValidatorDecorator(isMobilePhone(message, locale))
     } else {
         const [ target, propertyKey ] = args
         return createValidatorDecorator(isMobilePhone(''))(target, propertyKey)

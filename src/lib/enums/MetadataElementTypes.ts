@@ -18,6 +18,8 @@ export namespace MetadataElementTypes {
         CONFIGURATION = 'easyboot:configuration',
         EASYBOOTMODULE= 'easyboot:module',
         VALIDATORS = 'easyboot:validators',
-        PREFIX = 'easyboot:'
+        PREFIX = 'easyboot:',
+        RESPONSE = 'easyboot:response',
+        REQUEST = 'easyboot:request'
     }
 }

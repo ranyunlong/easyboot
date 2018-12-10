@@ -27,7 +27,7 @@ export class Layer {
         this.Mod = iModule
     }
 
-    public async parseParam(context: Context) {
+    public async parseParamMetadata(context: Context) {
         const paramMetadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_PARAM, this.Controller, this.propertyKey)
         if (paramMetadata) {
             const originParams: any = {}
@@ -59,7 +59,7 @@ export class Layer {
         }
     }
 
-    public async parseBody(bodyParseService: BodyParserService, context: Context) {
+    public async parseBodyMetadata(bodyParseService: BodyParserService, context: Context) {
         const bodyMetadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_BODY, this.Controller, this.propertyKey)
         if (bodyMetadata) {
             const originBodys = await bodyParseService.parseBody(context)
@@ -87,7 +87,7 @@ export class Layer {
         }
     }
 
-    public async parseQuery(context: Context) {
+    public async parseQueryMetadata(context: Context) {
         const bodyMetadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_QUERY, this.Controller, this.propertyKey)
         if (bodyMetadata) {
             const originQuerys = context.query
@@ -112,6 +112,24 @@ export class Layer {
                     this.handleMetadatas[bodyMetadata.index] = entity
                 }
             }
+        }
+    }
+
+    public async parseRequestMetadata(context: Context) {
+        const metadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST, this.Controller, this.propertyKey)
+        if (metadata) {
+            const { index } = metadata
+            if (typeof index !== 'number') return;
+            this.handleMetadatas[index] = context.request
+        }
+    }
+
+    public async parseResponseMetadata(context: Context) {
+        const metadata = Reflect.getMetadata(MetadataElementTypes.Metadata.RESPONSE, this.Controller, this.propertyKey)
+        if (metadata) {
+            const { index } = metadata
+            if (typeof index !== 'number') return;
+            this.handleMetadatas[index] = context.response
         }
     }
 }
