@@ -1,12 +1,15 @@
 import { Module } from '../../../../src';
 import { IndexController } from './contorllers/IndexController';
 import { UserService } from './services/UserService';
+import { TestController } from './contorllers/TestController';
 
 @Module({
     controllers: [
-        IndexController
+        IndexController,
+        TestController
     ],
-    providers: [
+    providers: [],
+    exports: [
         UserService
     ]
 })

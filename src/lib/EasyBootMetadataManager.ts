@@ -7,10 +7,14 @@
 
 import { CType } from './decorators';
 import { MetadataElementTypes } from './enums';
+import { EasyBootServlet } from './core';
 
 export class EasyBootMetadataManager {
-    // Register services
-    public services: Map<CType, RegistedMoudle<any>> = new Map()
+    constructor(public application: EasyBootServlet, public rootModule: CType) {
+        this.register(rootModule)
+    }
+    // Register modules
+    public modules: Map<CType, RegistedMoudle<any>> = new Map()
 
     /**
      * register
@@ -20,77 +24,76 @@ export class EasyBootMetadataManager {
      */
     public register(token: CType, parentToken?: CType) {
         // Check is registed
-        if (this.services.has(token)) return;
-        let providers = this.reflectProviders(token)
-        let imports = this.reflectImports(token)
-        let components = this.reflectComponents(token)
-        let exports = this.reflectExports(token)
-        let modules = this.reflectModules(token)
-        const moduleMetadata: RegistedMoudle<any> = {}
-        this.services.set(token, moduleMetadata)
-        const registed: any[] = []
-        // Provide dependencies
-        if (Array.isArray(providers)) {
-            providers = providers.map((Service) => {
-                const service = new Service()
-                registed.push(service)
-                return service
-            })
-            moduleMetadata.providers = providers
-        }
+        if (this.modules.has(token)) return
+        let providers: Map<CType, object>;
+        let exports: Map<CType, object>;
 
-        // Export dependencies
-        if (Array.isArray(exports)) {
-            exports = exports.map((Service) => {
-                const find = registed.find((service) => service instanceof Service)
-                if (find) return find
-                return new Service()
-            })
+        // originData
+        const services: Map<CType, object> = new Map()
+        const originProviders: any[] = this.reflectProviders(token) || []
+        const originImports: any[] = this.reflectImports(token) || []
+        const originExports: any[] = this.reflectExports(token) || []
+        const originControllers: any[] = this.reflectControllers(token) || []
+        const moduleMetadata: RegistedMoudle<any> = {}
+
+        originControllers.forEach((Controller) => {
+            this.application.router.addRoute(token, Controller)
+        })
+
+        // Imports dependencies
+        originImports.forEach((iToken) => {
+            this.register(iToken)
+            if (this.modules.has(iToken)) {
+                const Module = this.modules.get(iToken)
+                if (Module.exports) {
+                    providers = providers || new Map()
+                    Module.exports.forEach((service, key) => {
+                        providers.set(key, service)
+                    })
+                }
+            }
+        })
+
+        // Providers dependencies
+        originProviders.forEach((Service) => {
+            providers = providers || new Map()
+            if (!services.has(Service)) {
+                const service = new Service()
+                services.set(Service, service)
+            }
+            providers.set(Service, services.get(Service))
+        })
+
+        // Exports dependencies
+        originExports.forEach((eToken) => {
+            exports = exports || new Map()
+            if (this.modules.has(eToken)) {
+                const Module = this.modules.get(eToken)
+                if (Module.exports) {
+                    Module.exports.forEach((service, key) => {
+                        exports.set(key, service)
+                    })
+                }
+            } else {
+                if (services.has(eToken)) {
+                    const service = services.get(eToken)
+                    exports.set(eToken, service)
+                } else {
+                    const EXCEPTION = Reflect.getMetadata(MetadataElementTypes.Metadata.EXCEPTION_TRACE, token)
+                    // throw EXCEPTION
+                }
+            }
+        })
+
+        if (exports) {
             moduleMetadata.exports = exports
         }
 
-        // Import dependencies
-        if (Array.isArray(imports)) {
-            imports.forEach((tok) => {
-                if (this.services.has(tok)) {
-                    const ipts = this.services.get(tok)
-                    if (Array.isArray(providers)) {
-                        providers.push(...ipts.exports)
-                    } else {
-                        providers = []
-                        providers.push(...ipts.exports)
-                    }
-                } else {
-                    this.register(tok)
-                    const ipts = this.services.get(tok)
-                    providers.push(...ipts.exports)
-                }
-            })
-            moduleMetadata.imports = imports
+        if (providers) {
             moduleMetadata.providers = providers
         }
 
-        // Merge Parent providers
-        if (parentToken) {
-            const parent = this.services.get(parentToken) || {}
-            if (Array.isArray(parent.providers)) {
-                if (Array.isArray(providers)) providers.push(...parent.providers)
-                providers = parent.providers
-            }
-        }
-
-        // modules
-        if (Array.isArray(modules)) {
-            modules.forEach((Mod) => {
-                if (!this.services.has(Mod)) this.register(Mod, token)
-            })
-            moduleMetadata.modules = modules
-        }
-
-        // Components
-        if (Array.isArray(components)) {
-            moduleMetadata.components = components
-        }
+        this.modules.set(token, moduleMetadata)
     }
 
     /**
@@ -99,8 +102,10 @@ export class EasyBootMetadataManager {
      * @param Service
      */
     public queryProviders(token: CType, Service: CType) {
-       const metadata = this.services.get(token)
-       return metadata.providers.find((service) => service instanceof Service)
+        const metadata = this.modules.get(token)
+        if (metadata) {
+            if (metadata.providers) return metadata.providers.get(Service)
+        }
     }
 
     /**
@@ -122,12 +127,12 @@ export class EasyBootMetadataManager {
     }
 
     /**
-     * reflectComponents
+     * reflectControllers
      * @param token
      * @returns components
      */
-    public reflectComponents(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.COMPONENTS, token)
+    public reflectControllers(token: CType) {
+        return Reflect.getMetadata(MetadataElementTypes.Metadata.CONTROLLERS, token)
     }
 
     /**
@@ -138,22 +143,10 @@ export class EasyBootMetadataManager {
     public reflectExports(token: CType) {
         return Reflect.getMetadata(MetadataElementTypes.Metadata.EXPORTS, token)
     }
-
-    /**
-     * reflectModules
-     * @param token
-     * @returns modules
-     */
-    public reflectModules(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.MODULES, token)
-    }
 }
 
 export interface RegistedMoudle<T> {
-    imports?: T[];
-    controllers?: T[];
-    providers?: T[];
-    exports?: T[];
-    modules?: T[];
-    components?: T[];
+    imports?: Map<CType, object>;
+    providers?: Map<CType, object>;
+    exports?: Map<CType, object>;
 }

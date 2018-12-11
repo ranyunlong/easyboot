@@ -1,11 +1,13 @@
 import { RequestMapping, GetMapping, RquestQuery, RequestBody, PostMapping, DeleteMapping, RequestParam, isJSON, isInt, isRequired } from '../../../../../src';
 import { UserQueryEntity } from '../entites/UserQueryEntity';
 import { UserEntity } from '../entites/UserEntity';
+import { UserService } from '../../admin/services/UserService';
 
 @RequestMapping('app')
 export class IndexController {
+    constructor(private userService: UserService) {}
     @GetMapping('list')
-    public async list(@RquestQuery query: UserQueryEntity) {
+    public list(@RquestQuery query: UserQueryEntity) {
         return query;
     }
 

@@ -4,14 +4,11 @@ import { SessionService } from '../services/SessionService';
 import { AppModule } from './app';
 
 @Module({
-    modules: [
-        AdminModule,
-        AppModule
+    imports: [
+        AppModule,
+        AdminModule
     ],
     providers: [
-        SessionService
-    ],
-    exports: [
         SessionService
     ]
 })

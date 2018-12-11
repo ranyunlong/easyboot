@@ -8,37 +8,15 @@ import { Stack } from './Stack';
 import EasyBootServlet from '../core/EasyBootServlet';
 
 export class Router {
-    public configs: RegExpOptions;
     public routes: Route[] = []
-    constructor(public application: EasyBootServlet, options: Options) {
-        const { rootModule, ...configs } = options
-        this.configs = configs
-        this.createRoute(rootModule as CType)
-    }
+    constructor(public application: EasyBootServlet, public configs: RegExpOptions) {}
 
-    private createRoute(Module: CType) {
-        const { CONTROLLERS, MODULES  } = MetadataElementTypes.Metadata
-        const mControllers = Reflect.getMetadata(CONTROLLERS, Module)
-        const mModules = Reflect.getMetadata(MODULES, Module)
-        if (mControllers) {
-            if (Array.isArray(mControllers)) {
-                mControllers.forEach((mController) => {
-                   const requestMapping = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_MAPPING, mController)
-                   if (Array.isArray(requestMapping)) {
-                       requestMapping.forEach((metadata) => {
-                        this.routes.push(new Route(mController, Module, this.configs, metadata))
-                       })
-                   }
-                })
-            }
-        }
-
-        if (mModules) {
-            if (Array.isArray(mModules)) {
-                mModules.forEach((mModule) => {
-                    this.createRoute(mModule)
-                })
-            }
+    public addRoute(Module: CType, Controller: CType) {
+        const requestMapping = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_MAPPING, Controller)
+        if (Array.isArray(requestMapping)) {
+            requestMapping.forEach((metadata) => {
+                this.routes.push(new Route(Controller, Module, this.configs, metadata))
+            })
         }
     }
 
@@ -71,8 +49,4 @@ export class Router {
             }
         }
     }
-}
-
-interface Options extends RegExpOptions {
-    rootModule: ModuleMetadata;
 }

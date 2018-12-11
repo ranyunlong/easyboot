@@ -13,7 +13,7 @@ export class Route {
     public routePath: string;
     constructor(
         public Controller: CType,
-        public iModule: CType,
+        public Module: CType,
         public options: RegExpOptions = {},
         metadata: { path: string; method: RequestElementTypes.METHOD; propertyKey: string },
     ) {
@@ -32,7 +32,7 @@ export class Route {
     }
 
     protected mergePath() {
-        this.routePath = `/${this.basePath}/${this.path}`.replace(/[\/]{2,}/, '/')
+        this.routePath = `/${this.basePath}/${this.path}`.replace(/[\/]{2,}/g, '/')
     }
 
     protected createRegexp() {

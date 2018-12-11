@@ -9,11 +9,10 @@ import {
 } from '../../../../../src'
 import { UserService } from '../services/UserService';
 
-@RequestMapping('/admin/user')
-export class IndexController {
-    constructor(private userService: UserService) {
-        userService.name = 'aa'
-    }
+@Controller
+@RequestMapping('/admin/test')
+export class TestController {
+    constructor(private userService: UserService) {}
     @GetMapping('/')
     public async index(
         @HttpServletRequest request: Request,

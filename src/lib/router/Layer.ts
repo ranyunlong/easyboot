@@ -17,14 +17,14 @@ export class Layer {
     public readonly Mod: CType;
     public readonly handleMetadatas: any[] = [];
     constructor(route: Route) {
-        const { iModule, method, routePath, regexp, pathParamsKeys, Controller, propertyKey } = route
+        const { Module, method, routePath, regexp, pathParamsKeys, Controller, propertyKey } = route
         this.method = method
         this.path = routePath
         this.regexp = regexp
         this.pathParamsKeys = pathParamsKeys
         this.propertyKey = propertyKey
         this.Controller = Controller
-        this.Mod = iModule
+        this.Mod = Module
     }
 
     public async parseParamMetadata(context: Context) {

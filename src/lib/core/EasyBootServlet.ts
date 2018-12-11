@@ -29,7 +29,7 @@ export abstract class EasyBootServlet extends EventEmitter {
     public silent: boolean;
     public keys: string[];
     public router: Router;
-    public metadataManager = new EasyBootMetadataManager();
+    public metadataManager: EasyBootMetadataManager;
     public bodyParserService: BodyParserService;
 
     /**
@@ -52,11 +52,8 @@ export abstract class EasyBootServlet extends EventEmitter {
         process.env.NODE_ENV = env
         if (Reflect.hasMetadata(metadata.EASYBOOTMODULE, this.constructor)) {
             const rootModule = Reflect.getMetadata(metadata.EASYBOOTMODULE, this.constructor)
-            this.metadataManager.register(rootModule)
-            this.router = new Router(this, {
-                rootModule,
-                ...router
-            })
+            this.router = new Router(this, router)
+            this.metadataManager = new EasyBootMetadataManager(this, rootModule)
         }
         // Start server listen port
         if (port) this.listen(port, host)

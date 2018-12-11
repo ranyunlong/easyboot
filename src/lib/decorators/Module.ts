@@ -8,11 +8,11 @@
 import { MetadataElementTypes } from '../enums'
 import { DecoratorException } from '../exception';
 
-const { COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES, PREFIX } = MetadataElementTypes.Metadata
+const { COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES, PREFIX, EXCEPTION_TRACE } = MetadataElementTypes.Metadata
 const metadataKeys = [COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES]
 
 export function Module(metadata: ModuleMetadata): ClassDecorator {
-    return (target): void => {
+    return (target: any): void => {
         const propsKeys = Object.keys(metadata)
         propsKeys.forEach((property) => {
             const result = metadataKeys.find((key) => PREFIX + property === key)
@@ -21,6 +21,8 @@ export function Module(metadata: ModuleMetadata): ClassDecorator {
             }
             Reflect.defineMetadata(PREFIX + property, (metadata as any)[property], target)
         })
+
+        Reflect.defineMetadata(EXCEPTION_TRACE, new DecoratorException(''), target)
     }
 }
 
@@ -29,25 +31,10 @@ export interface ModuleMetadata {
     controllers?: CType[];
     providers?: Provider[];
     exports?: CType[];
-    modules?: CType[];
-    components?: Provider[];
 }
 
 export interface CType<T = any> extends Function {
     new (...args: any[]): T;
 }
 
-export declare type Provider = CType | ClassProvider | ValueProvider | FactoryProvider;
-export interface ClassProvider {
-    provide: any;
-    useClass: CType<any>;
-}
-export interface ValueProvider {
-    provide: any;
-    useValue: any;
-}
-export interface FactoryProvider {
-    provide: any;
-    useFactory: (...args: any[]) => any;
-    inject?: Array<CType<any> | string | any>;
-}
+export declare type Provider = CType;

@@ -20,6 +20,7 @@ export namespace MetadataElementTypes {
         VALIDATORS = 'easyboot:validators',
         PREFIX = 'easyboot:',
         RESPONSE = 'easyboot:response',
-        REQUEST = 'easyboot:request'
+        REQUEST = 'easyboot:request',
+        EXCEPTION_TRACE = 'easyboot:exception:trace'
     }
 }
