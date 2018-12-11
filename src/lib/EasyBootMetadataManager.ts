@@ -8,6 +8,8 @@
 import { CType } from './decorators';
 import { MetadataElementTypes } from './enums';
 import { EasyBootServlet } from './core';
+import { DecoratorException } from './exception';
+import chalk from 'chalk';
 
 export class EasyBootMetadataManager {
     constructor(public application: EasyBootServlet, public rootModule: CType) {
@@ -35,10 +37,6 @@ export class EasyBootMetadataManager {
         const originExports: any[] = this.reflectExports(token) || []
         const originControllers: any[] = this.reflectControllers(token) || []
         const moduleMetadata: RegistedMoudle<any> = {}
-
-        originControllers.forEach((Controller) => {
-            this.application.router.addRoute(token, Controller)
-        })
 
         // Imports dependencies
         originImports.forEach((iToken) => {
@@ -79,8 +77,10 @@ export class EasyBootMetadataManager {
                     const service = services.get(eToken)
                     exports.set(eToken, service)
                 } else {
-                    const EXCEPTION = Reflect.getMetadata(MetadataElementTypes.Metadata.EXCEPTION_TRACE, token)
-                    // throw EXCEPTION
+                    const exception = this.refllectExceptionTrace(token)
+                    exception.setMessage(`Invalid Service ${chalk.yellowBright(eToken.name)}, not in providers.`)
+                    exception.highlight(eToken.name)
+                    throw exception
                 }
             }
         })
@@ -94,6 +94,30 @@ export class EasyBootMetadataManager {
         }
 
         this.modules.set(token, moduleMetadata)
+
+        originControllers.forEach((Controller) => {
+            this.application.router.addRoute(token, Controller)
+            const paramtypes = this.reflectParamtypes(Controller)
+            if (Array.isArray(paramtypes)) {
+                paramtypes.forEach((paramtype) => {
+                    if (typeof paramtype === 'function') {
+                        if (!providers) {
+                            const moduleTrace: DecoratorException = this.refllectExceptionTrace(token)
+                            const exceptionTrace: DecoratorException = this.refllectExceptionTrace(Controller)
+                            if (exceptionTrace) {
+                                exceptionTrace.setMessage(`Invalid Service, ${chalk.yellowBright(paramtype.name)}, not in ${token.name} providers.`)
+                                moduleTrace.name = 'Tips'
+                                moduleTrace.setMessage(`You can in ${token.name} @Module decorator,providers add ${chalk.yellowBright(paramtype.name)}`)
+                                moduleTrace.highlight('providers')
+                                exceptionTrace.append(moduleTrace.stack)
+                                exceptionTrace.highlight(paramtype.name)
+                                throw exceptionTrace
+                            }
+                        }
+                    }
+                })
+            }
+        })
     }
 
     /**
@@ -104,17 +128,35 @@ export class EasyBootMetadataManager {
     public queryProviders(token: CType, Service: CType) {
         const metadata = this.modules.get(token)
         if (metadata) {
-            if (metadata.providers) return metadata.providers.get(Service)
+            if (metadata.providers) {
+                return metadata.providers.get(Service)
+            }
         }
     }
 
     /**
-     * reflectImports
+     * reflectProviders
      * @param token
      * @returns providers
      */
     public reflectProviders(token: CType) {
         return Reflect.getMetadata(MetadataElementTypes.Metadata.PROVIDERS, token)
+    }
+
+    /**
+     * reflectParamtypes
+     * @param token
+     */
+    public reflectParamtypes(token: CType) {
+        return Reflect.getMetadata(MetadataElementTypes.Metadata.PARAMTYPES, token)
+    }
+
+    /**
+     * refllectExceptionTrace
+     * @param token
+     */
+    public refllectExceptionTrace(token: CType) {
+        return Reflect.getMetadata(MetadataElementTypes.Metadata.EXCEPTION_TRACE, token)
     }
 
     /**
@@ -129,7 +171,7 @@ export class EasyBootMetadataManager {
     /**
      * reflectControllers
      * @param token
-     * @returns components
+     * @returns controllers
      */
     public reflectControllers(token: CType) {
         return Reflect.getMetadata(MetadataElementTypes.Metadata.CONTROLLERS, token)

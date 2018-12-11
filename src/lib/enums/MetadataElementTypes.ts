@@ -21,6 +21,7 @@ export namespace MetadataElementTypes {
         PREFIX = 'easyboot:',
         RESPONSE = 'easyboot:response',
         REQUEST = 'easyboot:request',
-        EXCEPTION_TRACE = 'easyboot:exception:trace'
+        EXCEPTION_TRACE = 'easyboot:exception:trace',
+        IS_CONTROLLER = 'easyboot:is:controller'
     }
 }

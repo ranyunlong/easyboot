@@ -7,6 +7,7 @@
 
 import { RequestElementTypes, MetadataElementTypes } from '../enums'
 import 'reflect-metadata'
+import { DecoratorException } from '../exception';
 
 const defalutMethod = RequestElementTypes.METHOD.ALL
 
@@ -69,11 +70,21 @@ export function RequestMapping(path: string, method: RequestElementTypes.METHOD 
  * export class IndexController {
  *     @GetMapping('admin')
  *     public async index(){}
+ *
+ *     @GetMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function GetMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.GET)
+export function GetMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function GetMapping(path: string): MethodDecorator
+export function GetMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.GET)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.GET)
+    }
 }
 
 /**
@@ -89,11 +100,21 @@ export function GetMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @PostMapping('admin')
  *     public async index(){}
+ *
+ *     @PostMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function PostMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.POST)
+export function PostMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function PostMapping(path: string): MethodDecorator
+export function PostMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.POST)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.POST)
+    }
 }
 
 /**
@@ -109,11 +130,21 @@ export function PostMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @DeleteMapping('admin')
  *     public async index(){}
+ *
+ *      @DeleteMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function DeleteMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.DELETE)
+export function DeleteMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function DeleteMapping(path: string): MethodDecorator
+export function DeleteMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.DELETE)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.DELETE)
+    }
 }
 
 /**
@@ -129,11 +160,21 @@ export function DeleteMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @CopyMapping('admin')
  *     public async index(){}
+ *
+ *     @CopyMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function CopyMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.COPY)
+export function CopyMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function CopyMapping(path: string): MethodDecorator
+export function CopyMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.COPY)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.COPY)
+    }
 }
 
 /**
@@ -149,11 +190,21 @@ export function CopyMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @HeadMapping('admin')
  *     public async index(){}
+ *
+ *     @HeadMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function HeadMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.HEAD)
+export function HeadMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function HeadMapping(path: string): MethodDecorator
+export function HeadMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.HEAD)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.HEAD)
+    }
 }
 
 /**
@@ -169,11 +220,21 @@ export function HeadMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @LinkMapping('admin')
  *     public async index(){}
+ *
+ *     @LinkMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function LinkMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.LINK)
+export function LinkMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function LinkMapping(path: string): MethodDecorator
+export function LinkMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.LINK)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.LINK)
+    }
 }
 
 /**
@@ -189,11 +250,21 @@ export function LinkMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @UnlinkMapping('admin')
  *     public async index(){}
+ *
+ *     @UnlinkMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function UnlinkMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.UNLINK)
+export function UnlinkMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function UnlinkMapping(path: string): MethodDecorator
+export function UnlinkMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.UNLINK)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.UNLINK)
+    }
 }
 
 /**
@@ -209,11 +280,21 @@ export function UnlinkMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @OptionsMapping('admin')
  *     public async index(){}
+ *
+ *     @OptionsMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function OptionsMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.OPTIONS)
+export function OptionsMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function OptionsMapping(path: string): MethodDecorator
+export function OptionsMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.OPTIONS)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.OPTIONS)
+    }
 }
 
 /**
@@ -229,11 +310,21 @@ export function OptionsMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @PatchMapping('admin')
  *     public async index(){}
+ *
+ *     @PatchMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function PatchMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.PATCH)
+export function PatchMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function PatchMapping(path: string): MethodDecorator
+export function PatchMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.PATCH)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.PATCH)
+    }
 }
 
 /**
@@ -249,11 +340,21 @@ export function PatchMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @PropfindMapping('admin')
  *     public async index(){}
+ *
+ *     @PropfindMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function PropfindMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.PROPFIND)
+export function PropfindMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function PropfindMapping(path: string): MethodDecorator
+export function PropfindMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.PROPFIND)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.PROPFIND)
+    }
 }
 
 /**
@@ -269,11 +370,21 @@ export function PropfindMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @PurgeMapping('admin')
  *     public async index(){}
+ *
+ *     @PurgeMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function PurgeMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.PURGE)
+export function PurgeMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function PurgeMapping(path: string): MethodDecorator
+export function PurgeMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.PURGE)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.PURGE)
+    }
 }
 
 /**
@@ -289,11 +400,21 @@ export function PurgeMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @PutMapping('admin')
  *     public async index(){}
+ *
+ *     @PutMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function PutMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.PUT)
+export function PutMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function PutMapping(path: string): MethodDecorator
+export function PutMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.PUT)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.PUT)
+    }
 }
 
 /**
@@ -309,11 +430,21 @@ export function PutMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @LockMapping('admin')
  *     public async index(){}
+ *
+ *     @LockMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function LockMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.LOCK)
+export function LockMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function LockMapping(path: string): MethodDecorator
+export function LockMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.LOCK)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.LOCK)
+    }
 }
 
 /**
@@ -329,11 +460,20 @@ export function LockMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @UnlockMapping('admin')
  *     public async index(){}
+ *     @UnlockMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function UnlockMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.UNLOCK)
+export function UnlockMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function UnlockMapping(path: string): MethodDecorator
+export function UnlockMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.UNLOCK)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.UNLOCK)
+    }
 }
 
 /**
@@ -349,11 +489,21 @@ export function UnlockMapping(path: string): MethodDecorator {
  * export class IndexController {
  *     @ViewMapping('admin')
  *     public async index(){}
+ *
+ *     @ViewMapping
+ *     public async test(){}
  * }
  * ```
  */
-export function ViewMapping(path: string): MethodDecorator {
-    return RequestMapping(path, RequestElementTypes.METHOD.VIEW)
+export function ViewMapping<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
+export function ViewMapping(path: string): MethodDecorator
+export function ViewMapping(...args: any[]): any {
+    if (args.length > 1) {
+        const [target, propertyKey, descriptor ] = args;
+        return RequestMapping(null, RequestElementTypes.METHOD.VIEW)(target, propertyKey, descriptor)
+    } else {
+        return RequestMapping(args[0], RequestElementTypes.METHOD.VIEW)
+    }
 }
 
 interface RequestMappingDecorator {

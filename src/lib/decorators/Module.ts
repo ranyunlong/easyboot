@@ -7,6 +7,7 @@
 
 import { MetadataElementTypes } from '../enums'
 import { DecoratorException } from '../exception';
+import chalk from 'chalk';
 
 const { COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES, PREFIX, EXCEPTION_TRACE } = MetadataElementTypes.Metadata
 const metadataKeys = [COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES]
@@ -21,6 +22,15 @@ export function Module(metadata: ModuleMetadata): ClassDecorator {
             }
             Reflect.defineMetadata(PREFIX + property, (metadata as any)[property], target)
         })
+
+        if (Array.isArray(metadata.controllers)) {
+            metadata.controllers.forEach((Controller) => {
+                const isController = Reflect.getMetadata(MetadataElementTypes.Metadata.IS_CONTROLLER, Controller)
+                if (!isController) {
+                    throw new DecoratorException(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`, Controller.name)
+                }
+            })
+        }
 
         Reflect.defineMetadata(EXCEPTION_TRACE, new DecoratorException(''), target)
     }

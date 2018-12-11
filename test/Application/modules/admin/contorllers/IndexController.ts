@@ -9,6 +9,7 @@ import {
 } from '../../../../../src'
 import { UserService } from '../services/UserService';
 
+@Controller
 @RequestMapping('/admin/user')
 export class IndexController {
     constructor(private userService: UserService) {

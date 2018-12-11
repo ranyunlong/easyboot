@@ -32,7 +32,7 @@ export class Route {
     }
 
     protected mergePath() {
-        this.routePath = `/${this.basePath}/${this.path}`.replace(/[\/]{2,}/g, '/')
+        this.routePath = `/${this.basePath ? this.basePath : '' }/${this.path ? this.path : this.propertyKey}`.replace(/[\/]{2,}/g, '/')
     }
 
     protected createRegexp() {

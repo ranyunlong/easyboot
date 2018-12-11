@@ -8,7 +8,9 @@ import { TestController } from './contorllers/TestController';
         IndexController,
         TestController
     ],
-    providers: [],
+    providers: [
+        UserService
+    ],
     exports: [
         UserService
     ]
