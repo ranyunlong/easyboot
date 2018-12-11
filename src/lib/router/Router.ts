@@ -30,13 +30,29 @@ export class Router {
                     if (requestbody || requestfile) {
                         const exceptionTrace: DecoratorException = Reflect.getMetadata(MetadataElementTypes.Metadata.EXCEPTION_TRACE, Controller)
                         if (exceptionTrace && this.application.bodyParserService.strict) {
-                            console.warn(chalk.yellowBright('file: ' + exceptionTrace.getTarget()))
-                            console.warn(chalk.yellowBright(`In route path '${metadata.path}', Now body parse mode strict cannot parse file or body.`))
-                            console.warn(chalk.yellowBright(`You can use @PostMapping decorator.`))
-                            console.warn(chalk.yellowBright(`Cannot be use @${requestMappingTypes[metadata.method]} decorator.`))
-                            if (requestbody) console.warn(chalk.yellowBright(`Cannot be use @RequestBody decorator.`))
-                            if (requestfile) console.warn(chalk.yellowBright(`Cannot be use @RequestFile decorator.`))
-                            exceptionTrace.setMessage(`Invalid decorator ${chalk.yellow('@' + requestMappingTypes[metadata.method])}`)
+                            const mapDecorator = '@' + requestMappingTypes[metadata.method]
+                            const regx = RegExp(mapDecorator + '[\\w\\W]+' + metadata.propertyKey)
+                            const file = (exceptionTrace as any).file
+                            const match = regx.exec(file)
+                            if (match[0]) {
+                                const matchSplit = match[0].split(mapDecorator);
+                                const index = file.indexOf(mapDecorator + matchSplit[matchSplit.length - 2])
+                                if (!!~index) {
+                                    const split: string[] = file.substr(0, index).split('\n')
+                                    const row = split.length
+                                    const col = split[split.length - 1].length + 1
+                                    const files: string[] = file.split('\n')
+                                    const value = chalk.underline.red(mapDecorator);
+                                    const splice = files.splice(row).join('\n').replace(mapDecorator, value);
+                                    (exceptionTrace as any).file = files.join('\n') + '\n' + splice
+                                    const find = (exceptionTrace as any).file.indexOf(value);
+                                    const splits: string[] = (exceptionTrace as any).file.substr(0, find).split('\n');
+                                    (exceptionTrace as any).row = splits.length;
+                                    (exceptionTrace as any).col = splits[splits.length - 1].length + 1;
+                                    exceptionTrace.setMessage(`Invalid decorator, ${chalk.yellow(mapDecorator)} cannot use in ${chalk.yellow(`${requestbody ? '@RequestBody' : '@RequestFile'}`)} decorator.`)
+                                }
+
+                            }
                             throw exceptionTrace
                         }
                     }
