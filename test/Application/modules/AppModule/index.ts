@@ -1,6 +1,6 @@
 import { Module } from '../../../../src';
 import { IndexController } from './controllers/IndexController';
-import { AdminModule } from '../admin';
+import { AdminModule } from '../AdminModule';
 
 @Module({
     imports: [

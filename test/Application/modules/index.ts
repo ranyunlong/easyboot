@@ -1,15 +1,11 @@
 import { Module } from '../../../src';
-import { AdminModule } from './admin';
-import { SessionService } from '../services/SessionService';
-import { AppModule } from './app';
+import { AppModule } from './AppModule';
+import { AdminModule } from './AdminModule';
 
 @Module({
     imports: [
         AppModule,
         AdminModule
-    ],
-    providers: [
-        SessionService
     ]
 })
 export class RootModule {}
