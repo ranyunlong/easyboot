@@ -9,7 +9,7 @@ import { ServerOptions } from 'https'
 import { RegExpOptions } from 'path-to-regexp'
 import { BodyParserService } from './core/BodyParserService';
 
-export class EasyBootServletConfiguration {
+export class ServletConfiguration {
     // Server http port config
     public port?: number = 3000
 

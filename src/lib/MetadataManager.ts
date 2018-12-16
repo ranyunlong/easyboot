@@ -10,7 +10,7 @@ import { MetadataEnums } from './enums';
 import { EasyBootServlet } from './core';
 import chalk from 'chalk';
 
-export class EasyBootMetadataManager {
+export class MetadataManager {
     constructor(public application: EasyBootServlet, public rootModule: CType) {
         this.register(rootModule)
     }
