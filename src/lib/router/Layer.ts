@@ -1,5 +1,5 @@
 import { Route } from './Route';
-import { RequestElementTypes, MetadataElementTypes } from '../enums';
+import { RequestEnums, MetadataEnums } from '../enums';
 import { Key } from 'path-to-regexp'
 import { CType } from '../decorators';
 import { Context } from '../core/Context';
@@ -8,7 +8,7 @@ import { ArgumentMetadata } from '../ArgumentMetadata';
 import { EasyBootEntity } from '../EasyBootEntity';
 import { BodyParserService } from '../core/BodyParserService';
 export class Layer {
-    public readonly method: RequestElementTypes.METHOD;
+    public readonly method: RequestEnums.METHOD;
     public readonly path: string;
     public readonly propertyKey: string;
     public readonly pathParamsKeys: Key[] = [];
@@ -28,7 +28,7 @@ export class Layer {
     }
 
     public async parseParamMetadata(context: Context) {
-        const paramMetadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_PARAM, this.Controller, this.propertyKey)
+        const paramMetadata = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_PARAM, this.Controller, this.propertyKey)
         if (paramMetadata) {
             const originParams: any = {}
             const originData = this.regexp.exec(context.path)
@@ -36,10 +36,10 @@ export class Layer {
                 originParams[key.name] = originData[index + 1]
             })
             const handleMetadatas: any = this.handleMetadatas[paramMetadata.index] = paramValidator(originParams, paramMetadata)
-            const paramtypes = Reflect.getMetadata(MetadataElementTypes.Metadata.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+            const paramtypes = Reflect.getMetadata(MetadataEnums.Metadata.PARAMTYPES, this.Controller.prototype, this.propertyKey)
             if (Array.isArray(paramtypes)) {
                 const Entity = paramtypes[paramMetadata.index]
-                const validations =  Reflect.getMetadata(MetadataElementTypes.Metadata.VALIDATORS, Entity.prototype)
+                const validations =  Reflect.getMetadata(MetadataEnums.Metadata.VALIDATORS, Entity.prototype)
                 if (Array.isArray(validations)) {
                     if (typeof handleMetadatas !== 'object') {
                         throw new TypeError(`Invalid type ${Entity.name}: In module: ${this.Mod.name}, Controller: ${this.Controller.name}, property: ${this.propertyKey}, route: ${this.path}`)
@@ -49,7 +49,7 @@ export class Layer {
                         (entity as any)[k] = handleMetadatas[k]
                     })
                     validations.forEach(({validation, propertyKey}) => {
-                        const metatype = Reflect.getMetadata(MetadataElementTypes.Metadata.TYPE, Entity.prototype, propertyKey);
+                        const metatype = Reflect.getMetadata(MetadataEnums.Metadata.TYPE, Entity.prototype, propertyKey);
                         const data = (entity as any).transform(handleMetadatas[propertyKey], new ArgumentMetadata('param', metatype, validation, propertyKey));
                         (entity as any)[propertyKey] = data
                     })
@@ -60,14 +60,14 @@ export class Layer {
     }
 
     public async parseBodyMetadata(bodyParseService: BodyParserService, context: Context) {
-        const bodyMetadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_BODY, this.Controller, this.propertyKey)
+        const bodyMetadata = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_BODY, this.Controller, this.propertyKey)
         if (bodyMetadata) {
             const originBodys = await bodyParseService.parseBody(context)
             const handleMetadatas: any = this.handleMetadatas[bodyMetadata.index] = paramValidator(originBodys, bodyMetadata)
-            const paramtypes = Reflect.getMetadata(MetadataElementTypes.Metadata.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+            const paramtypes = Reflect.getMetadata(MetadataEnums.Metadata.PARAMTYPES, this.Controller.prototype, this.propertyKey)
             if (Array.isArray(paramtypes)) {
                 const Entity = paramtypes[bodyMetadata.index]
-                const validations =  Reflect.getMetadata(MetadataElementTypes.Metadata.VALIDATORS, Entity.prototype)
+                const validations =  Reflect.getMetadata(MetadataEnums.Metadata.VALIDATORS, Entity.prototype)
                 if (Array.isArray(validations)) {
                     if (typeof handleMetadatas !== 'object') {
                         throw new TypeError(`Invalid type ${Entity.name}: In module: ${this.Mod.name}, Controller: ${this.Controller.name}, property: ${this.propertyKey}, route: ${this.path}`)
@@ -77,7 +77,7 @@ export class Layer {
                         (entity as any)[k] = handleMetadatas[k]
                     })
                     validations.forEach(({validation, propertyKey}) => {
-                        const metatype = Reflect.getMetadata(MetadataElementTypes.Metadata.TYPE, Entity.prototype, propertyKey);
+                        const metatype = Reflect.getMetadata(MetadataEnums.Metadata.TYPE, Entity.prototype, propertyKey);
                         const data = (entity as any).transform(handleMetadatas[propertyKey], new ArgumentMetadata('param', metatype, validation, propertyKey));
                         (entity as any)[propertyKey] = data
                     })
@@ -88,14 +88,14 @@ export class Layer {
     }
 
     public async parseQueryMetadata(context: Context) {
-        const bodyMetadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST_QUERY, this.Controller, this.propertyKey)
+        const bodyMetadata = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_QUERY, this.Controller, this.propertyKey)
         if (bodyMetadata) {
             const originQuerys = context.query
             const handleMetadatas: any = this.handleMetadatas[bodyMetadata.index] = paramValidator(originQuerys, bodyMetadata)
-            const paramtypes = Reflect.getMetadata(MetadataElementTypes.Metadata.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+            const paramtypes = Reflect.getMetadata(MetadataEnums.Metadata.PARAMTYPES, this.Controller.prototype, this.propertyKey)
             if (Array.isArray(paramtypes)) {
                 const Entity = paramtypes[bodyMetadata.index]
-                const validations =  Reflect.getMetadata(MetadataElementTypes.Metadata.VALIDATORS, Entity.prototype)
+                const validations =  Reflect.getMetadata(MetadataEnums.Metadata.VALIDATORS, Entity.prototype)
                 if (Array.isArray(validations)) {
                     if (typeof handleMetadatas !== 'object') {
                         throw new TypeError(`Invalid type ${Entity.name}: In module: ${this.Mod.name}, Controller: ${this.Controller.name}, property: ${this.propertyKey}, route: ${this.path}`)
@@ -105,7 +105,7 @@ export class Layer {
                         (entity as any)[k] = handleMetadatas[k]
                     })
                     validations.forEach(({validation, propertyKey}) => {
-                        const metatype = Reflect.getMetadata(MetadataElementTypes.Metadata.TYPE, Entity.prototype, propertyKey);
+                        const metatype = Reflect.getMetadata(MetadataEnums.Metadata.TYPE, Entity.prototype, propertyKey);
                         const data = (entity as any).transform(handleMetadatas[propertyKey], new ArgumentMetadata('param', metatype, validation, propertyKey));
                         (entity as any)[propertyKey] = data
                     })
@@ -116,7 +116,7 @@ export class Layer {
     }
 
     public async parseRequestMetadata(context: Context) {
-        const metadata = Reflect.getMetadata(MetadataElementTypes.Metadata.REQUEST, this.Controller, this.propertyKey)
+        const metadata = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST, this.Controller, this.propertyKey)
         if (metadata) {
             const { index } = metadata
             if (typeof index !== 'number') return;
@@ -125,7 +125,7 @@ export class Layer {
     }
 
     public async parseResponseMetadata(context: Context) {
-        const metadata = Reflect.getMetadata(MetadataElementTypes.Metadata.RESPONSE, this.Controller, this.propertyKey)
+        const metadata = Reflect.getMetadata(MetadataEnums.Metadata.RESPONSE, this.Controller, this.propertyKey)
         if (metadata) {
             const { index } = metadata
             if (typeof index !== 'number') return;

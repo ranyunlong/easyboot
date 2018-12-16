@@ -6,9 +6,8 @@
  */
 
 import { CType } from './decorators';
-import { MetadataElementTypes } from './enums';
+import { MetadataEnums } from './enums';
 import { EasyBootServlet } from './core';
-import { DecoratorException } from './exception';
 import chalk from 'chalk';
 
 export class EasyBootMetadataManager {
@@ -102,17 +101,7 @@ export class EasyBootMetadataManager {
                 paramtypes.forEach((paramtype) => {
                     if (typeof paramtype === 'function') {
                         if (!providers) {
-                            const moduleTrace: DecoratorException = this.refllectExceptionTrace(token)
-                            const exceptionTrace: DecoratorException = this.refllectExceptionTrace(Controller)
-                            if (exceptionTrace) {
-                                exceptionTrace.setMessage(`Invalid Service, ${chalk.yellowBright(paramtype.name)}, not in ${token.name} providers.`)
-                                moduleTrace.name = 'Tips'
-                                moduleTrace.setMessage(`You can in ${token.name} @Module decorator,providers add ${chalk.yellowBright(paramtype.name)}`)
-                                moduleTrace.highlight('providers')
-                                exceptionTrace.append(moduleTrace.stack)
-                                exceptionTrace.highlight(paramtype.name)
-                                throw exceptionTrace
-                            }
+                            // show error
                         }
                     }
                 })
@@ -140,7 +129,7 @@ export class EasyBootMetadataManager {
      * @returns providers
      */
     public reflectProviders(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.PROVIDERS, token)
+        return Reflect.getMetadata(MetadataEnums.Metadata.PROVIDERS, token)
     }
 
     /**
@@ -148,7 +137,7 @@ export class EasyBootMetadataManager {
      * @param token
      */
     public reflectParamtypes(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.PARAMTYPES, token)
+        return Reflect.getMetadata(MetadataEnums.Metadata.PARAMTYPES, token)
     }
 
     /**
@@ -156,7 +145,7 @@ export class EasyBootMetadataManager {
      * @param token
      */
     public refllectExceptionTrace(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.EXCEPTION_TRACE, token)
+        return Reflect.getMetadata(MetadataEnums.Metadata.EXCEPTION_TRACE, token)
     }
 
     /**
@@ -165,7 +154,7 @@ export class EasyBootMetadataManager {
      * @returns imports
      */
     public reflectImports(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.IMPORTS, token)
+        return Reflect.getMetadata(MetadataEnums.Metadata.IMPORTS, token)
     }
 
     /**
@@ -174,7 +163,7 @@ export class EasyBootMetadataManager {
      * @returns controllers
      */
     public reflectControllers(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.CONTROLLERS, token)
+        return Reflect.getMetadata(MetadataEnums.Metadata.CONTROLLERS, token)
     }
 
     /**
@@ -183,7 +172,7 @@ export class EasyBootMetadataManager {
      * @returns exports
      */
     public reflectExports(token: CType) {
-        return Reflect.getMetadata(MetadataElementTypes.Metadata.EXPORTS, token)
+        return Reflect.getMetadata(MetadataEnums.Metadata.EXPORTS, token)
     }
 }
 

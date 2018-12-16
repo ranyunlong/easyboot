@@ -1,7 +1,7 @@
-import { MetadataElementTypes } from '../enums';
+import { MetadataEnums } from '../enums';
 
 export function HttpServletRequest(target: Object, propertyKey: string, parameterIndex: number): void {
-    Reflect.defineMetadata(MetadataElementTypes.Metadata.REQUEST, {
+    Reflect.defineMetadata(MetadataEnums.Metadata.REQUEST, {
         index: parameterIndex,
         propertyKey
     }, target.constructor, propertyKey)

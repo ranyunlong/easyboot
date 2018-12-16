@@ -1,2 +1,2 @@
-export * from './RequestElementTypes'
-export * from './MetadataElementTypes'
+export * from './RequestEnums'
+export * from './MetadataEnums'

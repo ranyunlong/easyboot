@@ -1,5 +1,4 @@
-import { MetadataElementTypes } from '../enums';
-import { DecoratorException } from '../exception';
+import { MetadataEnums } from '../enums';
 import { Validation } from '../validation';
 import { Validator } from '../validation/paramValidator';
 
@@ -11,26 +10,26 @@ export function RequestBody(...args: any[]): any {
     function decorator(target: Object, propertyKey: string, parameterIndex: number): void {
         const [key, validations] = args
         if (args.length === 2) {
-            Reflect.defineMetadata(MetadataElementTypes.Metadata.REQUEST_BODY, {
+            Reflect.defineMetadata(MetadataEnums.Metadata.REQUEST_BODY, {
                 index: parameterIndex,
                 key,
                 validations
             }, target.constructor, propertyKey)
         } else if (args.length === 1) {
             if (typeof key === 'string') {
-                Reflect.defineMetadata(MetadataElementTypes.Metadata.REQUEST_BODY, {
+                Reflect.defineMetadata(MetadataEnums.Metadata.REQUEST_BODY, {
                     index: parameterIndex,
                     key
                 }, target.constructor, propertyKey)
             } else if (typeof key === 'object') {
-                if (Array.isArray(key)) throw new DecoratorException(`Invalid fields in @RequestBody() decorator`, `@RequestBody`)
-                Reflect.defineMetadata(MetadataElementTypes.Metadata.REQUEST_BODY, {
+                // if (Array.isArray(key)) throw new DecoratorException(`Invalid fields in @RequestBody() decorator`, `@RequestBody`)
+                Reflect.defineMetadata(MetadataEnums.Metadata.REQUEST_BODY, {
                     index: parameterIndex,
                     rules: key
                 }, target.constructor, propertyKey)
             }
         } else {
-            Reflect.defineMetadata(MetadataElementTypes.Metadata.REQUEST_BODY, {
+            Reflect.defineMetadata(MetadataEnums.Metadata.REQUEST_BODY, {
                 index: parameterIndex
             }, target.constructor, propertyKey)
         }

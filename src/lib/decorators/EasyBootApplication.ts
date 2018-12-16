@@ -1,5 +1,5 @@
 import { CType } from './Module'
-import { MetadataElementTypes } from '../enums';
+import { MetadataEnums } from '../enums';
 
 /**
  * @module EasyBootApplication
@@ -10,6 +10,6 @@ import { MetadataElementTypes } from '../enums';
 
 export function EasyBootApplication(metadata: CType): ClassDecorator {
     return (target): void => {
-        Reflect.defineMetadata(MetadataElementTypes.Metadata.EASYBOOTMODULE, metadata, target)
+        Reflect.defineMetadata(MetadataEnums.Metadata.EASYBOOTMODULE, metadata, target)
     }
 }

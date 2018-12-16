@@ -1,4 +1,4 @@
-export namespace RequestElementTypes {
+export namespace RequestEnums {
     export enum METHOD {
         GET = 'GET',
         PUT = 'PUT',

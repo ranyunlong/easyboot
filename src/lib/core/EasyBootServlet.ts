@@ -16,7 +16,7 @@ import { Request } from './Request'
 import { Stream } from 'stream'
 import { isJSON } from './utils'
 import { HttpException } from './HttpException';
-import { MetadataElementTypes } from '../enums';
+import { MetadataEnums } from '../enums';
 import { Router } from '../router';
 import { EasyBootServletConfiguration } from '../EasyBootServletConfiguration';
 import { EasyBootMetadataManager } from '../EasyBootMetadataManager';
@@ -37,7 +37,7 @@ export abstract class EasyBootServlet extends EventEmitter {
      */
     constructor(public configs: EasyBootServletConfiguration = {}) {
         super()
-        const metadata = MetadataElementTypes.Metadata
+        const metadata = MetadataEnums.Metadata
         const MetadataConfiguration = Reflect.getMetadata(metadata.CONFIGURATION, this.constructor)
         if (typeof MetadataConfiguration === 'function') {
             this.configs = Object.assign(this.configs, new MetadataConfiguration())

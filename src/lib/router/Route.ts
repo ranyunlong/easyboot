@@ -1,12 +1,12 @@
 import { CType } from '../decorators'
 import { RegExpOptions, Key } from 'path-to-regexp'
-import { MetadataElementTypes, RequestElementTypes } from '../enums';
+import { MetadataEnums, RequestEnums } from '../enums';
 import * as pathToRegexp from 'path-to-regexp'
 export class Route {
     public basePath: string;
     public baseMethod: string;
     public path: string;
-    public method: RequestElementTypes.METHOD;
+    public method: RequestEnums.METHOD;
     public propertyKey: string;
     public pathParamsKeys: Key[] = []
     public regexp: RegExp;
@@ -15,9 +15,9 @@ export class Route {
         public Controller: CType,
         public Module: CType,
         public options: RegExpOptions = {},
-        metadata: { path: string; method: RequestElementTypes.METHOD; propertyKey: string },
+        metadata: { path: string; method: RequestEnums.METHOD; propertyKey: string },
     ) {
-        const opts = Reflect.getMetadata(MetadataElementTypes.Metadata.CONTROLLER, Controller)
+        const opts = Reflect.getMetadata(MetadataEnums.Metadata.CONTROLLER, Controller)
         if (opts) {
             const { method, path } = opts
             this.baseMethod = method

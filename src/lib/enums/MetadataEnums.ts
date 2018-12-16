@@ -1,4 +1,4 @@
-export namespace MetadataElementTypes {
+export namespace MetadataEnums {
     export enum Metadata {
         MODULES = 'easyboot:modules',
         IMPORTS = 'easyboot:imports',
