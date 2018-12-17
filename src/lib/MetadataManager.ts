@@ -76,10 +76,7 @@ export class MetadataManager {
                     const service = services.get(eToken)
                     exports.set(eToken, service)
                 } else {
-                    const exception = this.refllectExceptionTrace(token)
-                    exception.setMessage(`Invalid Service ${chalk.yellowBright(eToken.name)}, not in providers.`)
-                    exception.highlight(eToken.name)
-                    throw exception
+                    // throw exception
                 }
             }
         })
@@ -129,7 +126,7 @@ export class MetadataManager {
      * @returns providers
      */
     public reflectProviders(token: CType) {
-        return Reflect.getMetadata(MetadataEnums.Metadata.PROVIDERS, token)
+        return Reflect.getMetadata(MetadataEnums.Module.PROVIDERS, token)
     }
 
     /**
@@ -137,15 +134,7 @@ export class MetadataManager {
      * @param token
      */
     public reflectParamtypes(token: CType) {
-        return Reflect.getMetadata(MetadataEnums.Metadata.PARAMTYPES, token)
-    }
-
-    /**
-     * refllectExceptionTrace
-     * @param token
-     */
-    public refllectExceptionTrace(token: CType) {
-        return Reflect.getMetadata(MetadataEnums.Metadata.EXCEPTION_TRACE, token)
+        return Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, token)
     }
 
     /**
@@ -154,7 +143,7 @@ export class MetadataManager {
      * @returns imports
      */
     public reflectImports(token: CType) {
-        return Reflect.getMetadata(MetadataEnums.Metadata.IMPORTS, token)
+        return Reflect.getMetadata(MetadataEnums.Module.IMPORTS, token)
     }
 
     /**
@@ -163,7 +152,7 @@ export class MetadataManager {
      * @returns controllers
      */
     public reflectControllers(token: CType) {
-        return Reflect.getMetadata(MetadataEnums.Metadata.CONTROLLERS, token)
+        return Reflect.getMetadata(MetadataEnums.Module.CONTROLLERS, token)
     }
 
     /**
@@ -172,7 +161,7 @@ export class MetadataManager {
      * @returns exports
      */
     public reflectExports(token: CType) {
-        return Reflect.getMetadata(MetadataEnums.Metadata.EXPORTS, token)
+        return Reflect.getMetadata(MetadataEnums.Module.EXPORTS, token)
     }
 }
 

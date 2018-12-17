@@ -37,7 +37,7 @@ export abstract class EasyBootServlet extends EventEmitter {
      */
     constructor(public configs: ServletConfiguration = {}) {
         super()
-        const metadata = MetadataEnums.Metadata
+        const metadata = MetadataEnums.Base
         const MetadataConfiguration = Reflect.getMetadata(metadata.CONFIGURATION, this.constructor)
         if (typeof MetadataConfiguration === 'function') {
             this.configs = Object.assign(this.configs, new MetadataConfiguration())

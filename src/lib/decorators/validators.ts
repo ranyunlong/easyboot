@@ -3,8 +3,8 @@ import { Validation, isAfter, isAlpha, isAlphanumeric, isAscii, isBase64, isBefo
 
 export function createValidatorDecorator(validation: Validation<any>): PropertyDecorator {
     return (target: any, propertyKey: string): void => {
-        const metadatas = Reflect.getMetadata(MetadataEnums.Metadata.VALIDATORS, target) || []
-        Reflect.defineMetadata(MetadataEnums.Metadata.VALIDATORS, [...metadatas, {
+        const metadatas = Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, target) || []
+        Reflect.defineMetadata(MetadataEnums.Base.VALIDATORS, [...metadatas, {
             validation,
             propertyKey
         }], target)

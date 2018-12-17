@@ -1,5 +1,6 @@
 import { CType } from './Module'
 import { MetadataEnums } from '../enums';
+import { StackTrace } from '../StackTrace/StackTrace';
 
 /**
  * @module Configuration
@@ -25,6 +26,6 @@ import { MetadataEnums } from '../enums';
  */
 export function Configuration(metadata: CType): ClassDecorator {
     return (target): void => {
-        Reflect.defineMetadata(MetadataEnums.Metadata.CONFIGURATION, metadata, target)
+        Reflect.defineMetadata(MetadataEnums.Base.CONFIGURATION, metadata, target)
     }
 }

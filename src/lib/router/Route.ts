@@ -17,7 +17,7 @@ export class Route {
         public options: RegExpOptions = {},
         metadata: { path: string; method: RequestEnums.METHOD; propertyKey: string },
     ) {
-        const opts = Reflect.getMetadata(MetadataEnums.Metadata.CONTROLLER, Controller)
+        const opts = Reflect.getMetadata(MetadataEnums.Controller.CONTROLLER, Controller)
         if (opts) {
             const { method, path } = opts
             this.baseMethod = method

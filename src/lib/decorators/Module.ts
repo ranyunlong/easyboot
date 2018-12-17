@@ -5,26 +5,41 @@
  * @license MIT
  */
 
-import { MetadataEnums } from '../enums'
+import { MetadataEnums, PREFIX, StackTraceEnums } from '../enums'
+import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
 
-const { COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES, PREFIX, EXCEPTION_TRACE } = MetadataEnums.Metadata
-const metadataKeys = [COMPONENTS, CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS, MODULES]
+const { CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS } = MetadataEnums.Module
+const metadataKeys = [CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS]
 
 export function Module(metadata: ModuleMetadata): ClassDecorator {
     return (target: any): void => {
+        StackTrace.defineModule(target)
         const propsKeys = Object.keys(metadata)
-        propsKeys.forEach((property) => {
+        propsKeys.forEach((property: keyof ModuleMetadata) => {
+            if (!Array.isArray(metadata[property])) {
+                const error = new StackTrace(`Invalid property ${chalk.yellowBright(property)} must be Array.`)
+                error.setStackTraceInfo(StackTraceEnums.DECORATOR.MODULE, target)
+                const replaceValue = chalk.bgRedBright(property)
+                error.replace(RegExp(`${property}[\\s]*\\:`), chalk.bgRedBright(property) + ':')
+                error.resetCodeTarget(replaceValue)
+                throw error
+            }
             const result = metadataKeys.find((key) => PREFIX + property === key)
             if (!result) {
-                // throw new DecoratorException(`Invalid property '${property}' in @Module() decorator.`, property)
+                const error = new StackTrace(`Invalid property ${chalk.yellowBright(property)}, @Module decorator cannot use ${chalk.yellowBright(property)} property.`)
+                error.setStackTraceInfo(StackTraceEnums.DECORATOR.MODULE, target)
+                const replaceValue = chalk.bgRedBright(property)
+                error.replace(RegExp(`${property}[\\s]*\\:`), chalk.bgRedBright(property) + ':')
+                error.resetCodeTarget(replaceValue)
+                throw error
             }
-            Reflect.defineMetadata(PREFIX + property, (metadata as any)[property], target)
+            Reflect.defineMetadata(PREFIX + property, metadata[property], target)
         })
 
         if (Array.isArray(metadata.controllers)) {
             metadata.controllers.forEach((Controller) => {
-                const isController = Reflect.getMetadata(MetadataEnums.Metadata.IS_CONTROLLER, Controller)
+                const isController = Reflect.getMetadata(MetadataEnums.Controller.IS_CONTROLLER, Controller)
                 if (!isController) {
                     // throw new DecoratorException(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`, Controller.name)
                 }

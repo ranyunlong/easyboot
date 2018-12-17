@@ -20,12 +20,12 @@ export class Router {
     public routes: Route[] = []
     constructor(public application: EasyBootServlet, public configs: RegExpOptions) {}
     public addRoute(Module: CType, Controller: CType) {
-        const requestMapping = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_MAPPING, Controller)
+        const requestMapping = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_MAPPING, Controller)
         if (Array.isArray(requestMapping)) {
             requestMapping.forEach((metadata) => {
                 if (/(GET|DELETE|HEAD|COPY|PURGE|UNLOCK)/.test(metadata.method)) {
-                    const requestbody = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_BODY, Controller, metadata.propertyKey)
-                    const requestfile = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_FILE, Controller, metadata.propertyKey)
+                    const requestbody = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, Controller, metadata.propertyKey)
+                    const requestfile = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_FILE, Controller, metadata.propertyKey)
                     if (requestbody || requestfile) {
                         // show error
                     }
@@ -52,7 +52,7 @@ export class Router {
             await layer.parseRequestMetadata(context)
             await layer.parseResponseMetadata(context)
             const { Controller, propertyKey, Mod } = layer
-            let metadata = Reflect.getMetadata(MetadataEnums.Metadata.PARAMTYPES, Controller) || []
+            let metadata = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, Controller) || []
             if (Array.isArray(metadata)) {
                 metadata = metadata.map((Service) => {
                     return this.application.metadataManager.queryProviders(Mod, Service)

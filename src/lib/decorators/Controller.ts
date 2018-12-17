@@ -1,4 +1,5 @@
 import { MetadataEnums } from '../enums';
+import { StackTrace } from '../StackTrace/StackTrace';
 
 /**
  * @module Controller
@@ -8,5 +9,6 @@ import { MetadataEnums } from '../enums';
  */
 
 export function Controller<TFunction extends Function>(target: TFunction): TFunction | void {
-    Reflect.defineMetadata(MetadataEnums.Metadata.IS_CONTROLLER, true, target)
+    StackTrace.defineController(target)
+    Reflect.defineMetadata(MetadataEnums.Controller.IS_CONTROLLER, true, target)
 }

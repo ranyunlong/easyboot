@@ -5,8 +5,10 @@
  * @license MIT
  */
 
-import { RequestEnums, MetadataEnums } from '../enums'
+import { RequestEnums, MetadataEnums, StackTraceEnums } from '../enums'
 import 'reflect-metadata'
+import { StackTrace } from '../StackTrace/StackTrace';
+import chalk from 'chalk';
 const defalutMethod = RequestEnums.METHOD.ALL
 
 /**
@@ -42,10 +44,62 @@ export function RequestMapping(path: string, method: RequestEnums.METHOD = defal
     return function decorator(...args: any[]): any {
         const [ target, propertyKey, descriptor ] = args
         if (args.length === 1) { // ClassDecorator
-            Reflect.defineMetadata(MetadataEnums.Metadata.CONTROLLER, {path, method}, target)
+            StackTrace.defineController(target)
+            Reflect.defineMetadata(MetadataEnums.Controller.CONTROLLER, {path, method}, target)
         } else if (args.length === 3) { // MethodDecorator
-            const metadatas = Reflect.getMetadata(MetadataEnums.Metadata.REQUEST_MAPPING, target.constructor) || []
-            Reflect.defineMetadata(MetadataEnums.Metadata.REQUEST_MAPPING, [...metadatas, {
+            StackTrace.defineControllerParameter(target.constructor, propertyKey)
+            const bodys = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, target.constructor, propertyKey)
+            const params = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_PARAM, target.constructor, propertyKey)
+            const files = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_FILE, target.constructor, propertyKey)
+            if (/(GET|DELETE|HEAD|COPY|PURGE|UNLOCK)/.test(method)) {
+                if (bodys) {
+                    const error = new StackTrace(`Invalid decoraotr ${chalk.yellowBright(`@${RequestEnums.MAPPING[method]}('${path}')`)}, request method type is ${method}, cannot use ${chalk.yellowBright('@RequestBody')}.`)
+                    error.setStackTraceInfo(StackTraceEnums.DECORATOR.PARAMETER, target.constructor, propertyKey)
+                    const originCode = error.getCode(RegExp(`${propertyKey}[\\s]*\\([\\r\\n\\s\\w\\@\\:\\,\\$\\(\\)\\{\\}\\'\\"\\[\\]]*\\)`))
+                    const code = originCode
+                        .replace(RegExp(`^${propertyKey}[\\s]*\\(`), '')
+                        .replace(/\r\n/g, '')
+                        .replace(/\)$/, '')
+                        .split(',').map((value) => value.replace(/^[\s]*/, ''))
+                        const value = chalk.redBright('@RequestBody')
+                        const replaceValue = originCode.replace(code[bodys.index], code[bodys.index].replace('@RequestBody', value))
+                    error.replace(originCode, replaceValue)
+                    error.resetCodeTarget(value)
+                    throw error
+                }
+                if (files) {
+                    const error = new StackTrace(`Invalid decoraotr ${chalk.yellowBright(`@${RequestEnums.MAPPING[method]}('${path}')`)}, request method type is ${method}, cannot use ${chalk.yellowBright('@RequestFile')}.`)
+                    error.setStackTraceInfo(StackTraceEnums.DECORATOR.PARAMETER, target.constructor, propertyKey)
+                    const originCode = error.getCode(RegExp(`${propertyKey}[\\s]*\\([\\r\\n\\s\\w\\@\\:\\,\\$\\(\\)\\{\\}\\'\\"\\[\\]]*\\)`))
+                    const code = originCode
+                        .replace(RegExp(`^${propertyKey}[\\s]*\\(`), '')
+                        .replace(/\r\n/g, '')
+                        .replace(/\)$/, '')
+                        .split(',').map((value) => value.replace(/^[\s]*/, ''))
+                        const value = chalk.redBright('@RequestFile')
+                        const replaceValue = originCode.replace(code[bodys.index], code[bodys.index].replace('@RequestFile', value))
+                    error.replace(originCode, replaceValue)
+                    error.resetCodeTarget(value)
+                    throw error
+                }
+            }
+            if (params && !/\:/.test(path)) {
+                const error = new StackTrace(`Invalid decoraotr ${chalk.yellowBright(`@${RequestEnums.MAPPING[method]}('${path}')`)}, request method path is not an dynamic route, cannot use ${chalk.yellowBright('@RequestParam')}.`)
+                error.setStackTraceInfo(StackTraceEnums.DECORATOR.PARAMETER, target.constructor, propertyKey)
+                const originCode = error.getCode(RegExp(`${propertyKey}[\\s]*\\([\\r\\n\\s\\w\\@\\:\\,\\$\\(\\)\\{\\}\\'\\"\\[\\]]*\\)`))
+                const code = originCode
+                    .replace(RegExp(`^${propertyKey}[\\s]*\\(`), '')
+                    .replace(/\r\n/g, '')
+                    .replace(/\)$/, '')
+                    .split(',').map((value) => value.replace(/^[\s]*/, ''))
+                    const value = chalk.redBright('@RequestParam')
+                    const replaceValue = originCode.replace(code[params.index], code[params.index].replace('@RequestParam', value))
+                error.replace(originCode, replaceValue)
+                error.resetCodeTarget(value)
+                throw error
+            }
+            const metadatas = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_MAPPING, target.constructor) || []
+            Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_MAPPING, [...metadatas, {
                 path,
                 method,
                 propertyKey
