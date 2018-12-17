@@ -54,8 +54,9 @@ export class StackTrace {
         stackTrace.stack += `    at file: ${filePath}:${codeRow}:${codeColumn}\n`
         stackTrace.stack += `    at code:\n`
         stackTrace.stack += `${file.split('\n').map((value, index) => {
+            const lineIndex = index + 1
             const line = file.split('\n').length.toString().replace(/[0-9]/g, ' ').split('');
-            const lineNumber = index + line.splice(index.toString().length).join('')
+            const lineNumber = lineIndex + line.splice(lineIndex.toString().length).join('')
             return `    ${lineNumber}    ${value}`
         }).join('\n')}`
     }

@@ -6,9 +6,10 @@
  */
 
 import { CType } from './decorators';
-import { MetadataEnums } from './enums';
+import { MetadataEnums, StackTraceEnums } from './enums';
 import { EasyBootServlet } from './core';
 import chalk from 'chalk';
+import { StackTrace } from './StackTrace/StackTrace';
 
 export class MetadataManager {
     constructor(public application: EasyBootServlet, public rootModule: CType) {
@@ -95,10 +96,34 @@ export class MetadataManager {
             this.application.router.addRoute(token, Controller)
             const paramtypes = this.reflectParamtypes(Controller)
             if (Array.isArray(paramtypes)) {
-                paramtypes.forEach((paramtype) => {
+                paramtypes.forEach((paramtype, index) => {
                     if (typeof paramtype === 'function') {
-                        if (!providers) {
+                        if (!providers || !providers.has(paramtype)) {
                             // show error
+                            const error = new StackTrace(`Invalid service, ${chalk.yellowBright(token.name)} no provider ${chalk.yellowBright(paramtype.name)}.`)
+                            error.setStackTraceInfo(StackTraceEnums.DECORATOR.CONTROLLER, Controller)
+                            const moduleTrace = new StackTrace(`Invalid module, ${chalk.yellowBright(token.name)} no provider ${chalk.yellowBright(paramtype.name)}.`)
+                            moduleTrace.setStackTraceInfo(StackTraceEnums.DECORATOR.MODULE, token)
+                            const moduleValue = chalk.bgRedBright('providers')
+                            const mouduleCode = moduleTrace.getCode(/providers[\s]*\:[\s*][\[]*/)
+                            moduleTrace.replace(mouduleCode, mouduleCode.replace('providers', moduleValue))
+                            moduleTrace.resetCodeTarget(moduleValue)
+                            const originCode = error.getCode(/constructor[\s]*\([\r\n\s\w\@\:\,\$\(\)\'\"\[\]]*\)/)
+                            const code = originCode
+                            .replace(/constructor[\s]*\(/, '')
+                            .replace(/\r\n/g, '')
+                            .replace(/\)$/, '')
+                            .split(',').map((value) => value.replace(/^[\s]*/, ''))
+                            const value1 = chalk.bgRedBright(paramtype.name)
+                            const value2 = chalk.bgRedBright(paramtype.name.toLowerCase())
+                            if (RegExp(paramtype.name).test(code[index])) {
+                                error.replace(originCode, originCode.replace(code[index], code[index].replace(paramtype.name, value1)))
+                                error.resetCodeTarget(value1)
+                            } else {
+                                error.replace(originCode, originCode.replace(code[index], code[index].replace(paramtype.name.toLowerCase(), value2)))
+                                error.resetCodeTarget(value2)
+                            }
+                            throw error.stack += `\n\n${moduleTrace.stack}`
                         }
                     }
                 })

@@ -47,7 +47,7 @@ export function RequestMapping(path: string, method: RequestEnums.METHOD = defal
             StackTrace.defineController(target)
             Reflect.defineMetadata(MetadataEnums.Controller.CONTROLLER, {path, method}, target)
         } else if (args.length === 3) { // MethodDecorator
-            StackTrace.defineControllerParameter(target.constructor, propertyKey)
+            StackTrace.defineControllerMethod(target.constructor, propertyKey)
             const bodys = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, target.constructor, propertyKey)
             const params = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_PARAM, target.constructor, propertyKey)
             const files = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_FILE, target.constructor, propertyKey)
@@ -98,7 +98,34 @@ export function RequestMapping(path: string, method: RequestEnums.METHOD = defal
                 error.resetCodeTarget(value)
                 throw error
             }
+            if (path) {
+                const pathSplit  = path.split('/')
+                pathSplit.forEach((key) => {
+                    key = key.replace(':', '')
+                    if (/[^\w]+/.test(key)) {
+                        const decoraotrName = `@${RequestEnums.MAPPING[method]}('${path}')`
+                        const error = new StackTrace(`Invalid decorator ${chalk.yellowBright(decoraotrName)}, route path cannot use special characters.`)
+                        error.setStackTraceInfo(StackTraceEnums.DECORATOR.METHOD, target.constructor, propertyKey)
+                        const originCode = error.getCode(RegExp(`@${RequestEnums.MAPPING[method]}[\\s]*\\((\\'|\\")${path}(\\'|\\")\\)`))
+                        const replaceValue = chalk.bgRedBright(key)
+                        error.replace(originCode, originCode.replace(key, replaceValue))
+                        error.resetCodeTarget(replaceValue)
+                        throw error
+                    }
+                })
+            }
             const metadatas = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_MAPPING, target.constructor) || []
+            const repeat = metadatas.find((meta: any) => meta.path === path && meta.method === method)
+            if (repeat) {
+                const decoraotrName = `@${RequestEnums.MAPPING[method]}('${path}')`
+                const error =  new StackTrace(`Invalid decorator ${chalk.yellowBright(decoraotrName)}, route path cannot repeat.`)
+                error.setStackTraceInfo(StackTraceEnums.DECORATOR.METHOD, target.constructor, propertyKey)
+                const originCode = error.getCode(RegExp(`@${RequestEnums.MAPPING[method]}[\\s]*\\((\\'|\\")${path}(\\'|\\")\\)`))
+                const replaceValue = chalk.bgRedBright(originCode)
+                error.replace(originCode, replaceValue)
+                error.resetCodeTarget(replaceValue)
+                throw error
+            }
             Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_MAPPING, [...metadatas, {
                 path,
                 method,

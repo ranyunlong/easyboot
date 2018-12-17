@@ -12,12 +12,12 @@ export class IndexController {
         return query;
     }
 
-    @PostMapping('save/哈哈')
+    @PostMapping('save')
     public async save(@RequestBody body: UserEntity) {
         return body;
     }
 
-    @GetMapping('/userinfo/:id/哈哈')
+    @GetMapping('/userinfo/:id')
     public async userinfo(@RequestParam('id', isInt) id: number) {
         return id
     }
