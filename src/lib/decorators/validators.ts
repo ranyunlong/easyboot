@@ -2,12 +2,12 @@ import { MetadataEnums } from '../enums';
 import { Validation, isAfter, isAlpha, isAlphanumeric, isAscii, isBase64, isBefore, isBoolean, isByteLength, isCreditCard, isCurrency, isDataURI, isMagnetURI, isDecimal, isDivisibleBy, isEmail, isEmpty, isFQDN, isFloat, isFullWidth, isHalfWidth, isHash, isHexColor, isHexadecimal, isIdentityCard, isIP, isIPRange, isISBN, isISSN, isISIN, isISO8601, isRFC3339, isISO31661Alpha2, isISO31661Alpha3, isISRC, isIn, isInt, isJSON, isJWT, isLatLong, isLength, isLowercase, isMACAddress, isMD5, isMimeType, isMongoId, isMultibyte, isPort, isSurrogatePair, isUppercase, isVariableWidth, isRequired, isWhitelisted, isUUID, isURL, isPostalCode, isNumeric, isMobilePhone } from '../validation';
 
 export function createValidatorDecorator(validation: Validation<any>): PropertyDecorator {
-    return (target: any, propertyKey: string): void => {
-        const metadatas = Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, target) || []
+    return (target: Object, propertyKey: string): void => {
+        const metadatas = Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, target.constructor) || []
         Reflect.defineMetadata(MetadataEnums.Base.VALIDATORS, [...metadatas, {
             validation,
             propertyKey
-        }], target)
+        }], target.constructor)
     }
 }
 

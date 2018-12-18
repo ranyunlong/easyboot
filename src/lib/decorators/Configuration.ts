@@ -16,11 +16,9 @@ import { StackTrace } from '../StackTrace/StackTrace';
  *
  * Example
  * ```
- * @Controller
- * @RequestMapping('admin')
- * export class IndexController {
- *     @GetMapping('admin')
- *     public async index(){}
+ * @Configuration(ApplicationConfig)
+ * export class Application extends EasyBootServlet {
+ *    public async run(context: Context) {}
  * }
  * ```
  */

@@ -5,7 +5,7 @@ import { RootModule } from './modules';
 @Configuration(ApplicationConfig)
 @EasyBootApplication(RootModule)
 export class Application extends EasyBootServlet {
-    public async response(context: Context) {
+    public async run(context: Context) {
         return;
     }
 }

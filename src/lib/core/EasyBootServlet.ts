@@ -201,7 +201,9 @@ export abstract class EasyBootServlet extends EventEmitter {
         if (this.listeners('err').length > 0) {
             this.emit('err', error)
         } else {
-            if (this.env === 'development') console.error(error.stack)
+            if (this.env === 'development' && error.name !== 'HttpException') {
+                console.error(error.stack)
+            }
         }
         let status: number;
         // If not number
