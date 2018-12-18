@@ -1,3 +1,10 @@
+/**
+ * @namepace MetadataEnums
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 export const PREFIX = 'easyboot:'
 
 export namespace MetadataEnums {

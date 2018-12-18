@@ -1,3 +1,10 @@
+/**
+ * @class ArgumentMetadata
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { CType } from './decorators';
 import { Validation } from './validation';
 

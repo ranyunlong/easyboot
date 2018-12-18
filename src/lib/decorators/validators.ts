@@ -1,3 +1,10 @@
+/**
+ * @module validators
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { MetadataEnums } from '../enums';
 import { Validation, isAfter, isAlpha, isAlphanumeric, isAscii, isBase64, isBefore, isBoolean, isByteLength, isCreditCard, isCurrency, isDataURI, isMagnetURI, isDecimal, isDivisibleBy, isEmail, isEmpty, isFQDN, isFloat, isFullWidth, isHalfWidth, isHash, isHexColor, isHexadecimal, isIdentityCard, isIP, isIPRange, isISBN, isISSN, isISIN, isISO8601, isRFC3339, isISO31661Alpha2, isISO31661Alpha3, isISRC, isIn, isInt, isJSON, isJWT, isLatLong, isLength, isLowercase, isMACAddress, isMD5, isMimeType, isMongoId, isMultibyte, isPort, isSurrogatePair, isUppercase, isVariableWidth, isRequired, isWhitelisted, isUUID, isURL, isPostalCode, isNumeric, isMobilePhone } from '../validation';
 

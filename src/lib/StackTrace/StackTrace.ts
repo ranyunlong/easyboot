@@ -1,13 +1,13 @@
-import { StackTraceEnums } from '../enums';
-import { getStackPath } from './utils';
-import { readFileSync, existsSync } from 'fs'
-
 /**
  * @class StackTrace
  * @author ranyunlong<549510622@qq.com>
  * @copyright Ranyunlong
  * @license MIT
  */
+
+import { StackTraceEnums } from '../enums';
+import { getStackPath } from './utils';
+import { readFileSync, existsSync } from 'fs'
 
 const stacks: MapStackTraces = new Map();
 

@@ -1,3 +1,10 @@
+/**
+ * @module entityValidator
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { MetadataEnums } from '../enums';
 import { toValidator } from './paramValidator';
 import { CType } from '../decorators';

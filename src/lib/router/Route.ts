@@ -1,7 +1,15 @@
+/**
+ * @class Route
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { CType } from '../decorators'
 import { RegExpOptions, Key } from 'path-to-regexp'
 import { MetadataEnums, RequestEnums } from '../enums';
 import * as pathToRegexp from 'path-to-regexp'
+
 export class Route {
     public basePath: string;
     public baseMethod: string;

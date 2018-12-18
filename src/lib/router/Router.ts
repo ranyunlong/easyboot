@@ -1,3 +1,10 @@
+/**
+ * @class Router
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { RegExpOptions } from 'path-to-regexp'
 import { CType } from '../decorators';
 import { MetadataEnums, RequestEnums } from '../enums';
@@ -6,15 +13,6 @@ import { Context } from '../core/Context';
 import { Layer } from './Layer';
 import { Stack } from './Stack';
 import EasyBootServlet from '../core/EasyBootServlet';
-import chalk from 'chalk';
-const requestMappingTypes: any = {
-    GET: 'GetMapping',
-    DELETE: 'DeleteMapping',
-    HEAD: 'HeadMapping',
-    COPY: 'CopyMapping',
-    PURGE: 'PurgeMapping',
-    UNLOCK: 'UnlockMapping'
-}
 
 export class Router {
     public routes: Route[] = []

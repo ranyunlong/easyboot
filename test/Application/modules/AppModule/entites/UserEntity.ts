@@ -1,6 +1,6 @@
-import { EasyBootEntity, IsRequired, IsLength, IsEmail, IsMobilePhone } from '../../../../../src';
+import { IsRequired, IsLength, IsEmail, IsMobilePhone } from '../../../../../src';
 
-export class UserEntity extends EasyBootEntity {
+export class UserEntity {
     @IsRequired('账户必须')
     @IsLength('账户长度必须6位以上', { min: 6 })
     public username: string;

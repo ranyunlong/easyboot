@@ -1,3 +1,10 @@
+/**
+ * @class Layer
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { Route } from './Route';
 import { RequestEnums, MetadataEnums } from '../enums';
 import { Key } from 'path-to-regexp'
@@ -6,6 +13,7 @@ import { Context } from '../core/Context';
 import { paramValidator } from '../validation/paramValidator';
 import { BodyParserService } from '../core/BodyParserService';
 import { entityValidator } from '../validation/entityValidator';
+
 export class Layer {
     public readonly method: RequestEnums.METHOD;
     public readonly path: string;
@@ -34,12 +42,17 @@ export class Layer {
             this.pathParamsKeys.forEach((key, index) => {
                 originParams[key.name] = originData[index + 1]
             })
-            const handleMetadatas: any = this.handleMetadatas[paramMetadata.index] = paramValidator(originParams, paramMetadata)
-            const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
-            if (Array.isArray(paramtypes)) {
-                const Entity = paramtypes[paramMetadata.index]
-                const result = entityValidator(Entity, originParams)
-                if (result) this.handleMetadatas[paramMetadata.index] = result
+            if (paramMetadata.validations) {
+                const metaTypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+                if (Array.isArray(metaTypes)) paramMetadata.metaType = metaTypes[paramMetadata.index]
+                this.handleMetadatas[paramMetadata.index] = paramValidator(originParams, paramMetadata)
+            } else {
+                const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+                if (Array.isArray(paramtypes)) {
+                    const Entity = paramtypes[paramMetadata.index]
+                    const result = entityValidator(Entity, originParams)
+                    if (result) this.handleMetadatas[paramMetadata.index] = result
+                }
             }
         }
     }
@@ -47,13 +60,16 @@ export class Layer {
     public async parseBodyMetadata(bodyParseService: BodyParserService, context: Context) {
         const bodyMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, this.Controller, this.propertyKey)
         if (bodyMetadata) {
-            const originQuerys = context.query
-            this.handleMetadatas[bodyMetadata.index] = paramValidator(originQuerys, bodyMetadata)
-            const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
-            if (Array.isArray(paramtypes)) {
-                const Entity = paramtypes[bodyMetadata.index]
-                const result = entityValidator(Entity, originQuerys)
-                if (result) this.handleMetadatas[bodyMetadata.index] = result
+            const originBodys = await bodyParseService.parseBody(context)
+            if (bodyMetadata.validations) {
+                this.handleMetadatas[bodyMetadata.index] = paramValidator(originBodys, bodyMetadata)
+            } else {
+                const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+                if (Array.isArray(paramtypes)) {
+                    const Entity = paramtypes[bodyMetadata.index]
+                    const result = entityValidator(Entity, originBodys)
+                    if (result) this.handleMetadatas[bodyMetadata.index] = result
+                }
             }
         }
     }
@@ -62,12 +78,15 @@ export class Layer {
         const queryMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_QUERY, this.Controller, this.propertyKey)
         if (queryMetadata) {
             const originQuerys = context.query
-            this.handleMetadatas[queryMetadata.index] = paramValidator(originQuerys, queryMetadata)
-            const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
-            if (Array.isArray(paramtypes)) {
-                const Entity = paramtypes[queryMetadata.index]
-                const result = entityValidator(Entity, originQuerys)
-                if (result) this.handleMetadatas[queryMetadata.index] = result
+            if (queryMetadata.validations) {
+                this.handleMetadatas[queryMetadata.index] = paramValidator(originQuerys, queryMetadata)
+            } else {
+                const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+                if (Array.isArray(paramtypes)) {
+                    const Entity = paramtypes[queryMetadata.index]
+                    const result = entityValidator(Entity, originQuerys)
+                    if (result) this.handleMetadatas[queryMetadata.index] = result
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ export class IndexController {
     }
 
     @GetMapping('/userinfo/:id')
-    public async userinfo(@RequestParam('id', isInt) id: number) {
+    public async userinfo(@RequestParam({ id: isInt }) id: number) {
         return id
     }
 

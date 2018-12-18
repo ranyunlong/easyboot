@@ -1,13 +1,12 @@
-import { CType } from './Module'
-import { MetadataEnums } from '../enums';
-import { StackTrace } from '../StackTrace/StackTrace';
-
 /**
  * @module Configuration
  * @author ranyunlong<549510622@qq.com>
  * @copyright Ranyunlong
  * @license MIT
  */
+
+import { CType } from './Module'
+import { MetadataEnums } from '../enums';
 
 /**
  * Configuration decorator

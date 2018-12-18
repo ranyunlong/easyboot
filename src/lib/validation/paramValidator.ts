@@ -1,5 +1,6 @@
 import { Validation } from './Validation';
 import { HttpException } from '../core/HttpException';
+import { CType } from '../decorators';
 
 export function toValidator(param: string, key: string, validation: Validation<any>) {
     const { message, validType } = validation
@@ -14,9 +15,9 @@ export function toValidator(param: string, key: string, validation: Validation<a
     }
 }
 
-export function paramValidator(value: { [key: string]: string }, metadata: ParamMetadata) {
+export function paramValidator(value: { [key: string]: any }, metadata: ParamMetadata) {
     const { rules, key } = metadata
-    let { validations } = metadata
+    let { validations, metaType } = metadata
     if (rules) {
         let param: any;
         Object.keys(rules).forEach((key) => {
@@ -35,7 +36,7 @@ export function paramValidator(value: { [key: string]: string }, metadata: Param
         })
         return param
     } else if (key && validations) {
-        const param = value[key]
+        let param = value[key]
         if (Array.isArray(validations)) {
             validations.forEach((validation) => {
                 if (typeof validation === 'function') validation = validation()
@@ -45,6 +46,20 @@ export function paramValidator(value: { [key: string]: string }, metadata: Param
             if (typeof validations === 'function') validations = validations()
             toValidator(param, key, validations)
         }
+        if (typeof metaType === 'function') {
+            if (metaType === Number && !isNaN(param)) {
+                param = Number(param)
+            } else if (metaType !== Object) {
+                if (param.constructor !== metaType) {
+                    throw new HttpException({
+                        message: `Invalid parameter ${this.propertyKey}`,
+                        data: {
+                            msg: `Parameter ${key} expected ${metaType.name}, got ${typeof param}.`
+                        }
+                    })
+                }
+            }
+        }
         return param;
     }
     return value
@@ -53,6 +68,7 @@ export function paramValidator(value: { [key: string]: string }, metadata: Param
 export interface ParamMetadata {
     index?: number;
     key?: string;
+    metaType?: CType;
     validations?: Validator | Validation<any> | Array<Validation<any> | Validator>;
     rules: {
         [key: string]: Validator | Validation<any> | Array<Validation<any> | Validator> | null;

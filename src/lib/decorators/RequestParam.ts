@@ -1,3 +1,10 @@
+/**
+ * @module RequestParam
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { MetadataEnums, StackTraceEnums } from '../enums';
 import { Validation } from '../validation';
 import { Validator } from '../validation/paramValidator';

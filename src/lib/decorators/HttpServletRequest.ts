@@ -1,3 +1,10 @@
+/**
+ * @module HttpServletRequest
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+
 import { MetadataEnums, StackTraceEnums } from '../enums';
 import { StackTrace } from '../StackTrace/StackTrace';
 import { Request } from '../core';
