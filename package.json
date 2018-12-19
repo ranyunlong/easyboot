@@ -22,9 +22,10 @@
   },
   "repository": "ranyunlong/core",
   "dependencies": {
-    "@types/formidable": "^1.0.31",
-    "@types/node": "^10.10.3",
     "formidable": "^1.2.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/formidable": "^1.0.31",
+    "@types/node": "^10.10.3"
+  }
 }
