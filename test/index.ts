@@ -1,1 +1,1 @@
-import './Application'
+import { File } from '../src'

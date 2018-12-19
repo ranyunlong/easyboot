@@ -1,6 +1,6 @@
 {
-  "name": "@easyboot/core",
-  "version": "1.0.0-alpha.1",
+  "name": "@easyboot/formidable",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "license": "MIT",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "keywords": [
     "easyboot",
-    "@easyboot/core"
+    "@easyboot/formidable"
   ],
   "author": {
     "email": "549510622@qq.com",
@@ -22,48 +22,9 @@
   },
   "repository": "ranyunlong/core",
   "dependencies": {
-    "@types/accepts": "^1.3.5",
-    "@types/co-body": "^0.0.3",
-    "@types/content-disposition": "^0.5.2",
-    "@types/content-type": "^1.1.2",
-    "@types/cookies": "^0.7.1",
-    "@types/destroy": "^1.0.0",
-    "@types/escape-html": "^0.0.20",
     "@types/formidable": "^1.0.31",
-    "@types/fresh": "^0.5.0",
-    "@types/http-assert": "^1.3.0",
-    "@types/http-errors": "^1.6.1",
-    "@types/mime-types": "^2.1.0",
     "@types/node": "^10.10.3",
-    "@types/on-finished": "^2.3.1",
-    "@types/parseurl": "^1.3.1",
-    "@types/path-to-regexp": "^1.7.0",
-    "@types/statuses": "^1.3.0",
-    "@types/type-is": "^1.6.2",
-    "@types/validator": "^9.4.3",
-    "@types/vary": "^1.1.0",
-    "accepts": "^1.3.5",
-    "chalk": "^2.4.1",
-    "co-body": "^6.0.0",
-    "content-disposition": "^0.5.2",
-    "content-type": "^1.0.4",
-    "cookies": "^0.7.2",
-    "destroy": "^1.0.4",
-    "escape-html": "^1.0.3",
-    "formidable": "^1.2.1",
-    "fresh": "^0.5.2",
-    "http-assert": "^1.4.0",
-    "http-errors": "^1.7.1",
-    "keygrip": "^1.0.3",
-    "mime-types": "^2.1.20",
-    "on-finished": "^2.3.0",
-    "parseurl": "^1.3.2",
-    "path-to-regexp": "^2.4.0",
-    "reflect-metadata": "^0.1.12",
-    "statuses": "^1.5.0",
-    "type-is": "^1.6.16",
-    "validator": "^10.9.0",
-    "vary": "^1.1.2"
+    "formidable": "^1.2.1"
   },
   "devDependencies": {}
 }
