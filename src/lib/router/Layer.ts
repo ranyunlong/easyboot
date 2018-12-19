@@ -42,7 +42,8 @@ export class Layer {
             this.pathParamsKeys.forEach((key, index) => {
                 originParams[key.name] = originData[index + 1]
             })
-            if (paramMetadata.validations) {
+            const { rules, validations } = paramMetadata
+            if (rules || validations) {
                 const metaTypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
                 if (Array.isArray(metaTypes)) paramMetadata.metaType = metaTypes[paramMetadata.index]
                 this.handleMetadatas[paramMetadata.index] = paramValidator(originParams, paramMetadata)
@@ -61,7 +62,8 @@ export class Layer {
         const bodyMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, this.Controller, this.propertyKey)
         if (bodyMetadata) {
             const originBodys = await bodyParseService.parseBody(context)
-            if (bodyMetadata.validations) {
+            const { rules, validations } = bodyMetadata
+            if (rules || validations) {
                 this.handleMetadatas[bodyMetadata.index] = paramValidator(originBodys, bodyMetadata)
             } else {
                 const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
@@ -78,7 +80,8 @@ export class Layer {
         const queryMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_QUERY, this.Controller, this.propertyKey)
         if (queryMetadata) {
             const originQuerys = context.query
-            if (queryMetadata.validations) {
+            const { rules, validations } = queryMetadata
+            if (rules || validations) {
                 this.handleMetadatas[queryMetadata.index] = paramValidator(originQuerys, queryMetadata)
             } else {
                 const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)

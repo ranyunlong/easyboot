@@ -42,6 +42,14 @@ export function Module(metadata: ModuleMetadata): ClassDecorator {
                 const isController = Reflect.getMetadata(MetadataEnums.Controller.IS_CONTROLLER, Controller)
                 if (!isController) {
                     // throw new DecoratorException(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`, Controller.name)
+                    const error = new StackTrace(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`)
+                    error.setStackTraceInfo(StackTraceEnums.DECORATOR.MODULE, target)
+                    const originCode = error.getCode(/controllers[\s]*\:[\s]*\[[\r\n\s\,\w]*\]/)
+                    console.log(originCode)
+                    const replaceValue = chalk.bgRedBright(Controller.name)
+                    error.replace(originCode, originCode.replace(Controller.name, replaceValue))
+                    error.resetCodeTarget(replaceValue)
+                    throw error
                 }
             })
         }

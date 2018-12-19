@@ -5,7 +5,12 @@ import {
     HttpServletRequest,
     Request,
     HttpServletResponse,
-    Response
+    Response,
+    PostMapping,
+    RequestBody,
+    isLength,
+    isRequired,
+    isFile
 } from '../../../../../src'
 import { UserService } from '../services/UserService';
 
@@ -23,4 +28,10 @@ export class IndexController {
         response.type = 'text/css'
         return this.userService.name
     }
+
+    @PostMapping
+    public upload(@RequestBody('file', isFile('xx')) body: any) {
+        return 'upload'
+    }
+
 }

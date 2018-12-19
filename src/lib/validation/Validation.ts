@@ -1,3 +1,5 @@
+import { File } from 'formidable';
+
 /**
  * @class Validation
  * @author ranyunlong<549510622@qq.com>
@@ -15,8 +17,11 @@ export class Validation<V extends Validator> {
             this.args = filters
         }
     }
-    public  toValidate(value: string): boolean {
+    public toValidate(value: any): boolean {
         if (value) {
+            // check is not file
+            if (typeof value === 'object') value = JSON.stringify(value)
+            if (typeof value === 'number') value = String(value)
             if (this.args) {
                 return this.validator(value, ...this.args)
             } else {
@@ -30,5 +35,5 @@ export class Validation<V extends Validator> {
 }
 
 export interface Validator {
-    (value: string, ...args: any[]): boolean;
+    (value: string | File, ...args: any[]): boolean;
 }

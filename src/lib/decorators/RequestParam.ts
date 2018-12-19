@@ -20,6 +20,7 @@ export function RequestParam(...args: any[]): any {
         StackTrace.defineControllerParameter(target.constructor, propertyKey)
         const [key, validations] = args
         if (args.length === 2) {
+            console.log(validations)
             Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_PARAM, {
                 index: parameterIndex,
                 key,

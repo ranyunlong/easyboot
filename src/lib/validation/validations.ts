@@ -7,6 +7,9 @@
 
 import { createValidation } from './createValidation'
 import * as validators from 'validator'
+import { File } from 'formidable'
+import { contentType } from 'mime-types'
+import { Validation } from './Validation'
 
 interface ValidatorStatic extends  ValidatorJS.ValidatorStatic {
     isMagnetURI(value: string): boolean;
@@ -16,12 +19,38 @@ interface ValidatorStatic extends  ValidatorJS.ValidatorStatic {
     isISO31661Alpha3(value: string): boolean;
     isJWT(value: string): boolean;
     isRequired(value: string): boolean;
+    isFileMaxSize(value: File, size: number): boolean;
+    isFileMinSize(value: File, size: number): boolean;
+    isFileType(value: File, filetype: string | string[]): boolean;
+    isFile(value: File): boolean;
 }
 
 const validator = validators as ValidatorStatic
 
-validator.isRequired = function isRequired(value: string) {
+validator.isRequired = function isRequired(value: string): boolean {
     return !validator.isEmpty(value)
+}
+
+validator.isFileMaxSize = function isFileMaxSize(value: File, size: number): boolean {
+    return value.size <= size
+}
+
+validator.isFileMinSize = function isFileMaxSize(value: File, size: number): boolean {
+    return value.size >= size
+}
+
+validator.isFileType = function isFileType(value: File, filetype: string | string[]): boolean {
+    if (Array.isArray(filetype)) {
+        filetype = filetype.map((val) => contentType(val) as string)
+        filetype = filetype.filter((val) => val)
+        return Boolean(filetype.find((val) => contentType(value.type) === filetype))
+    }
+    return contentType(value.type) === contentType(filetype)
+}
+
+validator.isFile = function isFile(value: File): boolean {
+    if (typeof value !== 'object' || Array.isArray(value)) return false;
+    return Boolean(value.name && value.path && value.size && value.toJSON && value.type && value.lastModifiedDate)
 }
 
 /**
@@ -1366,4 +1395,45 @@ export function isWhitelisted(message: string, chars?: string | string[]) {
  */
 export function isRequired(message: string) {
     return createValidation<ValidatorStatic['isRequired']>(message, validator.isRequired)
+}
+
+/**
+ * isRequired
+ *
+ * checks value is required.
+ *
+ * Example
+ * ```
+ * @RequestBody('id', isRequired)
+ * @RequestBody('id', [isRequired])
+ * @RequestBody('id', isRequired('message'))
+ * @RequestBody('id', [isRequired('message')])
+ * ```
+ * Also applies to the following decorators:
+ * ```
+ * @RequestFile()
+ * ```
+ */
+export function isFile(message: string, options?: FileOptions): Array<Validation<any>> {
+    const validations: any = [];
+    if (options) {
+        if (options.minSize) {
+            validations.push(createValidation<ValidatorStatic['isFileMinSize']>(message, validator.isFileMinSize), options.minSize)
+        }
+        if (options.maxSize) {
+            validations.push(createValidation<ValidatorStatic['isFileMaxSize']>(message, validator.isFileMaxSize), options.maxSize)
+        }
+        if (options.type) {
+            validations.push(createValidation<ValidatorStatic['isFileType']>(message, validator.isFileType), options.type)
+        }
+        return validations
+    }
+    validations.push(createValidation<ValidatorStatic['isRequired']>(message, validator.isRequired))
+    validations.push(createValidation<ValidatorStatic['isFile']>(message, validator.isFile))
+}
+
+interface FileOptions {
+    maxSize?: number;
+    minSize?: number;
+    type?: string | string[];
 }

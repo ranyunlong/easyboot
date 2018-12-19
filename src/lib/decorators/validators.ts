@@ -30,6 +30,7 @@ export function createValidatorDecorator(validation: Validation<any>): PropertyD
  * @IsAfter('message', '2018-10-11')
  * ```
  */
+
 export function IsAfter(target: Object, propertyKey: string): void;
 export function IsAfter(message: string, date?: string): PropertyDecorator;
 export function IsAfter(...args: any[]): any {
@@ -41,6 +42,7 @@ export function IsAfter(...args: any[]): any {
         return createValidatorDecorator(isAfter(''))(target, propertyKey)
     }
 }
+
 /**
  * IsAlpha decorator
  *
@@ -1360,3 +1362,26 @@ export function IsRequired(...args: any[]): any {
         return createValidatorDecorator(isRequired(''))(target, propertyKey)
     }
 }
+
+/**
+ * IsRequired decorator
+ *
+ * The decorator apply to EasyBootEntity class propertys, Used to validate data types.
+ * checks value is required.
+ *
+ * Example
+ * ```
+ * @IsFile('message')
+ * ```
+ */
+// export function IsFile(target: Object, propertyKey: string): void;
+// export function IsFile(message: string): PropertyDecorator;
+// export function IsFile(...args: any[]): any {
+//     const [ message ] = args;
+//     if (typeof message === 'string') {
+//         return createValidatorDecorator(isRequired(message))
+//     } else {
+//         const [ target, propertyKey ] = args
+//         return createValidatorDecorator(isRequired(''))(target, propertyKey)
+//     }
+// }
