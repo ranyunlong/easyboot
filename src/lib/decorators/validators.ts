@@ -6,7 +6,7 @@
  */
 
 import { MetadataEnums } from '../enums';
-import { Validation, isAfter, isAlpha, isAlphanumeric, isAscii, isBase64, isBefore, isBoolean, isByteLength, isCreditCard, isCurrency, isDataURI, isMagnetURI, isDecimal, isDivisibleBy, isEmail, isEmpty, isFQDN, isFloat, isFullWidth, isHalfWidth, isHash, isHexColor, isHexadecimal, isIdentityCard, isIP, isIPRange, isISBN, isISSN, isISIN, isISO8601, isRFC3339, isISO31661Alpha2, isISO31661Alpha3, isISRC, isIn, isInt, isJSON, isJWT, isLatLong, isLength, isLowercase, isMACAddress, isMD5, isMimeType, isMongoId, isMultibyte, isPort, isSurrogatePair, isUppercase, isVariableWidth, isRequired, isWhitelisted, isUUID, isURL, isPostalCode, isNumeric, isMobilePhone } from '../validation';
+import { Validation, isAfter, isAlpha, isAlphanumeric, isAscii, isBase64, isBefore, isBoolean, isByteLength, isCreditCard, isCurrency, isDataURI, isMagnetURI, isDecimal, isDivisibleBy, isEmail, isEmpty, isFQDN, isFloat, isFullWidth, isHalfWidth, isHash, isHexColor, isHexadecimal, isIdentityCard, isIP, isIPRange, isISBN, isISSN, isISIN, isISO8601, isRFC3339, isISO31661Alpha2, isISO31661Alpha3, isISRC, isIn, isInt, isJSON, isJWT, isLatLong, isLength, isLowercase, isMACAddress, isMD5, isMimeType, isMongoId, isMultibyte, isPort, isSurrogatePair, isUppercase, isVariableWidth, isRequired, isWhitelisted, isUUID, isURL, isPostalCode, isNumeric, isMobilePhone, isFile } from '../validation';
 
 export function createValidatorDecorator(validation: Validation<any>): PropertyDecorator {
     return (target: Object, propertyKey: string): void => {
@@ -1374,14 +1374,14 @@ export function IsRequired(...args: any[]): any {
  * @IsFile('message')
  * ```
  */
-// export function IsFile(target: Object, propertyKey: string): void;
-// export function IsFile(message: string): PropertyDecorator;
-// export function IsFile(...args: any[]): any {
-//     const [ message ] = args;
-//     if (typeof message === 'string') {
-//         return createValidatorDecorator(isRequired(message))
-//     } else {
-//         const [ target, propertyKey ] = args
-//         return createValidatorDecorator(isRequired(''))(target, propertyKey)
-//     }
-// }
+export function IsFile(target: Object, propertyKey: string): void;
+export function IsFile(message: string): PropertyDecorator;
+export function IsFile(...args: any[]): any {
+    const [ message ] = args;
+    if (typeof message === 'string') {
+        return createValidatorDecorator(isFile(message))
+    } else {
+        const [ target, propertyKey ] = args
+        return createValidatorDecorator(isFile(''))(target, propertyKey)
+    }
+}

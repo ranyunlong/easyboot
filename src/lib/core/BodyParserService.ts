@@ -8,9 +8,12 @@
 import * as os from 'os'
 import * as typeIs from 'type-is'
 import * as parse from 'co-body'
-import * as formidable from 'formidable'
+import * as formidable from '@easyboot/formidable'
 import { Context } from './Context';
 import chalk from 'chalk';
+import { UploadOptions } from '../decorators';
+import { HttpException } from './HttpException';
+import { contentType } from 'mime-types'
 
 function showWarn() {
     if (process.env.NODE_ENV === 'development') {
@@ -21,36 +24,37 @@ function showWarn() {
 }
 
 export class BodyParserService {
-    // JSON正文的字节限制 默认值1mb
+    // The byte (if integer) limit of the JSON body, default 1mb
     public readonly jsonLimit: string
-    // 表单主体数据的限制 默认值56kb
+    // The byte (if integer) limit of the form body, default 56kb
     public readonly formLimit: string;
-    // 文本正文的字节限制 默认值56kb
-    public readonly textLimit: number;
-    // 编码格式 默认 utf-8
+    // The byte (if integer) limit of the text body, default 56kb
+    public readonly textLimit: string;
+    // Sets encoding for incoming form fields, default utf-8
     public readonly encoding: 'utf-8' | string;
-    // 开启 multipart 默认true
+    // Parse multipart bodies, default false
     public readonly multipart: boolean;
-    // 解析 urlencoded  默认true
+    // Parse urlencoded bodies, default true
     public readonly urlencoded: boolean;
-    // 解析text 默认true
+    // Parse text bodies, default true
     public readonly text: boolean;
-    // 解析json 默认true
+    // Parse json bodies, default true
     public readonly json: boolean;
-    // json只解析数组和对象 默认true
+    // Toggles co-body strict mode; if set to true - only parses arrays or objects, default true
     public readonly jsonStrict: boolean;
-    // formidable 选项
+    // Options to pass to the formidable multipart parser
     public readonly formidable: BodyParserService.FormMidable;
-    // 开启严格模式 不解析GET HEAD DELETE请求 默认true
+    //  If enabled, don't parse GET, HEAD, DELETE requests, default true
     public readonly strict: boolean;
-    // 上传文件保存路径
+    // // Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
     public readonly uploadDir: string;
 
     constructor(public opts: BodyParserService.Options = {}) {
         this.encoding = opts.encoding || 'utf-8';
         this.formLimit = (opts.formLimit || 56) + 'kb'
         this.json = opts.json || true
-        this.jsonLimit = (opts.jsonLimit || 1) + 'mb'
+        this.jsonLimit = (opts.jsonLimit || 56) + 'kb'
+        this.textLimit = (opts.textLimit || 1) + 'mb'
         this.jsonStrict = opts.jsonStrict || true
         this.multipart = opts.multipart || true
         this.urlencoded = opts.urlencoded ||  true
@@ -87,40 +91,67 @@ export class BodyParserService {
      * parseBody
      * Parser file request data
      */
-    public async parseFile(ctx: Context): Promise<{
-        fields?: formidable.Fields,
-        files?: formidable.Files
+    public async parseFile(ctx: Context, options?: UploadOptions): Promise<{
+        [key: string]: any;
     } | undefined> {
         if (/(GET|DELETE|HEAD|COPY|PURGE|UNLOCK)/.test(ctx.method) && this.strict) {
             showWarn()
             return;
         };
-        if (typeIs(ctx.req, 'multipart')) return;
+        if (!typeIs(ctx.req, 'multipart')) return;
         return new Promise((resolve, reject) => {
             const form = new formidable.IncomingForm()
-            if (this.formidable) {
-                const { uploadDir, keepExtensions, maxFieldsSize, maxFields, hash, multiples} = this.formidable
-                if (uploadDir) form.uploadDir = uploadDir
-                if (keepExtensions)  form.keepExtensions = keepExtensions
-                if (maxFieldsSize) {
-                    form.maxFieldsSize = maxFieldsSize
-                    form.maxFileSize = maxFieldsSize
-                }
-                if (maxFields) form.maxFields = maxFields
-                if (hash) form.hash = hash
-                if (multiples) form.multiples = multiples
-            } else {
-                form.uploadDir = this.uploadDir
-                form.multiples = true
-            }
-
+            form.uploadDir = this.uploadDir
+            form.multiples = true
             form.encoding = this.encoding
-
+            form.maxFileSize = 2 * 1024 * 1024
+            const opts = { ...this.formidable, ...options }
+            Object.keys(opts).forEach((key: keyof BodyParserService.FormMidable) => {
+                form[key] = opts[key]
+            })
+            form.onPart = function(part) {
+                if (part.mime) {
+                    let fileType = opts.fileType
+                    if (Array.isArray(fileType)) {
+                        if (!fileType.find((v) => contentType(v) === contentType(part.mime))) {
+                            (form as any).pause()
+                            reject(new HttpException({
+                                statusCode: 400,
+                                data: {
+                                    msg: `The Request File key '${part.name}' type expected ${fileType.map((v) => `'${contentType(v)}'`).join(' or ')}, got ${part.mime}`
+                                }
+                            }))
+                            return;
+                        }
+                    } else if (typeof fileType === 'string') {
+                        if (contentType(fileType) !== contentType(part.mime)) {
+                            (form as any).pause()
+                            reject(new HttpException({
+                                statusCode: 400,
+                                data: {
+                                    msg: `The Request File key '${part.name}' type expected ${contentType(fileType)}, got ${part.mime}`
+                                }
+                            }))
+                        }
+                        return;
+                    }
+                }
+                form.handlePart(part)
+            }
             form.parse(ctx.req, (err, fields, files) => {
-                if (err) reject(err)
+                if (err) {
+                    if (/maxFileSize exceeded/.test(err.message)) {
+                        reject(new HttpException({
+                            statusCode: 413,
+                            data: {
+                                msg: err.message
+                            }
+                        }))
+                    }
+                }
                 resolve({
-                    fields,
-                    files
+                    ...files,
+                    ...fields
                 })
             })
         })
@@ -129,26 +160,54 @@ export class BodyParserService {
 
 export namespace BodyParserService {
     export interface Options {
+        // The byte (if integer) limit of the JSON body, default 1mb
+        jsonLimit?: string
+        // The byte (if integer) limit of the form body, default 56kb
+        formLimit?: string;
+        // The byte (if integer) limit of the text body, default 56kb
+        textLimit?: string;
+        // Sets encoding for incoming form fields, default utf-8
+        encoding?: 'utf-8' | string;
+        // Parse multipart bodies, default false
+        multipart?: boolean;
+        // Parse urlencoded bodies, default true
+        urlencoded?: boolean;
+        // Parse text bodies, default true
+        text?: boolean;
+        // Parse json bodies, default true
+        json?: boolean;
+        // Toggles co-body strict mode; if set to true - only parses arrays or objects, default true
+        jsonStrict?: boolean;
+        // Options to pass to the formidable multipart parser
+        formidable?: BodyParserService.FormMidable;
+        //  If enabled, don't parse GET, HEAD, DELETE requests, default true
+        strict?: boolean;
+        // Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
         uploadDir?: string;
-        jsonLimit?: number;              // JSON正文的字节限制 默认值1mb
-        formLimit?: number;              // 表单主体数据的限制 默认值56kb
-        textLimit?: number;              // 文本正文的字节限制 默认值56kb
-        encoding?: 'utf-8' | string;     // 编码格式 默认 utf-8
-        multipart?: boolean;             // 开启 multipart 默认true
-        urlencoded?: boolean;            // 解析 urlencoded  默认true
-        text?: boolean;                  // 解析text 默认true
-        json?: boolean;                  // 解析json 默认true
-        jsonStrict?: boolean;            // json只解析数组和对象 默认true
-        formidable?: FormMidable;        // formidable 选项
-        strict?: boolean;                // 开启严格模式 不解析GET HEAD DELETE请求 默认true
     }
 
     export interface FormMidable {
-        maxFields?: number;              // 限制查询字符串解析器将解码的字段数，默认值1000
-        maxFieldsSize?: number;          // 默认情况2mb (2 * 1024 * 1024)
-        uploadDir?: string;              // 设置用于放置文件上载的目录，默认值os.tmpDir()
-        keepExtensions?: boolean;        // 写入的文件uploadDir将包含原始文件的扩展名，默认值false
-        hash?: string | boolean;         // 如果你想要进入的文件计算校验和，此设置为'sha1'或'md5'默认false
-        multiples?: boolean;             // 多个文件上传或否，默认true
+        // Sets encoding for incoming form fields, default utf-8.
+        encoding?: string;
+        // Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
+        uploadDir?: string;
+         // If you want the files written to form.uploadDir to include the extensions of the original files, set this property to true.
+        keepExtensions?: boolean;
+        // Either 'multipart' or 'urlencoded' depending on the incoming request.
+        type?: 'multipart' | 'urlencoded';
+        // Limits the number of fields that the querystring parser will decode. Defaults to 1000 (0 for unlimited).
+        maxFields?: number;
+        // Limits the size of uploaded file. If this value is exceeded, an 'error' event is emitted. The default size is 2MB.
+        maxFileSize?: number;
+        // Limits the amount of memory all fields together (except files) can allocate in bytes. If this value is exceeded, an 'error' event is emitted. The default size is 20MB.
+        maxFieldsSize?: number;
+        // If you want checksums calculated for incoming files, set this to either 'sha1' or 'md5'.
+        hash?: 'sha1' | 'md5' | boolean;
+        // If this option is enabled, when you call form.parse, the files argument will contain arrays of files for inputs which submit multiple files using the HTML5 multiple attribute.
+        multiples?: boolean;
+        // The amount of bytes received for this form so far.
+        bytesReceived?: number;
+        // The expected number of bytes in this form.
+        bytesExpected?: number;
     }
 }

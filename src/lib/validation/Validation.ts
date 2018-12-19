@@ -1,4 +1,5 @@
-import { File } from 'formidable';
+import { File } from '@easyboot/formidable';
+import { HttpException } from '../core';
 
 /**
  * @class Validation
@@ -17,19 +18,39 @@ export class Validation<V extends Validator> {
             this.args = filters
         }
     }
-    public toValidate(value: any): boolean {
+    public toValidate(value: any, field: string) {
         if (value) {
             // check is not file
             if (typeof value === 'object') value = JSON.stringify(value)
             if (typeof value === 'number') value = String(value)
             if (this.args) {
-                return this.validator(value, ...this.args)
+                if (!this.validator(value, ...this.args)) {
+                    throw new HttpException({
+                        statusCode: 400,
+                        data: {
+                            msg: this.message || `Parameter ${field} expected ${this.validType.replace('is', '')}, got ${typeof value}.`
+                        }
+                    })
+                }
             } else {
-                return this.validator(value)
+                if (!this.validator(value)) {
+                    throw new HttpException({
+                        statusCode: 400,
+                        data: {
+                            msg: this.message || `Parameter ${field} expected ${this.validType.replace('is', '')}, got ${typeof value}.`
+                        }
+                    })
+                }
             }
         } else {
-            if (this.validType === 'isRequired') return false;
-            return true
+            if (this.validType === 'isRequired') {
+                throw new HttpException({
+                    statusCode: 400,
+                    data: {
+                        msg: this.message || `Parameter ${field} expected ${this.validType.replace('is', '')}, got ${typeof value}.`
+                    }
+                })
+            }
         }
     }
 }

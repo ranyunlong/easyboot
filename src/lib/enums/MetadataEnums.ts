@@ -25,7 +25,12 @@ export namespace MetadataEnums {
         REQUEST_PARAM = 'easyboot:request:param',
         REQUEST_BODY = 'easyboot:request:body',
         REQUEST_FILE = 'easyboot:request:file',
-        REQUEST_QUERY = 'easyboot:request:query'
+        REQUEST_QUERY = 'easyboot:request:query',
+        EXCEPTION_CAPTURE = 'easyboot:exception:capture',
+        EXCEPTION = 'easyboot:exception',
+        STATUS_CODE = 'easyboot:status:code',
+        STATUS_MESSAGE = 'easyboot:status:message',
+        CONTENT_TYPE = 'easyboot:content:type'
     }
     export enum Module {
         IMPORTS = 'easyboot:imports',

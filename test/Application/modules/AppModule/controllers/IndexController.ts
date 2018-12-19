@@ -7,8 +7,14 @@ import { UserService } from '../../AdminModule/services/UserService';
 @RequestMapping('app')
 export class IndexController {
     constructor(private userService: UserService) {}
+
     @GetMapping
     public list(@RquestQuery query: UserQueryEntity) {
+        return query;
+    }
+
+    @GetMapping
+    public list1(@RquestQuery({id: isInt}) query: UserQueryEntity) {
         return query;
     }
 

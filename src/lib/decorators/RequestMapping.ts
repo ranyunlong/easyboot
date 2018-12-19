@@ -126,6 +126,7 @@ export function RequestMapping(path: string, method: RequestEnums.METHOD = defal
                 error.resetCodeTarget(replaceValue)
                 throw error
             }
+            if (!path) path = propertyKey
             Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_MAPPING, [...metadatas, {
                 path,
                 method,

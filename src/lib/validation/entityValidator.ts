@@ -6,7 +6,6 @@
  */
 
 import { MetadataEnums } from '../enums';
-import { toValidator } from './paramValidator';
 import { CType } from '../decorators';
 import { HttpException } from '../core';
 
@@ -16,7 +15,7 @@ export function entityValidator(Entity: CType, data: any) {
 
     // validator
     validations.forEach(({validation, propertyKey}) => {
-        toValidator(data[propertyKey], propertyKey, validation)
+        validation.toValidate(data[propertyKey], propertyKey)
     })
 
     // deep validator
@@ -36,7 +35,7 @@ export function entityValidator(Entity: CType, data: any) {
                     entity[key] = data[key]
                 } else {
                     throw new HttpException({
-                        message: `Invalid parameter ${key}`,
+                        statusCode: 400,
                         data: {
                             msg: `Parameter ${key} expected ${metatype.name}, got ${typeof data[key]}.`
                         }

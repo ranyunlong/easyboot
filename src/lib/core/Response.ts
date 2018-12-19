@@ -33,8 +33,8 @@ export class Response {
         public res: ServerResponse,
         public app: EasyBootServlet
     ) {
-        const { version, name } = require('../../../package.json').version
-        this.set('Server',  `${name}:${version}`)
+        const { version } = require('../../../package.json')
+        this.set('Server',  `easyboot:${version}`)
         this.vary('Accept-Encoding')
     }
 

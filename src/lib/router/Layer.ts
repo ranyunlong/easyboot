@@ -13,6 +13,7 @@ import { Context } from '../core/Context';
 import { paramValidator } from '../validation/paramValidator';
 import { BodyParserService } from '../core/BodyParserService';
 import { entityValidator } from '../validation/entityValidator';
+import { HttpException } from '../core';
 
 export class Layer {
     public readonly method: RequestEnums.METHOD;
@@ -42,17 +43,31 @@ export class Layer {
             this.pathParamsKeys.forEach((key, index) => {
                 originParams[key.name] = originData[index + 1]
             })
-            const { rules, validations } = paramMetadata
-            if (rules || validations) {
-                const metaTypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
-                if (Array.isArray(metaTypes)) paramMetadata.metaType = metaTypes[paramMetadata.index]
+            const { rules, validations, key } = paramMetadata
+            const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+            if (rules || validations || key) {
+                if (Array.isArray(paramtypes)) paramMetadata.metaType = paramtypes[paramMetadata.index]
                 this.handleMetadatas[paramMetadata.index] = paramValidator(originParams, paramMetadata)
             } else {
-                const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
                 if (Array.isArray(paramtypes)) {
                     const Entity = paramtypes[paramMetadata.index]
-                    const result = entityValidator(Entity, originParams)
-                    if (result) this.handleMetadatas[paramMetadata.index] = result
+                    const entite =  Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, Entity)
+                    if (entite) {
+                        const result = entityValidator(Entity, originParams)
+                        if (result) this.handleMetadatas[paramMetadata.index] = result
+                    } else {
+                        if (typeof Entity === 'function') {
+                            if (originParams.constructor !== Entity) {
+                                throw new HttpException({
+                                    statusCode: 400,
+                                    data: {
+                                        msg: `Parameters data expected ${Entity.name}, got ${typeof originParams}.`
+                                    }
+                                })
+                            }
+                        }
+                        this.handleMetadatas[paramMetadata.index] = originParams
+                    }
                 }
             }
         }
@@ -60,17 +75,42 @@ export class Layer {
 
     public async parseBodyMetadata(bodyParseService: BodyParserService, context: Context) {
         const bodyMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, this.Controller, this.propertyKey)
+        const fileMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_FILE, this.Controller, this.propertyKey)
         if (bodyMetadata) {
             const originBodys = await bodyParseService.parseBody(context)
-            const { rules, validations } = bodyMetadata
-            if (rules || validations) {
+            if (fileMetadata) {
+                const originFiles = await bodyParseService.parseFile(context, fileMetadata)
+                if (originFiles) {
+                    Object.keys(originFiles).forEach((key) => {
+                        originBodys[key] = originFiles[key]
+                    })
+                }
+            }
+            const { rules, validations, key } = bodyMetadata
+            const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+            if (rules || validations || key) {
+                if (Array.isArray(paramtypes)) bodyMetadata.metaType = paramtypes[bodyMetadata.index]
                 this.handleMetadatas[bodyMetadata.index] = paramValidator(originBodys, bodyMetadata)
             } else {
-                const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
                 if (Array.isArray(paramtypes)) {
                     const Entity = paramtypes[bodyMetadata.index]
-                    const result = entityValidator(Entity, originBodys)
-                    if (result) this.handleMetadatas[bodyMetadata.index] = result
+                    const entite =  Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, Entity)
+                    if (entite) {
+                        const result = entityValidator(Entity, originBodys)
+                        if (result) this.handleMetadatas[bodyMetadata.index] = result
+                    } else {
+                        if (typeof Entity === 'function') {
+                            if (originBodys.constructor !== Entity) {
+                                throw new HttpException({
+                                    statusCode: 400,
+                                    data: {
+                                        msg: `Parameters data expected ${Entity.name}, got ${typeof originBodys}.`
+                                    }
+                                })
+                            }
+                        }
+                        this.handleMetadatas[bodyMetadata.index] = originBodys
+                    }
                 }
             }
         }
@@ -80,15 +120,31 @@ export class Layer {
         const queryMetadata = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_QUERY, this.Controller, this.propertyKey)
         if (queryMetadata) {
             const originQuerys = context.query
-            const { rules, validations } = queryMetadata
-            if (rules || validations) {
+            const { rules, validations, key } = queryMetadata
+            const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
+            if (rules || validations || key) {
+                if (Array.isArray(paramtypes)) queryMetadata.metaType = paramtypes[queryMetadata.index]
                 this.handleMetadatas[queryMetadata.index] = paramValidator(originQuerys, queryMetadata)
             } else {
-                const paramtypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, this.Controller.prototype, this.propertyKey)
                 if (Array.isArray(paramtypes)) {
                     const Entity = paramtypes[queryMetadata.index]
-                    const result = entityValidator(Entity, originQuerys)
-                    if (result) this.handleMetadatas[queryMetadata.index] = result
+                    const entite =  Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, Entity)
+                    if (entite) {
+                        const result = entityValidator(Entity, originQuerys)
+                        if (result) this.handleMetadatas[queryMetadata.index] = result
+                    } else {
+                        if (typeof Entity === 'function') {
+                            if (originQuerys.constructor !== Entity) {
+                                throw new HttpException({
+                                    statusCode: 400,
+                                    data: {
+                                        msg: `Parameters data expected ${Entity.name}, got ${typeof originQuerys}.`
+                                    }
+                                })
+                            }
+                        }
+                        this.handleMetadatas[queryMetadata.index] = originQuerys
+                    }
                 }
             }
         }

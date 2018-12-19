@@ -2,19 +2,6 @@ import { Validation } from './Validation';
 import { HttpException } from '../core/HttpException';
 import { CType } from '../decorators';
 
-export function toValidator(param: string, key: string, validation: Validation<any>) {
-    const { message, validType } = validation
-    if (!validation.toValidate(param)) {
-        throw new HttpException({
-            statusCode: 400,
-            message: `Invalid parameter ${key}`,
-            data: {
-                msg: message || `Parameter ${key} expected ${validType.replace('is', '')}, got ${typeof param}.`
-            }
-        })
-    }
-}
-
 export function paramValidator(value: { [key: string]: any }, metadata: ParamMetadata) {
     const { rules, key } = metadata
     let { validations, metaType } = metadata
@@ -27,11 +14,11 @@ export function paramValidator(value: { [key: string]: any }, metadata: ParamMet
             if (Array.isArray(validations)) {
                 validations.forEach((validation) => {
                     if (typeof validation === 'function') validation = validation()
-                    toValidator(param, key, validation)
+                    validation.toValidate(param, key)
                 })
             } else {
                 if (typeof validations === 'function') validations = validations()
-                toValidator(param, key, validations)
+                validations.toValidate(param, key)
             }
         })
         return param
@@ -40,11 +27,11 @@ export function paramValidator(value: { [key: string]: any }, metadata: ParamMet
         if (Array.isArray(validations)) {
             validations.forEach((validation) => {
                 if (typeof validation === 'function') validation = validation()
-                toValidator(param, key, validation)
+                validation.toValidate(param, key)
             })
         } else {
             if (typeof validations === 'function') validations = validations()
-            toValidator(param, key, validations)
+            validations.toValidate(param, key)
         }
         if (typeof metaType === 'function') {
             if (metaType === Number && !isNaN(param)) {
@@ -52,7 +39,7 @@ export function paramValidator(value: { [key: string]: any }, metadata: ParamMet
             } else if (metaType !== Object) {
                 if (param.constructor !== metaType) {
                     throw new HttpException({
-                        message: `Invalid parameter ${this.propertyKey}`,
+                        statusCode: 400,
                         data: {
                             msg: `Parameter ${key} expected ${metaType.name}, got ${typeof param}.`
                         }
@@ -61,6 +48,31 @@ export function paramValidator(value: { [key: string]: any }, metadata: ParamMet
             }
         }
         return param;
+    } else if (key) {
+        let param = value[key]
+        if (metaType === Number && !isNaN(param)) {
+            param = Number(param)
+        } else if (typeof metaType === 'function') {
+            if (param && param.constructor !== metaType) {
+                throw new HttpException({
+                    statusCode: 400,
+                    data: {
+                        msg: `Parameter ${key} expected ${metaType.name}, got ${typeof param}.`
+                    }
+                })
+            }
+        }
+        return param
+    }
+    if (typeof metaType === 'function') {
+        if (value && value.constructor !== metaType) {
+            throw new HttpException({
+                statusCode: 400,
+                data: {
+                    msg: `Parameter ${key} expected ${metaType.name}, got ${typeof value}.`
+                }
+            })
+        }
     }
     return value
 }

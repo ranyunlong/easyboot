@@ -11,6 +11,55 @@ import { Validator } from '../validation/paramValidator';
 import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
 
+/**
+ * RquestQuery decorator
+ *
+ * The decorator apply to Contorllor handler.
+ * Example1
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping
+ *     public index(@RquestQuery('id', isInt) id: number) {
+ *        return id
+ *     }
+ * }
+ * ```
+ * Example2
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping
+ *     public index(@RquestQuery query: UserQueryEntity) {
+ *        return id
+ *     }
+ * }
+ * ```
+ * Example3
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping
+ *     public index(@RquestQuery('id') id: number) {
+ *        return id
+ *     }
+ * }
+ * ```
+ * Example4
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping
+ *     public index(@RquestQuery({id: isRequired}) query: any){
+ *          return query.id
+ *     }
+ * }
+ * ```
+ */
 export function RquestQuery(fields: { [key: string]: Validation<any> | Validator | Array<Validation<any> | Validator> | null }): ParameterDecorator;
 export function RquestQuery(key: string): ParameterDecorator;
 export function RquestQuery(key: string, validations: Validation<any> | Validator | Array<Validation<any> | Validator>): ParameterDecorator;
