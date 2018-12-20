@@ -5,10 +5,11 @@
  * @license MIT
  */
 
+import 'reflect-metadata'
+import * as pathToRegexp from 'path-to-regexp'
 import { CType } from '../decorators'
 import { RegExpOptions, Key } from 'path-to-regexp'
 import { MetadataEnums, RequestEnums } from '../enums';
-import * as pathToRegexp from 'path-to-regexp'
 import { HttpExceptionConstructor, HttpException } from '../core';
 
 export class Route {

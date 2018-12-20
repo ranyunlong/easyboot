@@ -5,8 +5,9 @@
  * @license MIT
  */
 
-import { MetadataEnums } from '../enums';
+import 'reflect-metadata';
 import { CType } from '../decorators';
+import { MetadataEnums } from '../enums';
 import { HttpException } from '../core';
 
 export function entityValidator(Entity: CType, data: any) {

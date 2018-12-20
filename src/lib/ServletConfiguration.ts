@@ -4,9 +4,9 @@
  * @copyright Ranyunlong
  * @license MIT
  */
-import { Env } from './core/EasyBootServlet'
-import { ServerOptions } from 'https'
-import { RegExpOptions } from 'path-to-regexp'
+import { Env } from './core';
+import { ServerOptions } from 'https';
+import { RegExpOptions } from 'path-to-regexp';
 import { BodyParserService } from './core/BodyParserService';
 
 export class ServletConfiguration {

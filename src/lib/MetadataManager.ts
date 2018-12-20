@@ -5,11 +5,12 @@
  * @license MIT
  */
 
-import { CType } from './decorators';
-import { MetadataEnums, StackTraceEnums } from './enums';
-import { EasyBootServlet } from './core';
+import 'reflect-metadata';
 import chalk from 'chalk';
-import { StackTrace } from './StackTrace/StackTrace';
+import { CType } from './decorators';
+import { EasyBootServlet } from './core';
+import { StackTrace } from './StackTrace';
+import { MetadataEnums, StackTraceEnums } from './enums';
 
 export class MetadataManager {
     constructor(public application: EasyBootServlet, public rootModule: CType) {

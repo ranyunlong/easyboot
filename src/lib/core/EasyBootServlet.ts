@@ -5,6 +5,7 @@
  * @license MIT
  */
 
+import 'reflect-metadata'
 import * as EventEmitter from 'events'
 import * as statuses from 'statuses'
 import * as https from 'https'

@@ -5,6 +5,7 @@
  * @license MIT
  */
 
+import 'reflect-metadata'
 import { Route } from './Route';
 import { RequestEnums, MetadataEnums } from '../enums';
 import { Key } from 'path-to-regexp'

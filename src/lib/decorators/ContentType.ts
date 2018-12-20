@@ -6,6 +6,7 @@
  */
 
 import { MetadataEnums } from '../enums';
+import 'reflect-metadata'
 
 /**
  * ContentType decorator

@@ -7,6 +7,7 @@
 
 import { MetadataEnums } from '../enums';
 import { HttpException, HttpExceptionConstructor } from '../core';
+import 'reflect-metadata'
 
 /**
  * ExceptionCapture decorator

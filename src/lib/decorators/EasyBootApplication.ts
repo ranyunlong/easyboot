@@ -7,6 +7,7 @@
 
 import { CType } from './Module'
 import { MetadataEnums } from '../enums';
+import 'reflect-metadata'
 
 /**
  * EasyBootApplication decorator

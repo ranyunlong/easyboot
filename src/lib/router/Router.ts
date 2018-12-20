@@ -5,13 +5,14 @@
  * @license MIT
  */
 
-import { RegExpOptions } from 'path-to-regexp'
-import { CType } from '../decorators';
-import { MetadataEnums, RequestEnums } from '../enums';
-import { Route } from './Route';
-import { Context } from '../core/Context';
+import 'reflect-metadata'
 import { Layer } from './Layer';
 import { Stack } from './Stack';
+import { Route } from './Route';
+import { CType } from '../decorators';
+import { Context } from '../core/Context';
+import { RegExpOptions } from 'path-to-regexp'
+import { MetadataEnums, RequestEnums } from '../enums';
 import EasyBootServlet from '../core/EasyBootServlet';
 
 export class Router {
