@@ -8,6 +8,7 @@
 import { MetadataEnums, PREFIX, StackTraceEnums } from '../enums'
 import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
+import 'reflect-metadata';
 
 const { CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS } = MetadataEnums.Module
 const metadataKeys = [CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS]
@@ -60,7 +61,6 @@ export function Module(metadata: ModuleMetadata): ClassDecorator {
             metadata.controllers.forEach((Controller) => {
                 const isController = Reflect.getMetadata(MetadataEnums.Controller.IS_CONTROLLER, Controller)
                 if (!isController) {
-                    // throw new DecoratorException(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`, Controller.name)
                     const error = new StackTrace(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`)
                     error.setStackTraceInfo(StackTraceEnums.DECORATOR.MODULE, target)
                     const originCode = error.getCode(/controllers[\s]*\:[\s]*\[[\r\n\s\,\w]*\]/)
