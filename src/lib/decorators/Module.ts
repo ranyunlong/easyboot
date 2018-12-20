@@ -12,6 +12,25 @@ import chalk from 'chalk';
 const { CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS } = MetadataEnums.Module
 const metadataKeys = [CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS]
 
+/**
+ * Module decorator
+ *
+ * The decorator apply to Module.
+ *
+ * Example
+ * ```
+ * @Module({
+ *     imports: [
+ *         AdminModule
+ *    ],
+ *     providers: [],
+ *    controllers: [
+ *        IndexController
+ *    ]
+ * })
+ * export class AppModule {}
+ * ```
+ */
 export function Module(metadata: ModuleMetadata): ClassDecorator {
     return (target: any): void => {
         StackTrace.defineModule(target)
@@ -45,7 +64,6 @@ export function Module(metadata: ModuleMetadata): ClassDecorator {
                     const error = new StackTrace(`Invalid controller, Your must be use ${chalk.yellowBright(`@Controller`)} decorator in ${chalk.yellowBright(Controller.name)}.`)
                     error.setStackTraceInfo(StackTraceEnums.DECORATOR.MODULE, target)
                     const originCode = error.getCode(/controllers[\s]*\:[\s]*\[[\r\n\s\,\w]*\]/)
-                    console.log(originCode)
                     const replaceValue = chalk.bgRedBright(Controller.name)
                     error.replace(originCode, originCode.replace(Controller.name, replaceValue))
                     error.resetCodeTarget(replaceValue)

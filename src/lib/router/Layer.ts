@@ -13,7 +13,7 @@ import { Context } from '../core/Context';
 import { paramValidator } from '../validation/paramValidator';
 import { BodyParserService } from '../core/BodyParserService';
 import { entityValidator } from '../validation/entityValidator';
-import { HttpException } from '../core';
+import { HttpException, HttpExceptionConstructor } from '../core';
 
 export class Layer {
     public readonly method: RequestEnums.METHOD;
@@ -24,9 +24,19 @@ export class Layer {
     public readonly Controller: CType;
     public readonly Mod: CType;
     public readonly handleMetadatas: any[] = [];
+    public readonly statusCode: number;
+    public readonly statusMessage: string;
+    public readonly exceptionCapture: HttpExceptionConstructor;
+    public readonly exception: HttpException;
+    public readonly contentType: string;
     constructor(route: Route) {
-        const { Module, method, routePath, regexp, pathParamsKeys, Controller, propertyKey } = route
+        const { Module, method, routePath, regexp, pathParamsKeys, Controller, propertyKey, statusCode, exception, exceptionCapture, statusMessage, contentType } = route
         this.method = method
+        this.statusMessage = statusMessage
+        this.statusCode = statusCode
+        this.exceptionCapture = exceptionCapture
+        this.exception = exception
+        this.contentType = contentType
         this.path = routePath
         this.regexp = regexp
         this.pathParamsKeys = pathParamsKeys
@@ -56,7 +66,7 @@ export class Layer {
                         const result = entityValidator(Entity, originParams)
                         if (result) this.handleMetadatas[paramMetadata.index] = result
                     } else {
-                        if (typeof Entity === 'function') {
+                        if (typeof Entity === 'function' && Entity !== Object) {
                             if (originParams.constructor !== Entity) {
                                 throw new HttpException({
                                     statusCode: 400,
@@ -99,7 +109,7 @@ export class Layer {
                         const result = entityValidator(Entity, originBodys)
                         if (result) this.handleMetadatas[bodyMetadata.index] = result
                     } else {
-                        if (typeof Entity === 'function') {
+                        if (typeof Entity === 'function' && Entity !== Object) {
                             if (originBodys.constructor !== Entity) {
                                 throw new HttpException({
                                     statusCode: 400,
@@ -133,7 +143,7 @@ export class Layer {
                         const result = entityValidator(Entity, originQuerys)
                         if (result) this.handleMetadatas[queryMetadata.index] = result
                     } else {
-                        if (typeof Entity === 'function') {
+                        if (typeof Entity === 'function' && Entity !== Object) {
                             if (originQuerys.constructor !== Entity) {
                                 throw new HttpException({
                                     statusCode: 400,

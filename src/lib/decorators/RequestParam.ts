@@ -11,6 +11,55 @@ import { Validator } from '../validation/paramValidator';
 import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
 
+/**
+ * RequestParam decorator
+ *
+ * The decorator apply to Contorllor handler.
+ * Example1
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PostMapping(':id/:name')
+ *     public index(@RequestParam('id', isInt) id: number) {
+ *        return id
+ *     }
+ * }
+ * ```
+ * Example2
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PostMapping(':id')
+ *     public index(@RequestParam paramEntity: ParamEntity) {
+ *        return paramEntity
+ *     }
+ * }
+ * ```
+ * Example3
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PostMapping(':id')
+ *     public index(@RequestParam('id') id: number) {
+ *        return id
+ *     }
+ * }
+ * ```
+ * Example4
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @PostMapping(':id')
+ *     public index(@RequestParam({id: isRequired}) params: any){
+ *          return params.id
+ *     }
+ * }
+ * ```
+ */
 export function RequestParam(fields: { [key: string]: Validation<any> | Validator | Array<Validation<any> | Validator> | null }): ParameterDecorator;
 export function RequestParam(key: string): ParameterDecorator;
 export function RequestParam(key: string, validations: Validation<any> | Validator | Array<Validation<any> | Validator>): ParameterDecorator;
@@ -20,7 +69,6 @@ export function RequestParam(...args: any[]): any {
         StackTrace.defineControllerParameter(target.constructor, propertyKey)
         const [key, validations] = args
         if (args.length === 2) {
-            console.log(validations)
             Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_PARAM, {
                 index: parameterIndex,
                 key,

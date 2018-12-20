@@ -9,6 +9,7 @@ import { CType } from '../decorators'
 import { RegExpOptions, Key } from 'path-to-regexp'
 import { MetadataEnums, RequestEnums } from '../enums';
 import * as pathToRegexp from 'path-to-regexp'
+import { HttpExceptionConstructor, HttpException } from '../core';
 
 export class Route {
     public basePath: string;
@@ -19,6 +20,11 @@ export class Route {
     public pathParamsKeys: Key[] = []
     public regexp: RegExp;
     public routePath: string;
+    public statusMessage: string;
+    public statusCode: number;
+    public exceptionCapture: HttpExceptionConstructor;
+    public exception: HttpException;
+    public contentType: string;
     constructor(
         public Controller: CType,
         public Module: CType,
@@ -32,6 +38,11 @@ export class Route {
             this.basePath = path
         }
         const { path, method, propertyKey } = metadata
+        this.statusMessage = Reflect.getMetadata(MetadataEnums.Controller.STATUS_MESSAGE, Controller, propertyKey)
+        this.statusCode = Reflect.getMetadata(MetadataEnums.Controller.STATUS_CODE, Controller, propertyKey)
+        this.exceptionCapture = Reflect.getMetadata(MetadataEnums.Controller.EXCEPTION_CAPTURE, Controller, propertyKey)
+        this.exception = Reflect.getMetadata(MetadataEnums.Controller.EXCEPTION, Controller, propertyKey)
+        this.contentType = Reflect.getMetadata(MetadataEnums.Controller.CONTENT_TYPE, Controller, propertyKey)
         this.path = path
         this.method = method
         this.propertyKey = propertyKey

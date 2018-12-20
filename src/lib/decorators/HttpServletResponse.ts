@@ -10,6 +10,25 @@ import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
 import { Response } from '../core';
 
+/**
+ * HttpServletResponse decorator
+ *
+ * The decorator apply to Contorllor handler.
+ *
+ * Example
+ * ```
+ * @Controller
+ * @RequestMapping('admin')
+ * export class IndexController {
+ *     @GetMapping
+ *     public index(@HttpServletResponse response: Request) {
+ *        response.type = 'application/json'
+ *        response.status = 200
+ *        return {}
+ *     }
+ * }
+ * ```
+ */
 export function HttpServletResponse(target: Object, propertyKey: string, parameterIndex: number): void {
     StackTrace.defineControllerParameter(target.constructor, propertyKey)
     const paramTypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, target, propertyKey)

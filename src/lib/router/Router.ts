@@ -21,13 +21,6 @@ export class Router {
         const requestMapping = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_MAPPING, Controller)
         if (Array.isArray(requestMapping)) {
             requestMapping.forEach((metadata) => {
-                if (/(GET|DELETE|HEAD|COPY|PURGE|UNLOCK)/.test(metadata.method)) {
-                    const requestbody = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_BODY, Controller, metadata.propertyKey)
-                    const requestfile = Reflect.getMetadata(MetadataEnums.Controller.REQUEST_FILE, Controller, metadata.propertyKey)
-                    if (requestbody || requestfile) {
-                        // show error
-                    }
-                }
                 this.routes.push(new Route(Controller, Module, this.configs, metadata))
             })
         }
@@ -43,6 +36,14 @@ export class Router {
     public async handleResponse(context: Context) {
         const stack = this.matchRoute(context.path, context.method as RequestEnums.METHOD)
         for (let layer of stack) {
+            this.application.once('err', (error) => {
+                if (layer.exceptionCapture) {
+                    this.application.exception(context, new layer.exceptionCapture(error))
+                }
+                if (layer.exception) {
+                    this.application.exception(context, layer.exception)
+                }
+            })
             if (context.response.body) return;
             await layer.parseParamMetadata(context)
             await layer.parseQueryMetadata(context)
@@ -59,6 +60,9 @@ export class Router {
             const data = await new Controller(...metadata)[propertyKey](...layer.handleMetadatas)
             if (data) {
                 context.body = data
+                if (layer.statusCode) context.response.status = layer.statusCode
+                if (layer.statusMessage) context.response.message = layer.statusMessage
+                if (layer.contentType) context.response.type = layer.contentType
             }
         }
     }

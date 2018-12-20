@@ -197,9 +197,10 @@ export abstract class EasyBootServlet extends EventEmitter {
      * exception
      * Exception handler method
      */
-    private exception(context: Context, error: HttpException) {
+    public exception(context: Context, error: HttpException) {
         if (this.listeners('err').length > 0) {
             this.emit('err', error)
+            return;
         } else {
             if (this.env === 'development' && error.name !== 'HttpException') {
                 console.error(error.stack)

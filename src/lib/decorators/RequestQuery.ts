@@ -1,5 +1,5 @@
 /**
- * @module RquestQuery
+ * @module RequestQuery
  * @author ranyunlong<549510622@qq.com>
  * @copyright Ranyunlong
  * @license MIT
@@ -12,7 +12,7 @@ import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
 
 /**
- * RquestQuery decorator
+ * RequestQuery decorator
  *
  * The decorator apply to Contorllor handler.
  * Example1
@@ -21,7 +21,7 @@ import chalk from 'chalk';
  * @RequestMapping('admin')
  * export class IndexController {
  *     @GetMapping
- *     public index(@RquestQuery('id', isInt) id: number) {
+ *     public index(@RequestQuery('id', isInt) id: number) {
  *        return id
  *     }
  * }
@@ -32,7 +32,7 @@ import chalk from 'chalk';
  * @RequestMapping('admin')
  * export class IndexController {
  *     @GetMapping
- *     public index(@RquestQuery query: UserQueryEntity) {
+ *     public index(@RequestQuery query: UserQueryEntity) {
  *        return id
  *     }
  * }
@@ -43,7 +43,7 @@ import chalk from 'chalk';
  * @RequestMapping('admin')
  * export class IndexController {
  *     @GetMapping
- *     public index(@RquestQuery('id') id: number) {
+ *     public index(@RequestQuery('id') id: number) {
  *        return id
  *     }
  * }
@@ -54,17 +54,17 @@ import chalk from 'chalk';
  * @RequestMapping('admin')
  * export class IndexController {
  *     @GetMapping
- *     public index(@RquestQuery({id: isRequired}) query: any){
+ *     public index(@RequestQuery({id: isRequired}) query: any){
  *          return query.id
  *     }
  * }
  * ```
  */
-export function RquestQuery(fields: { [key: string]: Validation<any> | Validator | Array<Validation<any> | Validator> | null }): ParameterDecorator;
-export function RquestQuery(key: string): ParameterDecorator;
-export function RquestQuery(key: string, validations: Validation<any> | Validator | Array<Validation<any> | Validator>): ParameterDecorator;
-export function RquestQuery(target: Object, propertyKey: string, parameterIndex: number): void;
-export function RquestQuery(...args: any[]): any {
+export function RequestQuery(key: string): ParameterDecorator;
+export function RequestQuery(key: string, validations: Validation<any> | Validator | Array<Validation<any> | Validator>): ParameterDecorator;
+export function RequestQuery(fields: { [key: string]: Validation<any> | Validator | Array<Validation<any> | Validator> | null }): ParameterDecorator;
+export function RequestQuery(target: Object, propertyKey: string, parameterIndex: number): void;
+export function RequestQuery(...args: any[]): any {
     function decorator(target: Object, propertyKey: string, parameterIndex: number): void {
         StackTrace.defineControllerParameter(target.constructor, propertyKey)
         const [key, validations] = args
@@ -82,7 +82,7 @@ export function RquestQuery(...args: any[]): any {
                 }, target.constructor, propertyKey)
             } else if (typeof key === 'object') {
                 if (Array.isArray(key)) {
-                    const error = new StackTrace(`Invalid fields in ${chalk.yellowBright('@RquestQuery')} decorator`)
+                    const error = new StackTrace(`Invalid fields in ${chalk.yellowBright('@RequestQuery')} decorator`)
                     error.setStackTraceInfo(StackTraceEnums.DECORATOR.PARAMETER, target.constructor, propertyKey)
                     const originCode = error.getCode(RegExp(`${propertyKey}[\\s]*\\([\\r\\n\\s\\w\\@\\:\\,\\$\\(\\)\\{\\}\\'\\"\\[\\]]*\\)`))
                     const code = originCode
@@ -90,8 +90,8 @@ export function RquestQuery(...args: any[]): any {
                         .replace(/\r\n/g, '')
                         .replace(/\)$/, '')
                         .split(',').map((value) => value.replace(/^[\s]*/, ''))
-                    const value = chalk.redBright('@RquestQuery')
-                    const replaceValue = originCode.replace(code[parameterIndex], code[parameterIndex].replace('@RquestQuery', value))
+                    const value = chalk.redBright('@RequestQuery')
+                    const replaceValue = originCode.replace(code[parameterIndex], code[parameterIndex].replace('@RequestQuery', value))
                     error.replace(originCode, replaceValue)
                     error.resetCodeTarget(value)
                     throw error

@@ -1,4 +1,4 @@
-import { RequestMapping, GetMapping, RquestQuery, RequestBody, PostMapping, DeleteMapping, RequestParam, isJSON, isInt, isRequired, Controller } from '../../../../../src';
+import { RequestMapping, GetMapping, RequestQuery, RequestBody, PostMapping, DeleteMapping, RequestParam, isJSON, isInt, isRequired, Controller } from '../../../../../src';
 import { UserQueryEntity } from '../entites/UserQueryEntity';
 import { UserEntity } from '../entites/UserEntity';
 import { UserService } from '../../AdminModule/services/UserService';
@@ -9,12 +9,12 @@ export class IndexController {
     constructor(private userService: UserService) {}
 
     @GetMapping
-    public list(@RquestQuery query: UserQueryEntity) {
+    public list(@RequestQuery query: UserQueryEntity) {
         return query;
     }
 
     @GetMapping
-    public list1(@RquestQuery({id: isInt}) query: UserQueryEntity) {
+    public list1(@RequestQuery({id: isInt}) query: UserQueryEntity) {
         return query;
     }
 
@@ -29,7 +29,7 @@ export class IndexController {
     }
 
     @DeleteMapping('/delete')
-    public async delete(@RquestQuery('id', isInt) id: number) {
+    public async delete(@RequestQuery('id', isInt) id: number) {
         return id;
     }
 }
