@@ -15,6 +15,7 @@ import * as httpErrors from 'http-errors'
 import { IncomingMessage, ServerResponse } from 'http'
 import { Request } from './Request';
 import { Response } from './Response';
+import { Session } from './Session';
 const COOKIES = Symbol('context#cookies');
 
 export class Context {
@@ -35,7 +36,7 @@ export class Context {
 
     public [COOKIES]: Cookies;
 
-    public session: any;
+    public session: Session<{[key: string]: any}>;
 
     // respond state
     public respond: boolean = true

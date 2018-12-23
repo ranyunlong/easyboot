@@ -21,6 +21,7 @@ export namespace MetadataEnums {
         IS_CONTROLLER = 'easyboot:is:controller',
         RESPONSE = 'easyboot:response',
         REQUEST = 'easyboot:request',
+        SESSION = 'easyboot:session',
         REQUEST_MAPPING = 'easyboot:request:mapping',
         REQUEST_PARAM = 'easyboot:request:param',
         REQUEST_BODY = 'easyboot:request:body',

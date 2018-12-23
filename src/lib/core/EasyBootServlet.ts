@@ -19,9 +19,10 @@ import { isJSON } from './utils'
 import { HttpException } from './HttpException';
 import { MetadataEnums } from '../enums';
 import { Router } from '../router';
-import { ServletConfiguration } from '../ServletConfiguration';
+import { ServletConfiguration } from '../configurations';
 import { MetadataManager } from '../MetadataManager';
 import { BodyParserService } from './BodyParserService';
+import { SessionService } from './SessionService';
 
 export abstract class EasyBootServlet extends EventEmitter {
     public proxy: boolean;
@@ -32,25 +33,34 @@ export abstract class EasyBootServlet extends EventEmitter {
     public router: Router;
     public metadataManager: MetadataManager;
     public bodyParserService: BodyParserService;
+    public sessionService: SessionService;
 
     /**
      * constructor
      */
-    constructor(public configs: ServletConfiguration = {}) {
+    constructor(public configs: ServletConfiguration = new ServletConfiguration()) {
         super()
         const metadata = MetadataEnums.Base
         const MetadataConfiguration = Reflect.getMetadata(metadata.CONFIGURATION, this.constructor)
         if (typeof MetadataConfiguration === 'function') {
             this.configs = Object.assign(this.configs, new MetadataConfiguration())
-        } else {
-            this.configs = Object.assign(new ServletConfiguration(), this.configs)
         }
-        const { port, host, keys = ['easyboot:sess'], subdomainOffset = 2, env = 'development', router, bodyparse } = configs
-        this.bodyParserService = new BodyParserService(bodyparse)
+        const {
+            port,
+            host,
+            keys = ['easyboot:sess'],
+            subdomainOffset = 2,
+            env = 'development',
+            router,
+            body,
+            session
+        } = configs
         this.keys = keys
         this.subdomainOffset = subdomainOffset
         this.env = env
         process.env.NODE_ENV = env
+        this.bodyParserService = new BodyParserService(body)
+        this.sessionService = new SessionService(this, session)
         if (Reflect.hasMetadata(metadata.EASYBOOTMODULE, this.constructor)) {
             const rootModule = Reflect.getMetadata(metadata.EASYBOOTMODULE, this.constructor)
             this.router = new Router(this, router)
@@ -110,8 +120,15 @@ export abstract class EasyBootServlet extends EventEmitter {
         // Create http/https context
         const context = this.createContext(request, response)
         try {
+            // Get session
+            await this.sessionService.get(context)
+            // handler custom hooks
             if (typeof this.run === 'function') await this.run(context)
+            // handler controller
             await this.router.handleResponse(context)
+            // Set session
+            await this.sessionService.set(context)
+            // response
             await this.respond(context)
             /**
              * Handler not found

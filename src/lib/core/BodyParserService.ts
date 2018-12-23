@@ -14,6 +14,7 @@ import chalk from 'chalk';
 import { UploadOptions } from '../decorators';
 import { HttpException } from './HttpException';
 import { contentType } from 'mime-types'
+import { BodyParseConfiguration, FormMidableConfiguration } from '../configurations';
 
 function showWarn() {
     if (process.env.NODE_ENV === 'development') {
@@ -43,13 +44,13 @@ export class BodyParserService {
     // Toggles co-body strict mode; if set to true - only parses arrays or objects, default true
     public readonly jsonStrict: boolean;
     // Options to pass to the formidable multipart parser
-    public readonly formidable: BodyParserService.FormMidable;
+    public readonly formidable: FormMidableConfiguration;
     //  If enabled, don't parse GET, HEAD, DELETE requests, default true
     public readonly strict: boolean;
     // // Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
     public readonly uploadDir: string;
 
-    constructor(public opts: BodyParserService.Options = {}) {
+    constructor(public opts: BodyParseConfiguration = new BodyParseConfiguration()) {
         this.encoding = opts.encoding || 'utf-8';
         this.formLimit = (opts.formLimit || 56) + 'kb'
         this.json = opts.json || true
@@ -106,7 +107,7 @@ export class BodyParserService {
             form.encoding = this.encoding
             form.maxFileSize = 2 * 1024 * 1024
             const opts = { ...this.formidable, ...options }
-            Object.keys(opts).forEach((key: keyof BodyParserService.FormMidable) => {
+            Object.keys(opts).forEach((key: keyof FormMidableConfiguration) => {
                 form[key] = opts[key]
             })
             form.onPart = function(part) {
@@ -155,59 +156,5 @@ export class BodyParserService {
                 })
             })
         })
-    }
-}
-
-export namespace BodyParserService {
-    export interface Options {
-        // The byte (if integer) limit of the JSON body, default 1mb
-        jsonLimit?: string
-        // The byte (if integer) limit of the form body, default 56kb
-        formLimit?: string;
-        // The byte (if integer) limit of the text body, default 56kb
-        textLimit?: string;
-        // Sets encoding for incoming form fields, default utf-8
-        encoding?: 'utf-8' | string;
-        // Parse multipart bodies, default false
-        multipart?: boolean;
-        // Parse urlencoded bodies, default true
-        urlencoded?: boolean;
-        // Parse text bodies, default true
-        text?: boolean;
-        // Parse json bodies, default true
-        json?: boolean;
-        // Toggles co-body strict mode; if set to true - only parses arrays or objects, default true
-        jsonStrict?: boolean;
-        // Options to pass to the formidable multipart parser
-        formidable?: BodyParserService.FormMidable;
-        //  If enabled, don't parse GET, HEAD, DELETE requests, default true
-        strict?: boolean;
-        // Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
-        uploadDir?: string;
-    }
-
-    export interface FormMidable {
-        // Sets encoding for incoming form fields, default utf-8.
-        encoding?: string;
-        // Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
-        uploadDir?: string;
-         // If you want the files written to form.uploadDir to include the extensions of the original files, set this property to true.
-        keepExtensions?: boolean;
-        // Either 'multipart' or 'urlencoded' depending on the incoming request.
-        type?: 'multipart' | 'urlencoded';
-        // Limits the number of fields that the querystring parser will decode. Defaults to 1000 (0 for unlimited).
-        maxFields?: number;
-        // Limits the size of uploaded file. If this value is exceeded, an 'error' event is emitted. The default size is 2MB.
-        maxFileSize?: number;
-        // Limits the amount of memory all fields together (except files) can allocate in bytes. If this value is exceeded, an 'error' event is emitted. The default size is 20MB.
-        maxFieldsSize?: number;
-        // If you want checksums calculated for incoming files, set this to either 'sha1' or 'md5'.
-        hash?: 'sha1' | 'md5' | boolean;
-        // If this option is enabled, when you call form.parse, the files argument will contain arrays of files for inputs which submit multiple files using the HTML5 multiple attribute.
-        multiples?: boolean;
-        // The amount of bytes received for this form so far.
-        bytesReceived?: number;
-        // The expected number of bytes in this form.
-        bytesExpected?: number;
     }
 }

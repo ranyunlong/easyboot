@@ -178,4 +178,13 @@ export class Layer {
             this.handleMetadatas[index] = context.response
         }
     }
+
+    public async parseSessionMetadata(context: Context) {
+        const metadata = Reflect.getMetadata(MetadataEnums.Controller.SESSION, this.Controller, this.propertyKey)
+        if (metadata) {
+            const { index } = metadata
+            if (typeof index !== 'number') return;
+            this.handleMetadatas[index] = context.session
+        }
+    }
 }

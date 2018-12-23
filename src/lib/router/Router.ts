@@ -68,6 +68,9 @@ export class Router {
             // Inject Response Object
             await layer.parseResponseMetadata(context)
 
+            // Inject Session Object
+            await layer.parseSessionMetadata(context)
+
             const { Controller, propertyKey, Mod } = layer
             // Controllr inject service
             let metadata = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, Controller) || []

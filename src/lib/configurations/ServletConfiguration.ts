@@ -4,10 +4,11 @@
  * @copyright Ranyunlong
  * @license MIT
  */
-import { Env } from './core';
+import { Env } from '../core';
 import { ServerOptions } from 'https';
-import { RegExpOptions } from 'path-to-regexp';
-import { BodyParserService } from './core/BodyParserService';
+import { RouterConfiguration } from './RouterConfiguration';
+import { BodyParseConfiguration } from './BodyParseConfiguration';
+import { SessionConfiguration } from './SessionConfiguration';
 
 export class ServletConfiguration {
     // Server http port config
@@ -17,7 +18,7 @@ export class ServletConfiguration {
     public host?: string = 'localhost'
 
     // Server keys config
-    public keys?: string[] = []
+    public keys?: string[] = ['easyboot:sess']
 
     // Server https config
     public ssl?: ServerOptions;
@@ -35,8 +36,10 @@ export class ServletConfiguration {
     public silent?: boolean;
 
     // Server router RegExp config
-    public router?: RegExpOptions = {}
+    public router?: RouterConfiguration = new RouterConfiguration()
 
     // Server body parse config;
-    public bodyparse?: BodyParserService.Options = {}
+    public body?: BodyParseConfiguration = new BodyParseConfiguration()
+
+    public session?: SessionConfiguration = new SessionConfiguration()
 }
