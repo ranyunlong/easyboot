@@ -12,7 +12,7 @@ import { Key } from 'path-to-regexp'
 import { CType } from '../decorators';
 import { Context } from '../core/Context';
 import { paramValidator } from '../validation/paramValidator';
-import { BodyParserService } from '../core/BodyParserService';
+import { BodyParserService } from '../core/services/BodyParserService';
 import { entityValidator } from '../validation/entityValidator';
 import { HttpException, HttpExceptionConstructor } from '../core';
 

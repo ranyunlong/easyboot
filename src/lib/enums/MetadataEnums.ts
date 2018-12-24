@@ -39,4 +39,8 @@ export namespace MetadataEnums {
         CONTROLLERS = 'easyboot:controllers',
         EXPORTS = 'easyboot:exports'
     }
+    export enum Entity {
+        DEFAULT = 'easyboot:entity:default',
+        ARRAY = 'easyboot:entity:array'
+    }
 }

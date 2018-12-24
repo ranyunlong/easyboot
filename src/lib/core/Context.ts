@@ -615,8 +615,8 @@ export class Context {
      *
      * @access public
      */
-    public accepts(args: string | string[]): string[] | string | false;
-    public accepts(...args: string[]): string[] | string | false {
+    public accepts(...args: string[]): string[] | string | false;
+    public accepts(args: string | string[]): string[] | string | false {
         return this.request.accepts(args)
     }
 
@@ -630,8 +630,8 @@ export class Context {
      *
      * @access public
      */
-    public acceptsLanguages(args: string | string[]): string | false;
-    public acceptsLanguages(...args: string[]): string | false {
+    public acceptsLanguages(...args: string[]): string | false
+    public acceptsLanguages(args: string | string[]): string | false {
         return this.request.acceptsLanguages(args)
     }
 
@@ -645,8 +645,8 @@ export class Context {
      *
      * @access public
      */
-    public acceptsCharsets(args: string | string[]): string | false;
-    public acceptsCharsets(...args: string[]): string | false {
+    public acceptsCharsets(...args: string[]): string | false;
+    public acceptsCharsets(args: string | string[]): string | false {
         return this.request.acceptsCharsets(args)
     }
 
@@ -660,8 +660,8 @@ export class Context {
      *
      * @access public
      */
-    public acceptsEncodings(args: string | string[]): string | false;
-    public acceptsEncodings(...args: string[]): string | false {
+    public acceptsEncodings(...args: string[]): string | false;
+    public acceptsEncodings(args: string | string[]): string | false {
         return this.request.acceptsEncodings(args)
     }
 

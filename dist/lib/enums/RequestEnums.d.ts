@@ -1,0 +1,44 @@
+/**
+ * @namepace RequestEnums
+ * @author ranyunlong<549510622@qq.com>
+ * @copyright Ranyunlong
+ * @license MIT
+ */
+export declare namespace RequestEnums {
+    enum MAPPING {
+        GET = "GetMapping",
+        PUT = "PutMapping",
+        POST = "PostMapping",
+        HEAD = "HeadMapping",
+        PATCH = "PatchMapping",
+        DELETE = "DeleteMapping",
+        COPY = "CopyMapping",
+        OPTIONS = "OptionsMapping",
+        LINK = "LinkMapping",
+        UNLINK = "UnlinkMapping",
+        PURGE = "PurgeMapping",
+        LOCK = "LockMapping",
+        UNLOCK = "UnlockMapping",
+        PROPFIND = "PropfindMapping",
+        VIEW = "ViewMapping",
+        ALL = "RequestMapping"
+    }
+    enum METHOD {
+        GET = "GET",
+        PUT = "PUT",
+        POST = "POST",
+        HEAD = "HEAD",
+        PATCH = "PATCH",
+        DELETE = "DELETE",
+        COPY = "COPY",
+        OPTIONS = "OPTIONS",
+        LINK = "LINK",
+        UNLINK = "UNLINK",
+        PURGE = "PURGE",
+        LOCK = "LOCK",
+        UNLOCK = "UNLOCK",
+        PROPFIND = "PROPFIND",
+        VIEW = "VIEW",
+        ALL = "ALL"
+    }
+}

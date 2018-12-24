@@ -2,9 +2,9 @@ import {
     Controller,
     RequestMapping,
     GetMapping,
-    HttpServletRequest,
+    ServletRequest,
     Request,
-    HttpServletResponse,
+    ServletResponse,
     Response,
     PostMapping,
     RequestBody,
@@ -26,8 +26,8 @@ export class IndexController {
     }
     @GetMapping('/')
     public async index(
-        @HttpServletRequest request: Request,
-        @HttpServletResponse response: Response
+        @ServletRequest request: Request,
+        @ServletResponse response: Response
     ) {
         response.type = 'text/css'
         return this.userService.name

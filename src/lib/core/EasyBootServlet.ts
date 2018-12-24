@@ -21,19 +21,23 @@ import { MetadataEnums } from '../enums';
 import { Router } from '../router';
 import { ServletConfiguration } from '../configurations';
 import { MetadataManager } from '../MetadataManager';
-import { BodyParserService } from './BodyParserService';
-import { SessionService } from './SessionService';
+import { BodyParserService } from './services/BodyParserService';
+import { SessionService } from './services/SessionService';
+import { StaticService } from './services/StaticService';
+import { ProxyService } from './services/ProxyService';
 
 export abstract class EasyBootServlet extends EventEmitter {
-    public proxy: boolean;
-    public subdomainOffset: number = 2;
-    public env: Env = process.env.NODE_ENV as Env || 'development';
-    public silent: boolean;
-    public keys: string[];
-    public router: Router;
-    public metadataManager: MetadataManager;
-    public bodyParserService: BodyParserService;
-    public sessionService: SessionService;
+    public readonly proxy: boolean;
+    public readonly subdomainOffset: number = 2;
+    public readonly env: Env = process.env.NODE_ENV as Env || 'development';
+    public readonly silent: boolean;
+    public readonly keys: string[];
+    public readonly router: Router;
+    public readonly metadataManager: MetadataManager;
+    public readonly bodyParserService: BodyParserService;
+    public readonly sessionService: SessionService;
+    public readonly staticService: StaticService;
+    public readonly proxyService: ProxyService;
 
     /**
      * constructor
@@ -52,15 +56,19 @@ export abstract class EasyBootServlet extends EventEmitter {
             subdomainOffset = 2,
             env = 'development',
             router,
-            body,
-            session
+            bodyConfig,
+            sessionConfig,
+            staticConfig,
+            proxyTable
         } = configs
         this.keys = keys
         this.subdomainOffset = subdomainOffset
         this.env = env
         process.env.NODE_ENV = env
-        this.bodyParserService = new BodyParserService(body)
-        this.sessionService = new SessionService(this, session)
+        this.bodyParserService = new BodyParserService(bodyConfig)
+        this.sessionService = new SessionService(this, sessionConfig)
+        if (staticConfig) this.staticService = new StaticService(staticConfig)
+        if (proxyTable) this.proxyService = new ProxyService(proxyTable)
         if (Reflect.hasMetadata(metadata.EASYBOOTMODULE, this.constructor)) {
             const rootModule = Reflect.getMetadata(metadata.EASYBOOTMODULE, this.constructor)
             this.router = new Router(this, router)
@@ -124,8 +132,14 @@ export abstract class EasyBootServlet extends EventEmitter {
             await this.sessionService.get(context)
             // handler custom hooks
             if (typeof this.run === 'function') await this.run(context)
+            // handler proxy service
+            if (this.proxyService) await this.proxyService.handleResponse(context)
+            // handler static service
+            if (this.staticService) await this.staticService.handleResponse(context)
             // handler controller
             await this.router.handleResponse(context)
+            // handler static service defer
+            if (this.staticService) await this.staticService.handleResponseDefer(context)
             // Set session
             await this.sessionService.set(context)
             // response
@@ -220,7 +234,7 @@ export abstract class EasyBootServlet extends EventEmitter {
             this.emit('err', error)
             return;
         } else {
-            if (this.env === 'development' && error.name !== 'HttpException') {
+            if (this.env === 'development' && error.name !== 'HttpException' && !this.silent) {
                 console.error(error.stack)
             }
         }

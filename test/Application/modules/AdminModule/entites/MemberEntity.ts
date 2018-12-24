@@ -1,6 +1,6 @@
-import { EasyBootEntity, IsLength, IsRequired, IsInt } from '../../../../../src';
+import { IsLength, IsRequired, IsInt } from '../../../../../src';
 
-export class MemberEntity extends EasyBootEntity {
+export class MemberEntity {
     @IsInt('id必须位整数')
     public id: string;
 

@@ -4,42 +4,76 @@
  * @copyright Ranyunlong
  * @license MIT
  */
+
 import { Env } from '../core';
 import { ServerOptions } from 'https';
 import { RouterConfiguration } from './RouterConfiguration';
 import { BodyParseConfiguration } from './BodyParseConfiguration';
 import { SessionConfiguration } from './SessionConfiguration';
+import { StaticConfiguration } from './StaticConfiguration';
+import { ProxyTable } from '../core/services/ProxyService';
 
 export class ServletConfiguration {
-    // Server http port config
+    /**
+     * Server http port config
+     */
     public port?: number = 3000
 
-    // Server http host config
+    /**
+     * Server http host
+     */
     public host?: string = 'localhost'
 
-    // Server keys config
+    /**
+     * Set signed cookie keys.
+     */
     public keys?: string[] = ['easyboot:sess']
 
     // Server https config
     public ssl?: ServerOptions;
 
-    // Server env mode config
+    /**
+     * defaulting to the NODE_ENV or "development"
+     */
     public env?: Env = 'development'
 
-    // Server proxy config
+    /**
+     * when true proxy header fields will be trusted
+     */
     public proxy?: boolean;
 
-    // Server subdomainOffset config
+    /**
+     * offset of .subdomains to ignore [2]
+     */
     public subdomainOffset?: number = 2
 
-    // Server silent config
-    public silent?: boolean;
-
-    // Server router RegExp config
+    /**
+     * Server router config
+     */
     public router?: RouterConfiguration = new RouterConfiguration()
 
-    // Server body parse config;
-    public body?: BodyParseConfiguration = new BodyParseConfiguration()
+    /**
+     * Server body parse config;
+     */
+    public bodyConfig?: BodyParseConfiguration = new BodyParseConfiguration()
 
-    public session?: SessionConfiguration = new SessionConfiguration()
+    /**
+     * By default outputs all errors to stderr unless silent is true.
+     */
+    public silent: boolean;
+
+    /**
+     * Server session config
+     */
+    public sessionConfig?: SessionConfiguration = new SessionConfiguration()
+
+    /**
+     * Server static config
+     */
+    public staticConfig?: StaticConfiguration;
+
+    /**
+     * Server proxy config
+     */
+    public proxyTable?: ProxyTable;
 }

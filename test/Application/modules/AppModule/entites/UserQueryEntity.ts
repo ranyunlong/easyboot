@@ -1,4 +1,4 @@
-import { EasyBootEntity, IsInt, IsRequired, isRequired } from '../../../../../src';
+import { IsInt, IsRequired, isRequired } from '../../../../../src';
 
 export class UserQueryEntity {
     @IsInt('用户id必须为整数')
