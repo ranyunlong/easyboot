@@ -1,7 +1,7 @@
 import { MetadataEnums } from '../enums';
 import { EasyBootEntity } from '../Entity';
 
-export function Entity(entity: EasyBootEntity, entityType: EntityType = 'array'): ClassDecorator;
+export function Entity(entity: EasyBootEntity, entityType: EntityType): ClassDecorator;
 export function Entity<TFunction extends Function>(target: TFunction): void | TFunction;
 export function Entity(...args: any []): any {
     if (args.length === 2) {

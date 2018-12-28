@@ -11,7 +11,6 @@ import {
 } from '../../../../../src'
 import { UserService } from '../services/UserService';
 import { TestEntity } from '../entites/TestEntity';
-import { MetadataEnums } from '../../../../../src/lib/enums';
 
 @Controller
 @RequestMapping('/admin/test')
@@ -27,6 +26,3 @@ export class TestController {
         return this.userService.name
     }
 }
-
-const a = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, TestEntity)
-console.log(a)

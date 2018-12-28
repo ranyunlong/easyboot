@@ -6,7 +6,6 @@
  */
 
 import { MetadataEnums } from '../enums';
-import 'reflect-metadata';
 
 /**
  * Upload decorator

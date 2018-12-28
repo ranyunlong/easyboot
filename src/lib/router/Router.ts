@@ -5,7 +5,6 @@
  * @license MIT
  */
 
-import 'reflect-metadata'
 import { Layer } from './Layer';
 import { Stack } from './Stack';
 import { Route } from './Route';

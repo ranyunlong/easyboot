@@ -7,7 +7,6 @@
 
 import { MetadataEnums } from '../enums';
 import { StackTrace } from '../StackTrace/StackTrace';
-import 'reflect-metadata'
 
 /**
  * Controller decorator

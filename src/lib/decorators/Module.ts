@@ -8,7 +8,6 @@
 import { MetadataEnums, PREFIX, StackTraceEnums } from '../enums'
 import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
-import 'reflect-metadata';
 
 const { CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS } = MetadataEnums.Module
 const metadataKeys = [CONTROLLERS, PROVIDERS, IMPORTS, EXPORTS]

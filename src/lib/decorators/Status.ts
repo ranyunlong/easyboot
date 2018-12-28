@@ -5,7 +5,6 @@
  * @license MIT
  */
 import { MetadataEnums } from '../enums';
-import 'reflect-metadata';
 
 /**
  * StatusCode decorator

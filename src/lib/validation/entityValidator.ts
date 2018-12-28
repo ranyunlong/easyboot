@@ -5,7 +5,6 @@
  * @license MIT
  */
 
-import 'reflect-metadata';
 import { CType } from '../decorators';
 import { MetadataEnums } from '../enums';
 import { HttpException } from '../core';

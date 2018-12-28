@@ -1,1 +1,0 @@
-export function Injectable<TFunction extends Function>(target: TFunction): void { return; }

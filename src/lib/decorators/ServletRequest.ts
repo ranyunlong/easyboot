@@ -9,7 +9,6 @@ import { MetadataEnums, StackTraceEnums } from '../enums';
 import { StackTrace } from '../StackTrace/StackTrace';
 import { Request } from '../core';
 import chalk from 'chalk';
-import 'reflect-metadata'
 
 /**
  * ServletRequest decorator

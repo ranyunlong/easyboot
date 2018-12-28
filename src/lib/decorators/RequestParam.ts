@@ -10,7 +10,6 @@ import { Validation } from '../validation';
 import { Validator } from '../validation/paramValidator';
 import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
-import 'reflect-metadata'
 
 /**
  * RequestParam decorator

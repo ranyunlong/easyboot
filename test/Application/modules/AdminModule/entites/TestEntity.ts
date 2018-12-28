@@ -1,5 +1,5 @@
-import { Injectable } from '../../../../../src';
 import { UserEntity } from './UserEntity';
+import { injectable } from 'inversify'
 
-@Injectable
+@injectable()
 export class TestEntity extends Array<UserEntity> {}

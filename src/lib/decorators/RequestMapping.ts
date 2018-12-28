@@ -6,7 +6,6 @@
  */
 
 import { RequestEnums, MetadataEnums, StackTraceEnums } from '../enums'
-import 'reflect-metadata'
 import { StackTrace } from '../StackTrace/StackTrace';
 import chalk from 'chalk';
 const defalutMethod = RequestEnums.METHOD.ALL

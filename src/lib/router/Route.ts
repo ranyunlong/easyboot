@@ -5,7 +5,6 @@
  * @license MIT
  */
 
-import 'reflect-metadata'
 import * as pathToRegexp from 'path-to-regexp'
 import { CType } from '../decorators'
 import { RegExpOptions, Key } from 'path-to-regexp'

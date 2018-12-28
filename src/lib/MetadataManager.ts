@@ -5,7 +5,6 @@
  * @license MIT
  */
 
-import 'reflect-metadata';
 import chalk from 'chalk';
 import { CType } from './decorators';
 import { EasyBootServlet } from './core';
