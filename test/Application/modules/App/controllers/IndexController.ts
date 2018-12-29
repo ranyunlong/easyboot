@@ -1,7 +1,7 @@
 import { RequestMapping, GetMapping, RequestQuery, RequestBody, PostMapping, DeleteMapping, RequestParam, isJSON, isInt, isRequired, Controller } from '../../../../../src';
 import { UserQueryEntity } from '../entites/UserQueryEntity';
 import { UserEntity } from '../entites/UserEntity';
-import { UserService } from '../../AdminModule/services/UserService';
+import { UserService } from '../../Admin/services/UserService';
 
 @Controller
 @RequestMapping('app')

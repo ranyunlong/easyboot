@@ -4,6 +4,7 @@
  * @copyright Ranyunlong
  * @license MIT
  */
+
 export class HttpException extends Error {
     public statusCode: number;
     public data: any;

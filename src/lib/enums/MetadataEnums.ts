@@ -14,7 +14,9 @@ export namespace MetadataEnums {
         RETURNTYPES = 'design:returntype',
         CONFIGURATION = 'easyboot:configuration',
         VALIDATORS = 'easyboot:validators',
-        EASYBOOTMODULE= 'easyboot:module'
+        EASYBOOTMODULE= 'easyboot:module',
+        ENTITY = 'easyboot:entity',
+        INJECTABLE = 'easyboot:injectable'
     }
     export enum Controller {
         CONTROLLER = 'easyboot:controller',
@@ -38,9 +40,5 @@ export namespace MetadataEnums {
         PROVIDERS = 'easyboot:providers',
         CONTROLLERS = 'easyboot:controllers',
         EXPORTS = 'easyboot:exports'
-    }
-    export enum Entity {
-        DEFAULT = 'easyboot:entity:default',
-        ARRAY = 'easyboot:entity:array'
     }
 }

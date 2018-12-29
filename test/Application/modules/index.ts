@@ -1,13 +1,13 @@
 import { Module } from '../../../src';
-import { AppModule } from './AppModule';
-import { AdminModule } from './AdminModule';
-import { TestModule } from './TestModule';
+import { Admin } from './Admin';
+import { App } from './App';
+import { Test } from './Test';
 
 @Module({
     imports: [
-        AppModule,
-        AdminModule,
-        TestModule
+        App,
+        Admin,
+        Test
     ]
 })
 export class RootModule {}

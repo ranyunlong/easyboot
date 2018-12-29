@@ -1,14 +1,14 @@
 import { Module } from '../../../../src';
 import { IndexController } from './controllers/IndexController';
-import { AdminModule } from '../AdminModule';
+import { Admin } from '../Admin';
 
 @Module({
     imports: [
-        AdminModule
+        Admin
     ],
     providers: [],
     controllers: [
         IndexController
     ]
 })
-export class AppModule {}
+export class App {}

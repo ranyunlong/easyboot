@@ -19,7 +19,9 @@ import { URL, format } from 'url'
 import { IncomingMessage, ServerResponse, IncomingHttpHeaders } from 'http'
 import { Context } from './Context';
 import { Response } from './Response';
+import { Entity } from '../decorators';
 
+@Entity
 export class Request {
     public originalUrl: string;
     private _accept: Accepts;

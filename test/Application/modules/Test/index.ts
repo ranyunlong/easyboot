@@ -6,4 +6,4 @@ import { IndexController } from './controllers/IndexController';
         IndexController
     ]
 })
-export class TestModule {}
+export class Test {}

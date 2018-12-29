@@ -22,7 +22,9 @@ import EasyBootServlet from './EasyBootServlet';
 import { getType } from './utils';
 import { Context } from './Context';
 import { Request } from './Request';
+import { Entity } from '../decorators';
 
+@Entity
 export class Response {
     private _body: any;
     public ctx: Context;

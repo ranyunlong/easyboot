@@ -1,12 +1,10 @@
 import { Module } from '../../../../src';
-import { IndexController } from './contorllers/IndexController';
+import { UserController } from './contorllers/UserController';
 import { UserService } from './services/UserService';
-import { TestController } from './contorllers/TestController';
 
 @Module({
     controllers: [
-        IndexController,
-        TestController
+        UserController,
     ],
     providers: [
         UserService
@@ -15,4 +13,4 @@ import { TestController } from './contorllers/TestController';
         UserService
     ]
 })
-export class AdminModule {}
+export class Admin {}

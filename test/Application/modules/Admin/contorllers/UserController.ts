@@ -17,10 +17,11 @@ import { UserService } from '../services/UserService';
 import { resolve } from 'path'
 import { UserEntity } from '../entites/UserEntity';
 import { UPicEntity } from '../entites/UPicEntity';
+import { ArrayNumberEntity } from '../entites/ArrayNumberEntity';
 
 @Controller
 @RequestMapping('/admin/user')
-export class IndexController {
+export class UserController {
     constructor(private userService: UserService) {
         userService.name = 'aa'
     }
@@ -31,6 +32,12 @@ export class IndexController {
     ) {
         response.type = 'text/css'
         return this.userService.name
+    }
+
+    @PostMapping
+    public save(@RequestBody ids: ArrayNumberEntity) {
+        console.log(1)
+        return 'save'
     }
 
     @Upload({

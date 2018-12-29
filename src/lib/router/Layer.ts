@@ -107,6 +107,7 @@ export class Layer {
                     const entite =  Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, Entity)
                     if (entite) {
                         const result = entityValidator(Entity, originBodys)
+                        console.log(1)
                         if (result) this.handleMetadatas[bodyMetadata.index] = result
                     } else {
                         if (typeof Entity === 'function' && Entity !== Object) {
