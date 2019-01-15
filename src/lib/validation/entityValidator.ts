@@ -12,16 +12,19 @@ import { ArgumentMetadata } from '../ArgumentMetadata';
 
 export function entityValidator(Entity: CType, data: any) {
     const validations = Reflect.getMetadata(MetadataEnums.Base.VALIDATORS, Entity)
-    if (!Array.isArray(validations)) return;
-
-    // validator
-    validations.forEach(({validation, propertyKey}) => {
-        validation.toValidate(data[propertyKey], propertyKey)
-    })
+    if (Array.isArray(validations)) {
+        // validator
+        validations.forEach(({validation, propertyKey}) => {
+            validation.toValidate(data[propertyKey], propertyKey)
+        })
+    }
 
     // deep validator
     if (typeof data === 'object' && !Array.isArray(data)) {
         const entity = new Entity()
+        if (Array.isArray(entity)) {
+           const types = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, Entity)
+        }
         Object.keys(data).forEach((key) => {
             const metatype = Reflect.getOwnMetadata(MetadataEnums.Base.TYPE, Entity.prototype, key);
             let value: any;

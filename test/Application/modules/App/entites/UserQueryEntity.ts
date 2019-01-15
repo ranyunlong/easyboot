@@ -1,5 +1,6 @@
-import { IsInt, IsRequired, isRequired } from '../../../../../src';
+import { IsInt, IsRequired, isRequired, Entity } from '../../../../../src';
 
+@Entity
 export class UserQueryEntity {
     @IsInt('用户id必须为整数')
     public userId: number = 0;

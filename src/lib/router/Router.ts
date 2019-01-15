@@ -40,9 +40,10 @@ export class Router {
             const handlerException = (error: HttpException) => {
                 if (layer.exceptionCapture) {
                     this.application.exception(context, new layer.exceptionCapture(error))
-                }
-                if (layer.exception) {
+                } else if (layer.exception) {
                     this.application.exception(context, layer.exception)
+                } else {
+                    this.application.exception(context, error)
                 }
             }
 

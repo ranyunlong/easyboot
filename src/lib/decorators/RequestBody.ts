@@ -68,6 +68,7 @@ export function RequestBody(...args: any[]): any {
     function decorator(target: Object, propertyKey: string, parameterIndex: number): void {
         StackTrace.defineControllerParameter(target.constructor, propertyKey)
         const [key, validations] = args
+        const parameterTypes = Reflect.getMetadata(MetadataEnums.Base.PARAMTYPES, target, propertyKey)
         if (args.length === 2) {
             Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_BODY, {
                 index: parameterIndex,
@@ -105,6 +106,19 @@ export function RequestBody(...args: any[]): any {
             Reflect.defineMetadata(MetadataEnums.Controller.REQUEST_BODY, {
                 index: parameterIndex
             }, target.constructor, propertyKey)
+        }
+        if (Array.isArray(parameterTypes)) {
+            const parameterType = parameterTypes[parameterIndex]
+            if (parameterType === Array || parameterType === Object || parameterType === Number || parameterType === undefined || parameterType === Boolean || parameterType === Buffer) return;
+            if (!Reflect.getMetadata(MetadataEnums.Base.ENTITY, parameterType)) {
+                const err = new StackTrace('Invalid interface, the interface must be used @Entity decorator.')
+                err.setStackTraceInfo(StackTraceEnums.DECORATOR.PARAMETER, target.constructor, propertyKey)
+                const code = err.getCode(RegExp(`\\@\\s*RequestBody\\s*\\w*\\s*\\:\\s*${parameterType.name}`))
+                const replaceValue = chalk.redBright(parameterType.name)
+                err.replace(code, code.replace(parameterType.name, replaceValue))
+                err.resetCodeTarget(replaceValue)
+                throw err
+            }
         }
     }
     if (args.length === 3) {
