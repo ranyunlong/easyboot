@@ -6,6 +6,8 @@
  */
 
 import { CONTROLLER } from '../constants/metadata.constant';
+import { contentType } from 'mime-types'
+import { DevStackTace } from '../core/DevStackTace';
 
 /**
  * ContentType decorator
@@ -32,6 +34,10 @@ import { CONTROLLER } from '../constants/metadata.constant';
  */
 export function ContentType(type: string): MethodDecorator {
     return (target: Object, propertyKey: string): void => {
-        Reflect.defineMetadata(CONTROLLER.CONTENT_TYPE, type, target.constructor, propertyKey)
+        const trace = new DevStackTace(`Invalid decorator: @ContentType('${type}'), '${type}' is not mime-type.`, 'meta.decorator.ts', 'ContentType')
+        if (!contentType(type)) {
+            trace.throw()
+        }
+        Reflect.defineMetadata(CONTROLLER.CONTENT_TYPE, contentType(type), target.constructor, propertyKey)
     }
 }

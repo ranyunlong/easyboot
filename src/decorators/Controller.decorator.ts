@@ -25,5 +25,7 @@ import { BASE } from '../constants/metadata.constant';
  * ```
  */
 export function Controller<TFunction extends Function>(target: TFunction): TFunction | void {
-    Reflect.defineMetadata(BASE.CONTROLLER, true, target)
+    if (!Reflect.getMetadata(BASE.CONTROLLER, target)) {
+        Reflect.defineMetadata(BASE.CONTROLLER, true, target)
+    }
 }

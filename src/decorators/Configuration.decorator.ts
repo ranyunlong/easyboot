@@ -7,7 +7,6 @@
 
 import { Ctor } from '../types/index.api';
 import { BASE } from '../constants/metadata.constant';
-
 /**
  * Configuration decorator
  *

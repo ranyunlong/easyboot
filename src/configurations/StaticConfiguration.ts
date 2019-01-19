@@ -7,7 +7,7 @@ import * as fs from 'fs'
 
 export class StaticConfiguration {
     constructor(configuration?: StaticConfiguration) {
-        if (typeof configuration !== 'object' && Array.isArray(configuration)) return;
+        if (typeof configuration !== 'object' || Array.isArray(configuration)) return;
         Object.keys(configuration).forEach((key: keyof StaticConfiguration) => {
             this[key] = configuration[key]
         })

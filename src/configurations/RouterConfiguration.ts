@@ -7,7 +7,7 @@
 
 export class RouterConfiguration {
     constructor(configuration?: RouterConfiguration) {
-        if (typeof configuration !== 'object' && Array.isArray(configuration)) return;
+        if (typeof configuration !== 'object' || Array.isArray(configuration)) return;
         Object.keys(configuration).forEach((key: keyof RouterConfiguration) => {
             this[key] = configuration[key]
         })

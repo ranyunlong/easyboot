@@ -1,5 +1,6 @@
-import { ServletSSLConfiguration } from './ServletSSLConfiguration';
-import { Env } from 'src/core/HttpServlet';
+import { ServletSSLConfiguration } from './SSLConfiguration';
+import { Env } from '../types/index.api';
+import { RouterConfiguration } from './RouterConfiguration';
 
 /**
  * @class ServletConfiguration
@@ -7,7 +8,6 @@ import { Env } from 'src/core/HttpServlet';
  * @copyright Ranyunlong
  * @license MIT
  */
-
 export class ServletConfiguration {
 
     /**
@@ -23,7 +23,7 @@ export class ServletConfiguration {
     /**
      * offset of .subdomains to ignore [2]
      */
-    public subdomainOffse: number = 2
+    public subdomainOffse?: number = 2
 
     /**
      * Server http port config
@@ -55,10 +55,15 @@ export class ServletConfiguration {
     /**
      * By default outputs all errors to stderr unless silent is true.
      */
-    public silent: boolean;
+    public silent?: boolean;
 
     /**
      * Http Services
      */
-    public Services: Map<any, any>;
+    public Services?: Map<any, any>;
+
+    /**
+     * Router config
+     */
+    public router?: RouterConfiguration;
 }

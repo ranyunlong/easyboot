@@ -2,16 +2,20 @@
     "compilerOptions": {
         "module": "commonjs",
         "noImplicitAny": true,
+        "diagnostics": true,
+        "extendedDiagnostics": true,
         "moduleResolution": "node",
         "experimentalDecorators":true,
         "emitDecoratorMetadata":true,
+        "inlineSourceMap": true,
+        "resolveJsonModule": true,
         "declaration": true,   // 生成相关的d.ts
         "alwaysStrict": true, // 严格模式编译每个文件
+        "locale": "zh-CN",
         "target": "esnext",
         "outDir": "./dist",
         "baseUrl": "."
     },
-    "lib":["esnext"],
     "include": [
         "src/**/*",
         "test/**/*"

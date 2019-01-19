@@ -12,32 +12,50 @@ import * as EventEmitter from 'events'
 import { Stream } from 'stream'
 import { isJSON } from './utils'
 import { ListenOptions } from 'net'
-import { HttpServletContext } from './HttpServletContext'
-import { HttpServletRequest } from './HttpServletRequest'
-import { HttpServletResponse } from './HttpServletResponse'
+import { ServletContext } from './ServletContext'
+import { ServletRequest } from './ServletRequest'
+import { ServletResponse } from './ServletResponse'
 import { IncomingMessage, ServerResponse, createServer } from 'http'
 import { ServletConfiguration } from '../configurations/ServletConfiguration'
 import { HttpException } from './HttpException';
 import { BASE } from '../constants/metadata.constant';
+import { Ctor, Env } from '../types/index.api';
+import { Router } from '../router/Router';
 
-export class HttpServlet extends EventEmitter {
+export class Servlet extends EventEmitter {
     public proxy: boolean;
     public subdomainOffset: number;
     public env: Env;
     public keys: string[] | Keygrip;
     public silent: boolean;
 
-    constructor(public servletConfiguration: ServletConfiguration = new ServletConfiguration()) {
+    public router: Router;
+
+    constructor(private options?: ServletConfiguration) {
         super()
         const Configuration = Reflect.getMetadata(BASE.CONFIGURATION, this.constructor)
-        if (Configuration) this.servletConfiguration = new Configuration()
-        const { port, host } = this.servletConfiguration
-        if (port) this.listen(port, host)
+
+        if (Configuration) {
+            this.options = new Configuration()
+        }
+
+        if (!this.options) this.options = {}
+
+        // Create router
+        this.router = new Router(this, this.options.router)
+
+        // Server listener
+        if (this.options.port) {
+            const { port, host } = this.options
+            if (port) this.listen(port, host)
+        }
+
+        if (typeof this.bootstrap === 'function') {
+            this.bootstrap()
+        }
     }
 
-    public setResonseProvider(service: any) {
-        return;
-    }
+    public bootstrap?(): void;
 
     /**
      * start reponse
@@ -45,7 +63,14 @@ export class HttpServlet extends EventEmitter {
     private async start(request: IncomingMessage, response: ServerResponse) {
         const context = this.createContext(request, response)
         try {
-
+            const stack = await this.router.matchRoutes(context)
+            for (let layer of stack) {
+               const data = layer.handler()
+                if (data) {
+                    context.body = data
+                    break;
+                }
+            }
             await this.respond(context)
             if (!context.body) context.throw(404)
 
@@ -62,7 +87,7 @@ export class HttpServlet extends EventEmitter {
      * respond
      * Application respond
      */
-    private async respond(context: HttpServletContext): Promise<any> {
+    private async respond(context: ServletContext): Promise<any> {
         // Check context writable
         if (!context.writable) return;
 
@@ -119,10 +144,10 @@ export class HttpServlet extends EventEmitter {
      * createContext
      * Server context create method
      */
-    protected createContext(req: IncomingMessage, res: ServerResponse): HttpServletContext {
-        const request = new HttpServletRequest(req, res, this)
-        const response = new HttpServletResponse(req, res, this)
-        const context = new HttpServletContext(req, res, request, response, this)
+    private createContext(req: IncomingMessage, res: ServerResponse): ServletContext {
+        const request = new ServletRequest(req, res, this)
+        const response = new ServletResponse(req, res, this)
+        const context = new ServletContext(req, res, request, response, this)
         request.ctx = response.ctx = context;
         request.response = response;
         response.request = request;
@@ -133,8 +158,8 @@ export class HttpServlet extends EventEmitter {
      * exception
      * Exception handler method
      */
-    public exception(context: HttpServletContext, error: HttpException) {
-        this.emit('error', error)
+    private exception(context: ServletContext, error: HttpException) {
+        if (this.listeners('error').length > 0) this.emit('error', error)
         if (this.listeners('exception').length > 0) {
             return this.emit('exception', error)
         } else {
@@ -177,7 +202,7 @@ export class HttpServlet extends EventEmitter {
     public listen(handle: any, backlog?: number, listeningListener?: Function): this;
     public listen(handle: any, listeningListener?: Function): this;
     public listen(...args: any[]): this {
-        const { ssl } = this.servletConfiguration
+        const { ssl } = this.options
         // ssl
         if (ssl) {
             https.createServer(ssl, (request, response) => this.start(request, response))
@@ -190,5 +215,3 @@ export class HttpServlet extends EventEmitter {
     }
 
 }
-
-export type Env = 'development' | 'production'

@@ -1,6 +1,6 @@
 export class ServletSSLConfiguration {
     constructor(configuration?: ServletSSLConfiguration) {
-        if (typeof configuration !== 'object' && Array.isArray(configuration)) return;
+        if (typeof configuration !== 'object' || Array.isArray(configuration)) return;
         Object.keys(configuration).forEach((key: keyof ServletSSLConfiguration) => {
             this[key] = configuration[key]
         })

@@ -18,22 +18,22 @@ import * as statuses from 'statuses'
 import * as onFinish from 'on-finished'
 import * as escape from 'escape-html'
 import destroy = require('destroy')
-import { HttpServlet } from './HttpServlet';
+import { Servlet } from './Servlet';
 import { getType } from './utils';
-import { HttpServletContext } from './HttpServletContext';
-import { HttpServletRequest } from './HttpServletRequest';
+import { ServletContext } from './ServletContext';
+import { ServletRequest } from './ServletRequest';
 
-export class HttpServletResponse {
+export class ServletResponse {
     private _body: any;
-    public ctx: HttpServletContext;
-    public request: HttpServletRequest;
+    public ctx: ServletContext;
+    public request: ServletRequest;
     public _explicitStatus: boolean;
     constructor(
         public req: IncomingMessage,
         public res: ServerResponse,
-        public app: HttpServlet
+        public app: Servlet
     ) {
-        const { version } = require('../../../package.json')
+        const { version } = require('../../package.json')
         this.set('Server',  `easyboot:${version}`)
         this.vary('Accept-Encoding')
     }

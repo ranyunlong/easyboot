@@ -6,7 +6,8 @@
  */
 
 import { HttpException } from '../core/HttpException';
-import { CONTROLLER } from 'src/constants/metadata.constant';
+import { CONTROLLER } from '../constants/metadata.constant';
+import { DevStackTace } from '../core/DevStackTace';
 
 /**
  * Exception decorator
@@ -33,6 +34,10 @@ import { CONTROLLER } from 'src/constants/metadata.constant';
  */
 export function Exception(Exception: HttpException): MethodDecorator {
     return (target: Object, propertyKey: string): void => {
+        const trace = new DevStackTace(`Invalid decorator: @Exception(), 'argument must be object.`, 'meta.decorator.ts', 'Exception')
+        if (typeof Exception !== 'object') {
+            trace.throw()
+        }
         Reflect.defineMetadata(CONTROLLER.EXCEPTION, Exception, target.constructor, propertyKey)
     }
 }

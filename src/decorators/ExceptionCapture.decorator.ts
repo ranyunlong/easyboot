@@ -7,6 +7,7 @@
 
 import { HttpExceptionConstructor } from '../core/HttpException';
 import { CONTROLLER } from '../constants/metadata.constant';
+import { DevStackTace } from '../core/DevStackTace';
 
 /**
  * ExceptionCapture decorator
@@ -33,6 +34,10 @@ import { CONTROLLER } from '../constants/metadata.constant';
  */
 export function ExceptionCapture(Exception: HttpExceptionConstructor): MethodDecorator {
     return (target: Object, propertyKey: string): void => {
+        const trace = new DevStackTace(`Invalid decorator: @ExceptionCapture(), 'argument must be Function.`, 'meta.decorator.ts', 'ExceptionCapture')
+        if (typeof Exception !== 'function') {
+            trace.throw()
+        }
         Reflect.defineMetadata(CONTROLLER.EXCEPTION_CAPTURE, Exception, target.constructor, propertyKey)
     }
 }

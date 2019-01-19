@@ -6,6 +6,10 @@
  */
 
 import { Ctor } from '../types/index.api';
+import { MODULE } from '../constants/metadata.constant';
+import { DevStackTace } from '../core/DevStackTace';
+
+const metadataKeys = Object.keys(MODULE)
 
 /**
  * Module decorator
@@ -28,13 +32,29 @@ import { Ctor } from '../types/index.api';
  */
 export function Module(metadata: ModuleMetadata): ClassDecorator {
     return <TFunction extends Function>(target: Function): TFunction | void => {
-        return;
+        const trace = new DevStackTace(`Invalid decorator: @Module(), arguments is invalid.`, 'meta.decorator.ts', 'Module')
+        const propsKeys = Object.keys(metadata || {})
+        if (Array.isArray(metadata)) {
+            trace.message = `Invalid decorator: @Module(), argument is cannot be Array.`
+            trace.throw()
+        }
+        if (typeof metadata !== 'object') {
+            trace.message = `Invalid decorator: @Module(), argument is must be Object.`
+            trace.throw()
+        }
+        propsKeys.forEach((key: keyof ModuleMetadata) => {
+            const result = metadataKeys.find((metaKey) => metaKey === key.toUpperCase())
+            if (result) {
+                Reflect.defineMetadata(MODULE[result as keyof MODULE], metadata[key], target)
+            } else {
+                trace.message = `Invalid decorator: @Module(), arguments property: '${key}' is invalid.`
+                trace.throw()
+            }
+        })
     }
 }
 
 export interface ModuleMetadata {
-    imports?: Ctor[];
-    controllers?: Ctor[];
+    controllers: Ctor[];
     providers?: Ctor[];
-    exports?: Ctor[];
 }

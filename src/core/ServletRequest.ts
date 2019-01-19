@@ -17,24 +17,24 @@ import * as net from 'net'
 
 import { URL, format } from 'url'
 import { Accepts } from 'accepts'
-import { HttpServlet } from './HttpServlet'
-import { HttpServletContext } from './HttpServletContext'
-import { HttpServletResponse } from './HttpServletResponse'
+import { Servlet } from './Servlet'
+import { ServletContext } from './ServletContext'
+import { ServletResponse } from './ServletResponse'
 
 import { IncomingMessage, ServerResponse, IncomingHttpHeaders } from 'http'
 
-export class HttpServletRequest {
+export class ServletRequest {
     public originalUrl: string;
     private _accept: Accepts;
     private _querycache: any;
     private _URLcache: URL;
     private _ip: string;
-    public ctx: HttpServletContext;
-    public response: HttpServletResponse;
+    public ctx: ServletContext;
+    public response: ServletResponse;
     constructor(
         public req: IncomingMessage,
         public res: ServerResponse,
-        public app: HttpServlet
+        public app: Servlet
     ) {
         // originalUrl
         this.originalUrl  = req.url || ''

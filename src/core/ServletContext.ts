@@ -6,20 +6,20 @@
  */
 
 // dependencies
-import { HttpServlet } from './HttpServlet'
+import { Servlet } from './Servlet'
 import * as util from 'util'
 import * as Cookies from 'cookies'
 import * as statuses from 'statuses'
 import * as httpAssert from 'http-assert'
 import * as httpErrors from 'http-errors'
 import { IncomingMessage, ServerResponse } from 'http'
-import { HttpServletRequest } from './HttpServletRequest';
-import { HttpServletResponse } from './HttpServletResponse';
+import { ServletRequest } from './ServletRequest';
+import { ServletResponse } from './ServletResponse';
 import { Session } from 'src/types/Session.api';
 
 const COOKIES = Symbol('context#cookies');
 
-export class HttpServletContext {
+export class ServletContext {
     /**
      * constructor
      * @param req IncomingMessage
@@ -30,9 +30,9 @@ export class HttpServletContext {
     constructor(
         public req: IncomingMessage,
         public res: ServerResponse,
-        public request: HttpServletRequest,
-        public response: HttpServletResponse,
-        public app: HttpServlet
+        public request: ServletRequest,
+        public response: ServletResponse,
+        public app: Servlet
     ) {}
 
     public [COOKIES]: Cookies;

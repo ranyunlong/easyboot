@@ -1,7 +1,11 @@
-import { HttpServlet, Configuration } from '../../src'
-import { ApplicationConfig } from './configs/ApplicationConfig';
+import { Servlet, Configuration, ServletConfiguration } from '../../src'
+import { AppModule } from './modules/app';
 
-@Configuration(ApplicationConfig)
-export class Application extends HttpServlet {}
+@Configuration(ServletConfiguration)
+export class Application extends Servlet {
+    public bootstrap() {
+        this.router.parseModule(AppModule)
+    }
+}
 
 new Application()

@@ -1,14 +1,15 @@
 import { Module } from '../../../../src';
-import { IndexController } from './controllers/IndexController';
-import { Admin } from '../Admin';
+import { UserController } from './controllers/UserController';
+import { TestController } from './controllers/TestController';
+import { UserService } from './services/UserService';
 
 @Module({
-    imports: [
-        Admin
-    ],
-    providers: [],
     controllers: [
-        IndexController
+        UserController,
+        TestController
+    ],
+    providers: [
+        UserService
     ]
 })
-export class App {}
+export class AppModule {}
