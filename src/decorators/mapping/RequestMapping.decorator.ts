@@ -7,7 +7,8 @@
 
 import { BASE, CONTROLLER } from '../../constants/metadata.constant';
 import { RequestEnum } from '../../enums/request.mapping.enum';
-import { DevStackTace } from '../../core/DevStackTace';
+import { DevStackTrace } from '../../core/DevStackTrace';
+import * as pathToRegexp from 'path-to-regexp'
 
 const defalutMethod = RequestEnum.Methods.ALL
 
@@ -50,15 +51,37 @@ export function RequestMapping(path: string, method: RequestEnum.Methods = defal
     return function decorator(...args: any[]): void {
         const [ target, propertyKey, descriptor ] = args
         if (args.length === 1) { // ClassDecorator {
-            const tace = new DevStackTace(`Invalid decorator: RequestMapping(), argument: '${path}' is invalid.`, 'meta.decorator.ts', 'RequestMapping')
+            const trace = new DevStackTrace(`Invalid decorator: RequestMapping(), argument: '${path}' is invalid.`, {
+                value: 'RequestMapping',
+                scopes: ['meta.decorator.ts']
+            })
             if (/[^0-9A-z\:\-\/]+/.test(path)) {
-                tace.throw()
+                trace.throw()
             }
             Reflect.defineMetadata(BASE.CONTROLLER, {path, method}, target)
         } else if (args.length === 3) { // MethodDecorator
-            const tace = new DevStackTace(`Invalid decorator: ${RequestEnum.Names[method]}(), argument: '${path}' is invalid.`, 'meta.decorator.ts', RequestEnum.Names[method])
+            const trace = new DevStackTrace(`Invalid decorator: ${RequestEnum.Names[method]}(), argument: '${path}' is invalid.`, {
+                value: RequestEnum.Names[method],
+                scopes: ['meta.decorator.ts']
+            })
             if (/[^0-9A-z\:\-\/]+/.test(path)) {
-                tace.throw()
+                trace.throw()
+            }
+            const requestBody = Reflect.getMetadata(CONTROLLER.REQUEST_BODY, target.constructor, propertyKey)
+            const requestParam = Reflect.getMetadata(CONTROLLER.REQUEST_PARAM, target.constructor, propertyKey)
+            if (requestParam) {
+                let keys: pathToRegexp.Key[] = []
+                let p = path || propertyKey
+                pathToRegexp(p, keys)
+                if (keys.length === 0) {
+                    trace.message = `Invalid decorator: ${RequestEnum.Names[method]}(), argument: '${path}' is not dynamic routing.`
+                    trace.throw()
+                }
+            }
+
+            if (requestBody && /GET|DELETE|HEAD|COPY|PURGE|UNLOCK/.test(method)) {
+                trace.message = `Invalid decorator: Used ${RequestEnum.Names[method]}() decorator, this route method is '${method}', cannot use @RequestBody decorator, you can try @PostMapping decorator.`
+                trace.throw()
             }
             const metadatas = Reflect.getMetadata(CONTROLLER.REQUEST_MAPPING, target.constructor) || []
             Reflect.defineMetadata(CONTROLLER.REQUEST_MAPPING, [...metadatas, {

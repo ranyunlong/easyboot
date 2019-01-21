@@ -6,14 +6,17 @@
  */
 
 import { CONTROLLER, BASE } from '../constants/metadata.constant';
-import { DevStackTace } from '../core/DevStackTace';
+import { DevStackTrace } from '../core/DevStackTrace';
 import { ServletRequest } from '../core/ServletRequest'
 
 export function HttpServletRequest(target: Object, propertyKey: string, parameterIndex: number): void {
     const paramtypes = Reflect.getMetadata(BASE.PARAMTYPES, target, propertyKey)
-    const tace = new DevStackTace('Invalid decorator: @HttpServletRequest, param type must be ServletRequest.', 'meta.decorator.ts', 'HttpServletRequest')
+    const trace = new DevStackTrace('Invalid decorator: @HttpServletRequest, param type must be ServletRequest.', {
+        value: 'HttpServletRequest',
+        scopes: ['meta.decorator.ts']
+    })
     if (paramtypes[parameterIndex] !== ServletRequest) {
-        tace.throw()
+        trace.throw()
     }
     Reflect.defineMetadata(CONTROLLER.REQUEST, {
         index: parameterIndex,

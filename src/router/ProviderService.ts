@@ -1,6 +1,6 @@
 import { Ctor } from '../types/index.api';
 import { Router } from './Router';
-import { MODULE } from '../constants/metadata.constant';
+import { MODULE, BASE } from '../constants/metadata.constant';
 
 export class ProviderService {
     private globalProvide: Map<Ctor, Map<Ctor, object>> = new Map()
@@ -11,7 +11,7 @@ export class ProviderService {
         if (Array.isArray(providers)) {
             providers.forEach((Provider: Ctor) => {
                 // Check is global providers
-                if (Reflect.getMetadata(MODULE.GLOBAL, Module)) {
+                if (Reflect.getMetadata(BASE.GLOBAL_SERVICE, Module)) {
                     if (this.globalProvide.has(Module)) {
                         const mappingProvider = this.globalProvide.get(Module)
                         if (mappingProvider.has(Provider)) return;

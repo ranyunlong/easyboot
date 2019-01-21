@@ -6,8 +6,10 @@ export const BASE: BASE = {
     TYPE: 'design:type',
     PARAMTYPES: 'design:paramtypes',
     RETURNTYPE: 'design:returntype',
-    IS: 'easyboot:decorator:is',
-    FORM: 'easyboot:decorator:form'
+    VALIDATE: 'easyboot:decorator:validate',
+    FORM: 'easyboot:decorator:form',
+    SERVICE: 'easyboot:decorator:service',
+    GLOBAL_SERVICE: 'easyboot:decorator:service:global'
 }
 
 export interface BASE {
@@ -18,8 +20,10 @@ export interface BASE {
     TYPE: string;
     PARAMTYPES: string;
     RETURNTYPE: string;
-    IS: string;
+    VALIDATE: string;
+    SERVICE: string;
     FORM: String;
+    GLOBAL_SERVICE: string;
 }
 
 export const CONTROLLER: CONTROLLER = {
@@ -28,6 +32,9 @@ export const CONTROLLER: CONTROLLER = {
     EXCEPTION: 'easyboot:decorator:response:exception:default',
     REQUEST_MAPPING: 'easyboot:decorator:request:mapping',
     REQUEST: 'easyboot:decorator:request',
+    REQUEST_QUERY: 'easyboot:decorator:request:query',
+    REQUEST_BODY: 'easyboot:decorator:request:body',
+    REQUEST_PARAM: 'easyboot:decorator:request:param',
     RESPONSE: 'easyboot:decorator:response',
     STATUS_CODE: 'easyboot:decorator:response:status:code',
     STATUS_MESSAGE: 'easyboot:decorator:response:status:message'
@@ -42,13 +49,15 @@ export interface CONTROLLER {
     RESPONSE: string;
     STATUS_CODE: string;
     STATUS_MESSAGE: string;
+    REQUEST_QUERY: string;
+    REQUEST_BODY: string;
+    REQUEST_PARAM: string;
 }
 
 export const MODULE: MODULE = {
     CONTROLLERS: 'easyboot:decorator:module:controllers',
     PROVIDERS: 'easyboot:decorator:module:providers',
-    BOOTSTRAP: 'easyboot:decorator:module:bootstrap',
-    GLOBAL: 'easyboot:decorator:module:global'
+    BOOTSTRAP: 'easyboot:decorator:module:bootstrap'
     // IMPORTS: 'easyboot:decorator:module:imports',
     // EXPORTS: 'easyboot:decorator:module:exports'
 }
@@ -56,8 +65,7 @@ export const MODULE: MODULE = {
 export interface MODULE {
     CONTROLLERS: string;
     PROVIDERS: string;
-    BOOTSTRAP: string;
-    GLOBAL: string;
+    BOOTSTRAP: string
     // IMPORTS: string;
     // EXPORTS: string;
 }

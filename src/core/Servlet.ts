@@ -65,11 +65,26 @@ export class Servlet extends EventEmitter {
         try {
             const stack = await this.router.matchRoutes(context)
             for (let layer of stack) {
-               const data = layer.handler()
+                const exceptionHandler = (error: HttpException) => {
+                    if (layer.exception) {
+                        this.exception(context, layer.exception)
+                    } else if (layer.exceptionCapture) {
+                        this.exception(context, new layer.exceptionCapture(error))
+                    } else {
+                        this.exception(context, error)
+                    }
+                }
+                this.once('exception', exceptionHandler)
+                await layer.inject(context)
+                const data = await layer.handler(...layer.handlerInjects)
                 if (data) {
                     context.body = data
+                    if (layer.contentType) context.type = layer.contentType
+                    if (layer.statusCode) context.status = layer.statusCode
+                    if (layer.statusMessage) context.response.message = layer.statusMessage
                     break;
                 }
+                this.off('exception', exceptionHandler)
             }
             await this.respond(context)
             if (!context.body) context.throw(404)

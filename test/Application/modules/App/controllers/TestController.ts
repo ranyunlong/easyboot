@@ -1,27 +1,26 @@
-import { Controller, RequestMapping, GetMapping, PostMapping, ContentType, Exception, HttpException, ExceptionCapture } from '../../../../../src'
+import { Controller, RequestMapping, GetMapping, PostMapping, ContentType, Exception, HttpException, ExceptionCapture, RequestParam, RequestBody, RequestQuery, isRequired, isEmail } from '../../../../../src'
 import { UserService } from '../services/UserService';
 
-@Controller
 @RequestMapping('app/test')
 export class TestController {
     constructor(public userService: UserService) {}
 
     @GetMapping
-    public list() {
+    public list(@RequestQuery({name: isEmail}) query: string) {
         return 'list';
     }
 
     @PostMapping
     @ContentType('js')
     @Exception(new HttpException({}))
-    public save() {
+    public save(@RequestBody body: any) {
         return 'save'
     }
 
     @GetMapping(':id')
     @ContentType('html')
     @ExceptionCapture(HttpException)
-    public test(): string {
+    public test(@RequestParam params: any): string {
         return 'test'
     }
 }

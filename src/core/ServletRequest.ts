@@ -97,7 +97,7 @@ export class ServletRequest {
      * Get parsed query-string.
      */
     public get query(): object {
-        if (!this._querycache) this._querycache = qs.parse(this.querystring) || {}
+        if (!this._querycache) this._querycache = JSON.parse(JSON.stringify(qs.parse(this.querystring))) || {}
         return this._querycache
     }
 
@@ -107,7 +107,7 @@ export class ServletRequest {
      */
     public set query(obj: object) {
         this.querystring = qs.stringify(obj)
-        this._querycache = qs.parse(this.querystring)
+        this._querycache = JSON.parse(JSON.stringify(obj))
     }
 
     /**

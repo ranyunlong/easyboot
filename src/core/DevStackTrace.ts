@@ -11,9 +11,9 @@ type FilePath = string;
 type DecoratorName = string;
 
 const filesRegisted: Map<FilePath, string> = new Map();
-const taces: Map<FilePath, Map<DecoratorName, DevStackTace[]>> = new Map();
+const taces: Map<FilePath, Map<DecoratorName, DevStackTrace[]>> = new Map();
 
-export class DevStackTace {
+export class DevStackTrace {
     public stack: string;
     public position: [number, number];
     public filePath: FilePath;
@@ -21,7 +21,7 @@ export class DevStackTace {
     public stackIndex: number;
     public tokenLines: StackToken[] = [];
     private lf: string;
-    constructor(public message: string, public scope: string, public value: DecoratorName) {
+    constructor(public message: string, public targetToken: GrammarToken) {
         Error.captureStackTrace(this)
         const { filePath, line, column } = this.getFilePath(this.stack);
         this.filePath = filePath;
@@ -38,14 +38,14 @@ export class DevStackTace {
 
         if (taces.has(this.filePath)) {
             const mapping = taces.get(this.filePath)
-            if (mapping.has(this.value)) {
-                mapping.get(this.value).push(this)
+            if (mapping.has(targetToken.value)) {
+                mapping.get(targetToken.value).push(this)
             } else {
-                mapping.set(this.value, [this])
+                mapping.set(targetToken.value, [this])
             }
         } else {
             const mapping = new Map()
-            mapping.set(this.value, [this])
+            mapping.set(targetToken.value, [this])
             taces.set(this.filePath, mapping)
         }
     }
@@ -53,7 +53,7 @@ export class DevStackTace {
     /**
      * throw Error
      */
-    public throw() {
+    public throw(target?: GrammarToken, end?: GrammarToken) {
         if (filesRegisted.has(this.filePath)) {
             this.file = filesRegisted.get(this.filePath)
         } else {
@@ -67,7 +67,14 @@ export class DevStackTace {
             tokens
         }))
 
-        const file = this.formatFile()
+        let file;
+        if (target && end) {
+            file = this.formatFile(target, end)
+        } else if (target) {
+            file = this.formatFile(target)
+        } else {
+            file = this.formatFile()
+        }
         this.stack = [
             `Error: ${this.message}`,
             `  at File: ${chalk.redBright(`${this.filePath}:${this.position.join(':')}`)}`,
@@ -93,31 +100,53 @@ export class DevStackTace {
     /**
      * format this file
      */
-    private formatFile() {
-        const index = taces.get(this.filePath).get(this.value).findIndex((tace) => tace === this)
+    private formatFile(target?: GrammarToken, end?: GrammarToken) {
+        const { targetToken } = this
+        const index = taces.get(this.filePath).get(targetToken.value).findIndex((tace) => tace === this)
         let codeIndex: number = -1;
         const count = this.tokenLines.length.toString().split('')
+        let start: boolean;
         return this.tokenLines.map((tokenLine) => {
             let lineNum = (tokenLine.lineNum + 1).toString().split('')
             let err: boolean;
+            let endLine: number;
             lineNum.unshift(...count.slice(lineNum.length).map((k) => ` `))
             const line = tokenLine.tokens.map((token) => {
-                if (token.scopes.find((scope) => scope === this.scope) && token.value === this.value) {
+                const result = targetToken.scopes.filter((targetScope) => token.scopes.find((tokenScope) => targetScope === tokenScope))
+                if (result.length === targetToken.scopes.length && token.value === targetToken.value) {
                     codeIndex ++;
                     if (index === codeIndex) {
                         err = true
-                        this.position[0] = tokenLine.lineNum + 1
-                        this.position[1] = tokenLine.line.indexOf(token.value)
-                        return chalk.underline(token.value)
+                        if (target) start = true
+                        if (!target) {
+                            this.position[0] = tokenLine.lineNum + 1
+                            this.position[1] = tokenLine.line.indexOf(token.value)
+                        }
+                        if (start) return token.value;
+                        return chalk.redBright(token.value)
                     } else {
                         err = false;
                     }
                 }
+                if (start && target) {
+                    const finds = target.scopes.filter((targetScope) => token.scopes.find((tokenScope) => targetScope === tokenScope))
+                    if (token.value === target.value && finds.length === target.scopes.length) {
+                        this.position[0] = tokenLine.lineNum + 1
+                        this.position[1] = tokenLine.line.indexOf(token.value) + 1
+                        return chalk.underline.redBright(token.value)
+                    }
+                    if (end) {
+                        const endFinds = end.scopes.filter((targetScope) => token.scopes.find((tokenScope) => targetScope === tokenScope))
+                        if (token.value === end.value && endFinds.length === end.scopes.length) {
+                            start = false;
+                            endLine = tokenLine.lineNum
+                        }
+                    }
+                }
                 return token.value
             })
-            if (err) {
-                return `  |${chalk.redBright(lineNum.join('') + `   ${line.join('')}`)}`
-            }
+            if (start && this.position[0] === tokenLine.lineNum + 1) return `  |${chalk.redBright(lineNum.join(''))}   ${line.join('')}`
+            if (err && !target) return `  |${chalk.redBright(lineNum.join('') + `   ${line.join('')}`)}`
             return `  |${lineNum.join('')}   ${line.join('')}`
         }).join(this.lf)
     }

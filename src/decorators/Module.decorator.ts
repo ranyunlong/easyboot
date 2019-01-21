@@ -6,8 +6,8 @@
  */
 
 import { Ctor } from '../types/index.api';
-import { MODULE } from '../constants/metadata.constant';
-import { DevStackTace } from '../core/DevStackTace';
+import { MODULE, BASE } from '../constants/metadata.constant';
+import { DevStackTrace } from '../core/DevStackTrace';
 
 const metadataKeys = Object.keys(MODULE)
 
@@ -21,9 +21,9 @@ const metadataKeys = Object.keys(MODULE)
  * @Module({
  *     imports: [
  *         AdminModule
- *    ],
+ *     ],
  *     providers: [],
- *    controllers: [
+ *     controllers: [
  *        IndexController
  *    ]
  * })
@@ -32,7 +32,14 @@ const metadataKeys = Object.keys(MODULE)
  */
 export function Module(metadata: ModuleMetadata): ClassDecorator {
     return <TFunction extends Function>(target: Function): TFunction | void => {
-        const trace = new DevStackTace(`Invalid decorator: @Module(), arguments is invalid.`, 'meta.decorator.ts', 'Module')
+        const trace = new DevStackTrace(`Invalid decorator: @Module(), arguments is invalid.`, {
+            value: 'Module',
+            scopes: [
+                'meta.decorator.ts',
+                'meta.function-call.ts',
+                'entity.name.function.ts'
+            ]
+        })
         const propsKeys = Object.keys(metadata || {})
         if (Array.isArray(metadata)) {
             trace.message = `Invalid decorator: @Module(), argument is cannot be Array.`
@@ -45,6 +52,112 @@ export function Module(metadata: ModuleMetadata): ClassDecorator {
         propsKeys.forEach((key: keyof ModuleMetadata) => {
             const result = metadataKeys.find((metaKey) => metaKey === key.toUpperCase())
             if (result) {
+                if (key === 'providers') {
+                    const providers = metadata[key]
+                    if (Array.isArray(providers)) {
+                        providers.forEach((Service) => {
+                            const isService =  Reflect.getMetadata(BASE.SERVICE, Service)
+                            const injects = Reflect.getMetadata(BASE.PARAMTYPES, Service)
+                            if (!isService) {
+                                trace.message = `Invalid Service: ${Service.name}, The Service must be use @Service decorator.`
+                                trace.throw({
+                                    value: Service.name,
+                                    scopes: [
+                                        'meta.decorator.ts',
+                                        'meta.objectliteral.ts',
+                                        'meta.object.member.ts',
+                                        'meta.array.literal.ts',
+                                        'variable.other.readwrite.ts'
+                                    ]
+                                }, {
+                                    value: ')',
+                                    scopes: [
+                                        'source.ts',
+                                        'meta.decorator.ts',
+                                        'meta.brace.round.ts'
+                                    ]
+                                })
+                            }
+                            if (Array.isArray(injects)) {
+                                injects.forEach((inService) => {
+                                    if (!providers.find((Serv) => inService === Serv)) {
+                                        trace.message = `Invalid Service: ${Service.name}, this providers not in ${inService.name}.`
+                                        trace.throw({
+                                            value: Service.name,
+                                            scopes: [
+                                                'meta.decorator.ts',
+                                                'meta.objectliteral.ts',
+                                                'meta.object.member.ts',
+                                                'meta.array.literal.ts',
+                                                'variable.other.readwrite.ts'
+                                            ]
+                                        }, {
+                                            value: ')',
+                                            scopes: [
+                                                'source.ts',
+                                                'meta.decorator.ts',
+                                                'meta.brace.round.ts'
+                                            ]
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+                if (key === 'controllers') {
+                    const controllers = metadata[key]
+                    if (Array.isArray(controllers)) {
+                        controllers.forEach((Controller) => {
+                            const isController = Reflect.getMetadata(BASE.CONTROLLER, Controller)
+                            const injects = Reflect.getMetadata(BASE.PARAMTYPES, Controller)
+                            if (!isController) {
+                                trace.throw({
+                                    value: Controller.name,
+                                    scopes: [
+                                        'meta.decorator.ts',
+                                        'meta.objectliteral.ts',
+                                        'meta.object.member.ts',
+                                        'meta.array.literal.ts',
+                                        'variable.other.readwrite.ts'
+                                    ]
+                                }, {
+                                    value: ')',
+                                    scopes: [
+                                        'source.ts',
+                                        'meta.decorator.ts',
+                                        'meta.brace.round.ts'
+                                    ]
+                                })
+                            }
+                            const providers = metadata['providers']
+                            if (Array.isArray(injects)) {
+                                injects.forEach((inService) => {
+                                    if (!providers.find((Serv) => inService === Serv)) {
+                                        trace.message = `Invalid Controller: ${Controller.name}, this providers not in ${inService.name}.`
+                                        trace.throw({
+                                            value: Controller.name,
+                                            scopes: [
+                                                'meta.decorator.ts',
+                                                'meta.objectliteral.ts',
+                                                'meta.object.member.ts',
+                                                'meta.array.literal.ts',
+                                                'variable.other.readwrite.ts'
+                                            ]
+                                        }, {
+                                            value: ')',
+                                            scopes: [
+                                                'source.ts',
+                                                'meta.decorator.ts',
+                                                'meta.brace.round.ts'
+                                            ]
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
                 Reflect.defineMetadata(MODULE[result as keyof MODULE], metadata[key], target)
             } else {
                 trace.message = `Invalid decorator: @Module(), arguments property: '${key}' is invalid.`
