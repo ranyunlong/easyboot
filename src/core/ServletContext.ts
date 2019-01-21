@@ -1,11 +1,10 @@
 /**
- * @class Context
+ * @class ServletContext
  * @author ranyunlong<549510622@qq.com>
  * @copyright Ranyunlong
  * @license MIT
  */
 
-// dependencies
 import { Servlet } from './Servlet'
 import * as util from 'util'
 import * as Cookies from 'cookies'

@@ -35,6 +35,7 @@ export const CONTROLLER: CONTROLLER = {
     REQUEST_QUERY: 'easyboot:decorator:request:query',
     REQUEST_BODY: 'easyboot:decorator:request:body',
     REQUEST_PARAM: 'easyboot:decorator:request:param',
+    REQUEST_FILE: 'easyboot:decorator:request:file',
     RESPONSE: 'easyboot:decorator:response',
     STATUS_CODE: 'easyboot:decorator:response:status:code',
     STATUS_MESSAGE: 'easyboot:decorator:response:status:message'
@@ -52,6 +53,7 @@ export interface CONTROLLER {
     REQUEST_QUERY: string;
     REQUEST_BODY: string;
     REQUEST_PARAM: string;
+    REQUEST_FILE: string;
 }
 
 export const MODULE: MODULE = {

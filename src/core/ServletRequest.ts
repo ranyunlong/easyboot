@@ -1,11 +1,9 @@
 /**
- * @class HttpServletRequest
+ * @class ServletRequest
  * @author ranyunlong<549510622@qq.com>
  * @copyright Ranyunlong
  * @license MIT
  */
-
-// dependencies
 
 import * as accepts from 'accepts'
 import * as qs from 'querystring'

@@ -19,14 +19,14 @@ import { IncomingMessage, ServerResponse, createServer } from 'http'
 import { ServletConfiguration } from '../configurations/ServletConfiguration'
 import { HttpException } from './HttpException';
 import { BASE } from '../constants/metadata.constant';
-import { Ctor, Env } from '../types/index.api';
+import { Env } from '../types/index.api';
 import { Router } from '../router/Router';
 
 export class Servlet extends EventEmitter {
     public proxy: boolean;
     public subdomainOffset: number;
     public env: Env;
-    public keys: string[] | Keygrip;
+    public keys: Keygrip;
     public silent: boolean;
 
     public router: Router;

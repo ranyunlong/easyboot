@@ -1,6 +1,7 @@
-import { ServletSSLConfiguration } from './SSLConfiguration';
+import { ServletSSLConfiguration } from './ServletSSLConfiguration';
 import { Env } from '../types/index.api';
 import { RouterConfiguration } from './RouterConfiguration';
+import * as Keygrip from 'keygrip'
 
 /**
  * @class ServletConfiguration
@@ -45,7 +46,7 @@ export class ServletConfiguration {
      * public keys = ['im a newer secret', 'i like turtle']
      * ```
      */
-    public keys?: string[] = ['easyboot:sess']
+    public keys?: Keygrip = Keygrip(['esayboot:servlet'], 'sha256')
 
     /**
      * https config
