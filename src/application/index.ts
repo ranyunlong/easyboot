@@ -1,8 +1,10 @@
-import { Servlet, Configuration, ServletConfiguration } from '@easyboot/core'
+import { Servlet, Configuration } from '@easyboot/core'
+import { RootModule } from './RootModule';
+import { AppConfig } from './configs/AppConfig';
 
-@Configuration(ServletConfiguration)
+@Configuration(AppConfig)
 export class Application extends Servlet {
     public bootstrap() {
-        this.registerModule()
+        this.registerModule(RootModule)
     }
 }
