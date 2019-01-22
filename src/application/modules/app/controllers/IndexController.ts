@@ -6,4 +6,9 @@ export class IndexController {
     public async index() {
         return 100;
     }
+
+    @GetMapping
+    public async test() {
+        return 'test'
+    }
 }
