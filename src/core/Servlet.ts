@@ -41,7 +41,6 @@ export class Servlet extends EventEmitter {
 
     constructor(private options?: ServletConfiguration) {
         super()
-
         const Configuration = Reflect.getMetadata(BASE.CONFIGURATION, this.constructor)
 
         if (Configuration) {
@@ -51,6 +50,7 @@ export class Servlet extends EventEmitter {
         if (!this.options) this.options = {}
 
         this.keys = this.options.keys ||  ['easyboot', 'servlet']
+        this.setMaxListeners(this.options.maxListeners || 100000)
 
         // Create router
         this.router = new Router(this, this.options.router)
@@ -99,7 +99,6 @@ export class Servlet extends EventEmitter {
 
             // Mapping controller layers
             for (let layer of stack) {
-                if (context.response.body) return;
                 const exceptionHandler = (error: HttpException) => {
                     if (layer.exception) {
                         this.exception(context, layer.exception)

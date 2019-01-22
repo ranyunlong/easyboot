@@ -37,6 +37,7 @@ class Servlet extends EventEmitter {
         if (!this.options)
             this.options = {};
         this.keys = this.options.keys || ['easyboot', 'servlet'];
+        this.setMaxListeners(this.options.maxListeners || 100000);
         // Create router
         this.router = new Router_1.Router(this, this.options.router);
         // Server listener
@@ -77,8 +78,6 @@ class Servlet extends EventEmitter {
             }
             // Mapping controller layers
             for (let layer of stack) {
-                if (context.response.body)
-                    return;
                 const exceptionHandler = (error) => {
                     if (layer.exception) {
                         this.exception(context, layer.exception);

@@ -1,6 +1,7 @@
 docs/
 src/
 test/
+static/
 node_modules/
 tsconfig.json
 *.log

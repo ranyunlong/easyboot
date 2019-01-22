@@ -67,4 +67,9 @@ export class ServletConfiguration {
      * public static dir
      */
     public staticDir?: string;
+
+    /**
+     * Set max listeners defalut (100000)
+     */
+    public maxListeners?: number;
 }

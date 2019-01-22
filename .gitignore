@@ -1,5 +1,6 @@
 node_modules/
 public/
+static/
 *.log
 *.lock
 .DS_Store
