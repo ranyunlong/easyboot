@@ -46,7 +46,7 @@ export class ServletConfiguration {
      * public keys = ['im a newer secret', 'i like turtle']
      * ```
      */
-    public keys?: Keygrip = Keygrip(['esayboot:servlet'], 'sha256')
+    public keys?: string[] | Keygrip =  ['easyboot', 'servlet']
 
     /**
      * https config
@@ -59,12 +59,12 @@ export class ServletConfiguration {
     public silent?: boolean;
 
     /**
-     * Http Services
-     */
-    public Services?: Map<any, any>;
-
-    /**
      * Router config
      */
     public router?: RouterConfiguration;
+
+    /**
+     * public static dir
+     */
+    public staticDir?: string;
 }

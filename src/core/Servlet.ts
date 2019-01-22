@@ -27,18 +27,22 @@ import { ServletSessionService } from '../services/ServletSessionService';
 import { ServletQueryParseService } from '../services/ServletQueryParseService';
 import { ServletParamParseService } from '../services/ServletParamParseService';
 import { ServletFileParseService } from '../services/ServletFileParseService';
+import { ServletStaticService } from '../services/ServletStaticService';
+import { resolve } from 'path';
+import { ServiceMetadata } from './ServiceMetadata';
 
 export class Servlet extends EventEmitter {
     public proxy: boolean;
     public subdomainOffset: number;
     public env: Env;
-    public keys: Keygrip;
+    public keys: string[] | Keygrip;
     public silent: boolean;
     public router: Router;
     public providers: Map<ServletServiceType, ServletService>;
 
     constructor(private options?: ServletConfiguration) {
         super()
+
         const Configuration = Reflect.getMetadata(BASE.CONFIGURATION, this.constructor)
 
         if (Configuration) {
@@ -46,6 +50,8 @@ export class Servlet extends EventEmitter {
         }
 
         if (!this.options) this.options = {}
+
+        this.keys = this.options.keys ||  ['easyboot', 'servlet']
 
         // Create router
         this.router = new Router(this, this.options.router)
@@ -63,6 +69,9 @@ export class Servlet extends EventEmitter {
         }))
         this.registerProvider(new ServletQueryParseService('query'))
         this.registerProvider(new ServletParamParseService('param'))
+        this.registerProvider(new ServletStaticService({
+            root: resolve('test', 'public')
+        }))
         if (typeof this.bootstrap === 'function') {
             this.bootstrap()
         }
@@ -77,7 +86,20 @@ export class Servlet extends EventEmitter {
         const context = this.createContext(request, response)
         try {
             const stack = await this.router.matchRoutes(context)
+
+            const services: ServletService[] = []
+            this.providers.forEach((service) => services.push(service))
+
+            // Mapping service before controller
+            for (let service of services) {
+                if (typeof service.onBeforeController === 'function') {
+                    await service.onBeforeController(new ServiceMetadata(null, context))
+                }
+            }
+
+            // Mapping controller layers
             for (let layer of stack) {
+                if (context.response.body) return;
                 const exceptionHandler = (error: HttpException) => {
                     if (layer.exception) {
                         this.exception(context, layer.exception)
@@ -99,8 +121,33 @@ export class Servlet extends EventEmitter {
                 }
                 this.off('exception', exceptionHandler)
             }
+
+            // Mapping service after controller
+            for (let service of services) {
+                if (typeof service.onAfterController === 'function') {
+                    await service.onAfterController(new ServiceMetadata(null, context))
+                }
+            }
+
+            // Mapping service before destroy
+            for (let service of services) {
+                if (typeof service.onBeforeDestroy === 'function') {
+                    await service.onBeforeDestroy(new ServiceMetadata(null, context))
+                }
+            }
+
+            // Mapping service destroyed
+            for (let service of services) {
+                if (typeof service.onDestroyed === 'function') {
+                    await service.onDestroyed(new ServiceMetadata(null, context))
+                }
+            }
+
+            // Respond
             await this.respond(context)
-            if (!context.body) context.throw(404)
+
+            // If is not response throw 404
+            if (!context.response.body) context.throw(404)
 
         } catch (error) {
             // Handler exception

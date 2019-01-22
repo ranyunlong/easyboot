@@ -51,7 +51,7 @@
     "co-body": "^6.0.0",
     "content-disposition": "^0.5.2",
     "content-type": "^1.0.4",
-    "cookies": "^0.7.2",
+    "cookies": "^0.7.3",
     "destroy": "^1.0.4",
     "escape-html": "^1.0.3",
     "first-mate": "^7.1.3",

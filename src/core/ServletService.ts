@@ -1,7 +1,7 @@
 import { ServiceMetadata } from './ServiceMetadata';
 export abstract class ServletService {
     constructor(
-        public type: 'query' | 'body' | 'param' | 'file' | 'session' | 'staic-serve' | 'proxy-serve'
+        public type: ServletServiceType
     ) {}
     public onLaunch?(
         metadata: ServiceMetadata

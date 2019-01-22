@@ -38,7 +38,8 @@ export const CONTROLLER: CONTROLLER = {
     REQUEST_FILE: 'easyboot:decorator:request:file',
     RESPONSE: 'easyboot:decorator:response',
     STATUS_CODE: 'easyboot:decorator:response:status:code',
-    STATUS_MESSAGE: 'easyboot:decorator:response:status:message'
+    STATUS_MESSAGE: 'easyboot:decorator:response:status:message',
+    SESSION: 'easyboot:decorator:session'
 }
 
 export interface CONTROLLER {
@@ -54,6 +55,7 @@ export interface CONTROLLER {
     REQUEST_BODY: string;
     REQUEST_PARAM: string;
     REQUEST_FILE: string;
+    SESSION: string;
 }
 
 export const MODULE: MODULE = {

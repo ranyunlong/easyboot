@@ -13,10 +13,10 @@ import * as httpError from 'http-errors'
 import { fs } from 'mz'
 import { normalize, basename, extname, resolve, parse, sep } from 'path'
 import { ServerResponse } from 'http';
-import { StaticConfiguration } from '../configurations/StaticConfiguration';
 import { ServletContext } from '../core/ServletContext';
+import { StaticOptions } from '../services/ServletStaticService';
 
-export default async function(ctx: ServletContext, path: string, opts: StaticConfiguration) {
+export default async function(ctx: ServletContext, path: string, opts: StaticOptions) {
     assert(ctx, 'context required')
     assert(path, 'pathname required')
 

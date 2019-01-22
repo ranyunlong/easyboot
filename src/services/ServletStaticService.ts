@@ -12,14 +12,14 @@ import { ServerResponse } from 'http';
 import * as fs from 'fs';
 
 export class ServletStaticService extends ServletService {
-    constructor(public options: Options) {
+    constructor(public options: StaticOptions) {
         super('staic-serve')
     }
 
     public async onBeforeController(metadata: ServiceMetadata): Promise<void> {
         if (this.options.defer) return;
         const { context } = metadata
-        if (context.finished || context.headerSent || !context.writable) return;
+        if (context.finished || context.headerSent || !context.writable || context.response.body) return;
         if (context.method === 'HEAD' || context.method === 'GET') {
             try {
                 await send(context, context.path, this.options)
@@ -34,7 +34,7 @@ export class ServletStaticService extends ServletService {
     public async onAfterController(metadata: ServiceMetadata): Promise<void> {
         if (!this.options.defer) return;
         const { context } = metadata
-        if (context.finished || context.headerSent || !context.writable) return;
+        if (context.finished || context.headerSent || !context.writable || context.response.body) return;
         if (context.method !== 'HEAD' && context.method !== 'GET') return;
         // response is already handled
         if (context.response.body != null || context.status === 404) return;
@@ -48,7 +48,7 @@ export class ServletStaticService extends ServletService {
     }
 }
 
-interface Options {
+export interface StaticOptions {
     /**
      * Root directory to restrict file access.
      */

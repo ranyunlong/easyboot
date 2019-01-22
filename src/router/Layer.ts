@@ -107,6 +107,7 @@ export class Layer {
         this.metadata.body = Reflect.getMetadata(CONTROLLER.REQUEST_BODY, Controller, propertyKey)
         this.metadata.entity = Reflect.getMetadata(BASE.PARAMTYPES, Controller.prototype, propertyKey)
         this.metadata.file = Reflect.getMetadata(CONTROLLER.REQUEST_FILE, Controller, propertyKey)
+        this.metadata.session = Reflect.getMetadata(CONTROLLER.SESSION, Controller, propertyKey)
     }
 
     /**
@@ -190,17 +191,28 @@ export class Layer {
     }
 
     /**
+     * parse request session
+     * @param context
+     */
+    private async parseRequestSessionData(context: ServletContext) {
+        const service = context.app.providers.get('session')
+        if (service && typeof service.onLaunch === 'function')
+        return await service.onLaunch(new ServiceMetadata(this.metadata.session, context))
+    }
+
+    /**
      * inject params
      * @param context
      */
     public async inject(context: ServletContext): Promise<void> {
-        const { response, request, query, param, body, file } = this.metadata
+        const { response, request, query, param, body, file, session } = this.metadata
         if (response) this.handlerInjects[response.index] = context.response
         if (request) this.handlerInjects[request.index] = context.request
         if (query) this.handlerInjects[query.index] = await this.parseRequestQueryData(context)
         if (param) this.handlerInjects[param.index] = await this.parseRequestParamData(context)
         if (body && !file) this.handlerInjects[body.index] = await this.parseRequestBodyData(context)
         if (file) this.handlerInjects[body.index] = await this.parseRequestFileData(context)
+        if (session) this.handlerInjects[session.index] = await this.parseRequestSessionData(context)
     }
 }
 
@@ -219,4 +231,5 @@ export interface LayerMetadata {
     exceptionCapture?: HttpExceptionConstructor;
     response?: { index: number };
     request?: { index: number };
+    session?: { index: number };
 }

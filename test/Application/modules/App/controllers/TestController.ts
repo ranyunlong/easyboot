@@ -1,4 +1,4 @@
-import { Controller, RequestMapping, GetMapping, PostMapping, ContentType, Exception, HttpException, ExceptionCapture, RequestParam, RequestBody, RequestQuery, isRequired, isEmail } from '../../../../../src'
+import { Controller, RequestMapping, GetMapping, PostMapping, ContentType, Exception, HttpException, ExceptionCapture, RequestParam, RequestBody, RequestQuery, isRequired, isEmail, HttpServletSession, Session } from '../../../../../src'
 import { UserService } from '../services/UserService';
 
 @RequestMapping('app/test')
@@ -17,10 +17,23 @@ export class TestController {
         return 'save'
     }
 
-    @GetMapping(':id')
-    @ContentType('html')
+    @GetMapping
+    @ContentType('json')
     @ExceptionCapture(HttpException)
-    public test(@RequestParam params: any): string {
-        return params
+    public test1(
+        @HttpServletSession session: Session<any>
+    ): string {
+        return session
+    }
+
+    @GetMapping(':id')
+    @ContentType('json')
+    @ExceptionCapture(HttpException)
+    public test2(
+        @RequestParam param: any,
+        @HttpServletSession session: Session<any>
+    ): string {
+        session.aa = param
+        return session
     }
 }

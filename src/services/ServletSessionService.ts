@@ -18,13 +18,14 @@ export class ServletSessionService extends ServletService {
         super('session')
         this.options = {
             key: 'easyboot:sess',
-            signed: true,
+            signed: false,
             maxAge: 1000000,
             store: new SessionStore(),
             httpOnly: true,
             overwrite: false,
             ...options
         }
+        this.store = this.options.store
     }
 
     public async onLaunch(metadata: ServiceMetadata): Promise<undefined | false | object> {
@@ -43,7 +44,7 @@ export class ServletSessionService extends ServletService {
         const { maxAge } = options
         const sessions = context.session || {}
         if (typeof sessions === 'object' && !Array.isArray(sessions) && Object.keys(sessions).length > 0) {
-            const sid = context.cookies.get(options.key, options);
+            const sid = context.cookies.get(options.key, options)
             const ssid = await store.set(sessions, {sid, maxAge})
             context.cookies.set(options.key, ssid, options)
         }
