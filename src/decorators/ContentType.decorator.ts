@@ -36,7 +36,12 @@ export function ContentType(type: string): MethodDecorator {
     return (target: Object, propertyKey: string): void => {
         const trace = new DevStackTrace(`Invalid decorator: @ContentType('${type}'), '${type}' is not mime-type.`, {
             value: 'ContentType',
-            scopes: [ 'meta.decorator.ts' ]
+            scopes: [
+                'entity.name.function.ts',
+                'meta.function-call.ts',
+                'meta.decorator.ts',
+                'meta.class.ts'
+            ]
         })
         if (!contentType(type)) {
             trace.throw()

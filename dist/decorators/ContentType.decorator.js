@@ -36,7 +36,12 @@ function ContentType(type) {
     return (target, propertyKey) => {
         const trace = new DevStackTrace_1.DevStackTrace(`Invalid decorator: @ContentType('${type}'), '${type}' is not mime-type.`, {
             value: 'ContentType',
-            scopes: ['meta.decorator.ts']
+            scopes: [
+                'entity.name.function.ts',
+                'meta.function-call.ts',
+                'meta.decorator.ts',
+                'meta.class.ts'
+            ]
         });
         if (!mime_types_1.contentType(type)) {
             trace.throw();

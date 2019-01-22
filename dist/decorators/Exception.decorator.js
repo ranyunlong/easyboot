@@ -35,7 +35,12 @@ function Exception(Exception) {
     return (target, propertyKey) => {
         const trace = new DevStackTrace_1.DevStackTrace(`Invalid decorator: @Exception(), 'argument must be object.`, {
             value: 'Exception',
-            scopes: ['meta.decorator.ts']
+            scopes: [
+                'entity.name.function.ts',
+                'meta.function-call.ts',
+                'meta.decorator.ts',
+                'meta.class.ts'
+            ]
         });
         if (typeof Exception !== 'object') {
             trace.throw();

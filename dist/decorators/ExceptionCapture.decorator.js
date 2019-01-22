@@ -35,7 +35,12 @@ function ExceptionCapture(Exception) {
     return (target, propertyKey) => {
         const trace = new DevStackTrace_1.DevStackTrace(`Invalid decorator: @ExceptionCapture(), 'argument must be Function.`, {
             value: 'ExceptionCapture',
-            scopes: ['meta.decorator.ts']
+            scopes: [
+                'entity.name.function.ts',
+                'meta.function-call.ts',
+                'meta.decorator.ts',
+                'meta.class.ts'
+            ]
         });
         if (typeof Exception !== 'function') {
             trace.throw();

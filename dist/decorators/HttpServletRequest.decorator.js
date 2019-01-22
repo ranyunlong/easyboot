@@ -13,7 +13,13 @@ function HttpServletRequest(target, propertyKey, parameterIndex) {
     const paramtypes = Reflect.getMetadata(metadata_constant_1.BASE.PARAMTYPES, target, propertyKey);
     const trace = new DevStackTrace_1.DevStackTrace('Invalid decorator: @HttpServletRequest, param type must be ServletRequest.', {
         value: 'HttpServletRequest',
-        scopes: ['meta.decorator.ts']
+        scopes: [
+            'meta.class.ts',
+            'meta.parameters.ts',
+            'meta.method.declaration.ts',
+            'variable.other.readwrite.ts',
+            'meta.decorator.ts'
+        ]
     });
     if (paramtypes[parameterIndex] !== ServletRequest_1.ServletRequest) {
         trace.throw();
