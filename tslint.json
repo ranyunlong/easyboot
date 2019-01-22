@@ -30,7 +30,8 @@
         "only-arrow-functions": false,
         "forin": false,
         "no-string-literal": false,
-        "align": false
+        "align": false,
+        "no-var-requires": false
     },
     "rulesDirectory": []
 }
