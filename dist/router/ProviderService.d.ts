@@ -1,5 +1,5 @@
-import { Ctor } from '../types/index.api';
 import { Router } from './Router';
+import { Ctor } from '../core/Servlet';
 export declare class ProviderService {
     private router;
     private globalProvide;

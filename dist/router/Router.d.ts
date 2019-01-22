@@ -1,7 +1,6 @@
-import { Servlet } from '../core/Servlet';
+import { Servlet, Ctor } from '../core/Servlet';
 import { ProviderService } from './ProviderService';
 import { RouterConfiguration } from '../configurations/RouterConfiguration';
-import { Ctor } from '../types/index.api';
 import { Route } from './Route';
 import { ServletContext } from '../core/ServletContext';
 import { Stack } from './Stack';

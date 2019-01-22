@@ -12,7 +12,7 @@ import * as httpAssert from 'http-assert';
 import { IncomingMessage, ServerResponse } from 'http';
 import { ServletRequest } from './ServletRequest';
 import { ServletResponse } from './ServletResponse';
-import { Session } from 'src/types/Session.api';
+import { Session } from './Session';
 declare const COOKIES: unique symbol;
 export declare class ServletContext {
     req: IncomingMessage;

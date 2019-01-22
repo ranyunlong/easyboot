@@ -1,9 +1,9 @@
 import { RequestEnum } from '../enums/request.mapping.enum';
-import { Ctor } from '../types/index.api';
 import { Key } from 'path-to-regexp';
 import * as pathToRegexp from 'path-to-regexp';
 import { BASE } from '../constants/metadata.constant';
 import { Router } from './Router';
+import { Ctor } from '../core/Servlet';
 
 export class Route {
     public path: string;

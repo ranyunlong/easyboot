@@ -1,7 +1,7 @@
 import { RequestEnum } from '../enums/request.mapping.enum';
-import { Ctor } from '../types/index.api';
 import { Key } from 'path-to-regexp';
 import { Router } from './Router';
+import { Ctor } from '../core/Servlet';
 export declare class Route {
     path: string;
     method: RequestEnum.Methods;

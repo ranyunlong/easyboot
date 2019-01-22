@@ -3,11 +3,11 @@ import { Router } from './Router';
 import { BASE, CONTROLLER } from '../constants/metadata.constant';
 import { ServletContext } from '../core/ServletContext';
 import { HttpException, HttpExceptionConstructor } from '../core/HttpException';
-import { Ctor } from '../types/index.api';
 import { ValidationMetadata } from '../validations/Validation';
 import { toValidate } from '../validations/toValidate';
 import * as pathToRegexp from 'path-to-regexp'
 import { ServiceMetadata, MetadataParam, MetadataFile } from '../core/ServiceMetadata';
+import { Ctor } from '../core/Servlet';
 
 export class Layer {
     /**

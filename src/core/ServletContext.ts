@@ -14,7 +14,7 @@ import * as httpErrors from 'http-errors'
 import { IncomingMessage, ServerResponse } from 'http'
 import { ServletRequest } from './ServletRequest';
 import { ServletResponse } from './ServletResponse';
-import { Session } from 'src/types/Session.api';
+import { Session } from './Session';
 
 const COOKIES = Symbol('context#cookies');
 

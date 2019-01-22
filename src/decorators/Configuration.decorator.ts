@@ -5,8 +5,8 @@
  * @license MIT
  */
 
-import { Ctor } from '../types/index.api';
 import { BASE } from '../constants/metadata.constant';
+import { Ctor } from '../core/Servlet';
 /**
  * Configuration decorator
  *

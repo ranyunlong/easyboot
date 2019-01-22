@@ -2,10 +2,10 @@ import { Route } from './Route';
 import { Router } from './Router';
 import { ServletContext } from '../core/ServletContext';
 import { HttpException, HttpExceptionConstructor } from '../core/HttpException';
-import { Ctor } from '../types/index.api';
 import { ValidationMetadata } from '../validations/Validation';
 import * as pathToRegexp from 'path-to-regexp';
 import { MetadataFile } from '../core/ServiceMetadata';
+import { Ctor } from '../core/Servlet';
 export declare class Layer {
     /**
      * 路由处理方法

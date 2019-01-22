@@ -19,7 +19,6 @@ import { IncomingMessage, ServerResponse, createServer } from 'http'
 import { ServletConfiguration } from '../configurations/ServletConfiguration'
 import { HttpException } from './HttpException';
 import { BASE } from '../constants/metadata.constant';
-import { Env } from '../types/index.api';
 import { Router } from '../router/Router';
 import { ServletService, ServletServiceType } from './ServletService';
 import { ServletBodyParseService } from '../services/ServletBodyParseService';
@@ -297,4 +296,20 @@ export class Servlet extends EventEmitter {
         this.providers.set(service.type, service)
     }
 
+    /**
+     * registerModule
+     */
+    public registerModule(...modules: Ctor[]) {
+        this.router.parseModule(...modules)
+    }
+
+}
+
+export interface Ctor {
+    new (...args: any): any;
+}
+export type Env = 'development' | 'production'
+
+export interface Modules {
+    [key: string]: Ctor;
 }

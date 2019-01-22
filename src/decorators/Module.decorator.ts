@@ -5,9 +5,9 @@
  * @license MIT
  */
 
-import { Ctor } from '../types/index.api';
 import { MODULE, BASE } from '../constants/metadata.constant';
 import { DevStackTrace } from '../core/DevStackTrace';
+import { Ctor } from '../core/Servlet';
 
 const metadataKeys = Object.keys(MODULE)
 

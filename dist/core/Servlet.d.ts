@@ -9,7 +9,6 @@ import * as Keygrip from 'keygrip';
 import * as EventEmitter from 'events';
 import { ListenOptions } from 'net';
 import { ServletConfiguration } from '../configurations/ServletConfiguration';
-import { Env } from '../types/index.api';
 import { Router } from '../router/Router';
 import { ServletService, ServletServiceType } from './ServletService';
 export declare class Servlet extends EventEmitter {
@@ -59,4 +58,15 @@ export declare class Servlet extends EventEmitter {
      * registerProvider
      */
     registerProvider(service: ServletService): void;
+    /**
+     * registerModule
+     */
+    registerModule(...modules: Ctor[]): void;
+}
+export interface Ctor {
+    new (...args: any): any;
+}
+export declare type Env = 'development' | 'production';
+export interface Modules {
+    [key: string]: Ctor;
 }

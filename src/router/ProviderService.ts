@@ -1,6 +1,6 @@
-import { Ctor } from '../types/index.api';
 import { Router } from './Router';
 import { MODULE, BASE } from '../constants/metadata.constant';
+import { Ctor } from '../core/Servlet';
 
 export class ProviderService {
     private globalProvide: Map<Ctor, Map<Ctor, object>> = new Map()

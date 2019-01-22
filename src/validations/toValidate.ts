@@ -7,8 +7,8 @@
 
 import { ValidationMetadata, Validation } from './Validation';
 import { Validator } from './validators';
-import { Ctor } from '../types/index.api';
 import { BASE } from '../constants/metadata.constant';
+import { Ctor } from '../core/Servlet';
 
  /**
   * validate

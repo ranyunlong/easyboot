@@ -5,7 +5,7 @@
  * @license MIT
  */
 import { ValidationMetadata } from './Validation';
-import { Ctor } from '../types/index.api';
+import { Ctor } from '../core/Servlet';
 /**
  * toValidate
  * validate entity or validations

@@ -1,7 +1,7 @@
 import { ServletSSLConfiguration } from './ServletSSLConfiguration';
-import { Env } from '../types/index.api';
 import { RouterConfiguration } from './RouterConfiguration';
 import * as Keygrip from 'keygrip';
+import { Env } from '../core/Servlet';
 /**
  * @class ServletConfiguration
  * @author ranyunlong<549510622@qq.com>

@@ -4,7 +4,7 @@
  * @copyright Ranyunlong
  * @license MIT
  */
-import { Ctor } from '../types/index.api';
+import { Ctor } from '../core/Servlet';
 /**
  * Configuration decorator
  *

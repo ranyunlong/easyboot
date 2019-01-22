@@ -7,12 +7,12 @@
         "moduleResolution": "node",
         "experimentalDecorators":true,
         "emitDecoratorMetadata":true,
-        "inlineSourceMap": true,
         "resolveJsonModule": true,
         "declaration": true,   // 生成相关的d.ts
         "alwaysStrict": true, // 严格模式编译每个文件
         "locale": "zh-CN",
         "target": "esnext",
+        "sourceMap": true,
         "outDir": "./dist",
         "baseUrl": "."
     },
