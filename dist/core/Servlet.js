@@ -53,7 +53,8 @@ class Servlet extends EventEmitter {
         this.registerProvider(new ServletQueryParseService_1.ServletQueryParseService('query'));
         this.registerProvider(new ServletParamParseService_1.ServletParamParseService('param'));
         this.registerProvider(new ServletStaticService_1.ServletStaticService({
-            root: this.options.staticDir || path_1.resolve('public')
+            root: this.options.staticDir || path_1.resolve('static'),
+            index: 'index.html'
         }));
         if (typeof this.bootstrap === 'function') {
             this.bootstrap();

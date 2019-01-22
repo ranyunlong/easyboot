@@ -24,6 +24,6 @@ export class Route {
         })
         this.controllerMapping = Reflect.getMetadata(BASE.CONTROLLER, this.Controller)
         const paths = [this.controllerMapping.path, this.path || this.propertyKey]
-        this.regexp = pathToRegexp('/' + paths.join('/').replace(/\/{2,}/, '/'), this.keys, router.configs || {})
+        this.regexp = pathToRegexp(('/' + paths.join('/')).replace(/\/{2,}/g, '/'), this.keys, router.configs || {})
     }
 }

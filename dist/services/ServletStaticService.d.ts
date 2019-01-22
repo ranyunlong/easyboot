@@ -27,7 +27,7 @@ export interface StaticOptions {
     /**
      * Default file name, defaults to 'index.html'
      */
-    index?: string | boolean;
+    index: string | boolean;
     /**
      * maxage Browser cache max-age in milliseconds. defaults to 0
      */
