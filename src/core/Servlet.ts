@@ -21,6 +21,12 @@ import { HttpException } from './HttpException';
 import { BASE } from '../constants/metadata.constant';
 import { Env } from '../types/index.api';
 import { Router } from '../router/Router';
+import { ServletService, ServletServiceType } from './ServletService';
+import { ServletBodyParseService } from '../services/ServletBodyParseService';
+import { ServletSessionService } from '../services/ServletSessionService';
+import { ServletQueryParseService } from '../services/ServletQueryParseService';
+import { ServletParamParseService } from '../services/ServletParamParseService';
+import { ServletFileParseService } from '../services/ServletFileParseService';
 
 export class Servlet extends EventEmitter {
     public proxy: boolean;
@@ -28,8 +34,8 @@ export class Servlet extends EventEmitter {
     public env: Env;
     public keys: Keygrip;
     public silent: boolean;
-
     public router: Router;
+    public providers: Map<ServletServiceType, ServletService>;
 
     constructor(private options?: ServletConfiguration) {
         super()
@@ -50,6 +56,13 @@ export class Servlet extends EventEmitter {
             if (port) this.listen(port, host)
         }
 
+        this.registerProvider(new ServletBodyParseService())
+        this.registerProvider(new ServletFileParseService())
+        this.registerProvider(new ServletSessionService({
+            signed: true
+        }))
+        this.registerProvider(new ServletQueryParseService('query'))
+        this.registerProvider(new ServletParamParseService('param'))
         if (typeof this.bootstrap === 'function') {
             this.bootstrap()
         }
@@ -227,6 +240,14 @@ export class Servlet extends EventEmitter {
             .listen(...args)
         }
         return this;
+    }
+
+    /**
+     * registerProvider
+     */
+    public registerProvider(service: ServletService) {
+        if (!this.providers) this.providers = new Map()
+        this.providers.set(service.type, service)
     }
 
 }

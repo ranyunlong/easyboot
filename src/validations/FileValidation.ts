@@ -5,22 +5,12 @@
  * @license MIT
  */
 
+import { Validation } from './Validation';
 import { HttpException } from '../core/HttpException';
-import { Validator } from './validators';
 
-export class Validation {
-    constructor(
-        public readonly typeId: string,
-        public readonly message: string,
-        public readonly validator: (value: any, ...args: any[]) => boolean,
-        public readonly required: boolean,
-        public readonly opts?: any[]
-    ) {}
-    public toValidate(value: any, field: string) {
+export class FileValidation extends Validation {
+    public toValidate(value: File, field: string) {
         if (typeof value !== 'undefined') {
-            if (typeof value === 'object') value = JSON.stringify(value)
-            if (typeof value === 'number') value = String(value)
-            if (typeof value === 'boolean') value ? value = 'true' : value = 'false'
             if (this.opts && this.opts.length > 0) {
                 if (!this.validator(value, ...this.opts)) {
                     throw new HttpException({
@@ -50,14 +40,5 @@ export class Validation {
                 })
             }
         }
-    }
-}
-
-export interface ValidationMetadata {
-    index: number;
-    key?: string;
-    validations?: Validation | Validator | Array<Validation | Validator>;
-    rules?: {
-        [key: string]: Validation | Validator | Array<Validation | Validator>;
     }
 }

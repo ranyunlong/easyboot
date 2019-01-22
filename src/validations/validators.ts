@@ -7,6 +7,8 @@
 
 import * as validatorJS from 'validator'
 import { Validation } from './Validation'
+import { File } from '@easyboot/formidable';
+import { FileValidation } from './FileValidation';
 
 interface ValidatorStatic extends  ValidatorJS.ValidatorStatic {
     isMagnetURI(value: string): boolean;
@@ -1369,4 +1371,8 @@ export function isWhitelisted(message: string, chars?: string | string[]) {
  */
 export function isRequired(message: string) {
     return new Validation('Required', message, (value: string) => !validator.isEmpty(value), true)
+}
+
+export function isFile(message: string) {
+    return new FileValidation('File', message, (file: File) => file instanceof File, false)
 }

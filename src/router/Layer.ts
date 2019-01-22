@@ -6,7 +6,8 @@ import { HttpException, HttpExceptionConstructor } from '../core/HttpException';
 import { Ctor } from '../types/index.api';
 import { ValidationMetadata } from '../validations/Validation';
 import { toValidate } from '../validations/toValidate';
-import pathToRegexp = require('path-to-regexp');
+import * as pathToRegexp from 'path-to-regexp'
+import { ServiceMetadata, MetadataParam, MetadataFile } from '../core/ServiceMetadata';
 
 export class Layer {
     /**
@@ -44,7 +45,7 @@ export class Layer {
     /**
      * 路由处理方法要注入的数据
      */
-    public handlerInjects: any[] = [];
+    public readonly handlerInjects: any[] = [];
     /**
      * http响应的状态码
      */
@@ -58,30 +59,40 @@ export class Layer {
         return this.metadata.statusMessage
     }
     /**
-     * metadata request query
+     * route path query
      */
-    public metadata: {
-        query?: ValidationMetadata;
-        body?: ValidationMetadata;
-        param?: ValidationMetadata;
-        entity?: Ctor;
-        provider?: Ctor[];
-        returnType?: Ctor;
-        contentType?: string;
-        exception?: HttpException;
-        statusCode?: number;
-        statusMessage?: string;
-        exceptionCapture?: HttpExceptionConstructor;
-        response?: { index: number };
-        request?: { index: number };
-    } = {};
-    public metadataRequestQuery: any;
+    public readonly path: string;
+    /**
+     * metadata
+     */
+    public readonly metadata: LayerMetadata = {};
+    /**
+     *  route regexp
+     */
+    public regexp: RegExp;
+    /**
+     * path keys
+     */
+    public keys: pathToRegexp.Key[];
+    /**
+     * this route property name in controller
+     */
+    public propertyKey: string;
     constructor(router: Router, route: Route, context: ServletContext) {
-        const { Module, Controller, propertyKey, keys, regexp } = route
+        const { Controller, propertyKey, path, keys, regexp } = route
+        this.path = path
+        this.regexp = regexp
+        this.keys = JSON.parse(JSON.stringify(keys))
         this.getMetadata(Controller, propertyKey)
-        this.init(Module, Controller, router, propertyKey, keys, regexp, context)
+        this.init(router, route)
     }
-    public getMetadata(Controller: Ctor, propertyKey: string) {
+
+    /**
+     * Get all metadate
+     * @param Controller
+     * @param propertyKey
+     */
+    private getMetadata(Controller: Ctor, propertyKey: string) {
         this.metadata.provider = Reflect.getMetadata(BASE.PARAMTYPES, Controller)
         this.metadata.returnType = Reflect.getMetadata(BASE.RETURNTYPE, Controller.prototype, propertyKey)
         this.metadata.contentType = Reflect.getMetadata(CONTROLLER.CONTENT_TYPE, Controller, propertyKey)
@@ -92,10 +103,20 @@ export class Layer {
         this.metadata.response = Reflect.getMetadata(CONTROLLER.RESPONSE, Controller, propertyKey)
         this.metadata.request = Reflect.getMetadata(CONTROLLER.REQUEST, Controller, propertyKey)
         this.metadata.query = Reflect.getMetadata(CONTROLLER.REQUEST_QUERY, Controller, propertyKey)
+        this.metadata.param = Reflect.getMetadata(CONTROLLER.REQUEST_PARAM, Controller, propertyKey)
+        this.metadata.body = Reflect.getMetadata(CONTROLLER.REQUEST_BODY, Controller, propertyKey)
         this.metadata.entity = Reflect.getMetadata(BASE.PARAMTYPES, Controller.prototype, propertyKey)
+        this.metadata.file = Reflect.getMetadata(CONTROLLER.REQUEST_FILE, Controller, propertyKey)
     }
 
-    private init(Module: Ctor, Controller: Ctor, router: Router, propertyKey: string, keys: pathToRegexp.Key[], regexp: RegExp, context: ServletContext) {
+    /**
+     * Init layer
+     * @param router
+     * @param route
+     * @param context
+     */
+    private init(router: Router, route: Route) {
+        const {  Module, Controller, propertyKey } = route
         const dependencies = this.metadata.provider;
         if (Array.isArray(this.metadata.provider)) {
             let controller = new Controller(...dependencies.map((dependencie) => {
@@ -106,32 +127,96 @@ export class Layer {
             let controller = new Controller()
             this.handler = controller[propertyKey].bind(controller)
         }
-
-        const params: any = this.params = {}
-        const pathParams = regexp.exec(context.path)
-        keys.forEach((k, i) => {
-            params[k.name] = pathParams[i + 1]
-        })
     }
 
+    /**
+     * parse request query string
+     * @param context
+     */
     private async parseRequestQueryData(context: ServletContext) {
-        return toValidate(context.query || {}, this.metadata.query, this.metadata.entity)
+        let originData: any = {}
+        const service = context.app.providers.get('query')
+        if (service && typeof service.onLaunch === 'function') {
+            originData = await service.onLaunch(new ServiceMetadata(this.metadata.query, context))
+        }
+        const Entity: Ctor = this.metadata.entity[this.metadata.query.index];
+        return toValidate(originData || {}, this.metadata.query, Entity);
     }
 
+    /**
+     * parser request file
+     * @param context
+     */
+    private async parseRequestFileData(context: ServletContext) {
+        let originData: any = {}
+        const service = context.app.providers.get('file')
+        if (service && typeof service.onLaunch === 'function') {
+            originData = await service.onLaunch(new ServiceMetadata<MetadataFile>(this.metadata.file, context))
+        }
+        const Entity: Ctor = this.metadata.entity[this.metadata.body.index];
+        return toValidate(originData, this.metadata.body, Entity);
+    }
+
+    /**
+     * parse request path param
+     * @param context
+     */
     private async parseRequestParamData(context: ServletContext) {
-        return toValidate(this.params || {}, this.metadata.param, this.metadata.entity)
+        let originData: any = {}
+        const service = context.app.providers.get('param')
+        if (service && typeof service.onLaunch === 'function') {
+            originData = await service.onLaunch(new ServiceMetadata<MetadataParam>({
+                keys: this.keys,
+                regexp: this.regexp,
+                data: this.metadata.param
+            }, context))
+        }
+        const Entity: Ctor = this.metadata.entity[this.metadata.param.index];
+        return toValidate(originData || {}, this.metadata.param, Entity);
     }
 
+    /**
+     * parse request body
+     * @param context
+     */
     private async parseRequestBodyData(context: ServletContext) {
-        return toValidate(this.params, this.metadata.body, this.metadata.entity)
+        let originData: any = {}
+        const service = context.app.providers.get('body')
+        if (service && typeof service.onLaunch === 'function') {
+            originData = await service.onLaunch(new ServiceMetadata(this.metadata.body, context))
+        }
+        const Entity: Ctor = this.metadata.entity[this.metadata.body.index];
+        return toValidate(originData, this.metadata.body, Entity);
     }
 
+    /**
+     * inject params
+     * @param context
+     */
     public async inject(context: ServletContext): Promise<void> {
-        const { response, request, query, param, body } = this.metadata
+        const { response, request, query, param, body, file } = this.metadata
         if (response) this.handlerInjects[response.index] = context.response
         if (request) this.handlerInjects[request.index] = context.request
         if (query) this.handlerInjects[query.index] = await this.parseRequestQueryData(context)
         if (param) this.handlerInjects[param.index] = await this.parseRequestParamData(context)
-        if (body) this.handlerInjects[body.index] = await this.parseRequestBodyData(context)
+        if (body && !file) this.handlerInjects[body.index] = await this.parseRequestBodyData(context)
+        if (file) this.handlerInjects[body.index] = await this.parseRequestFileData(context)
     }
+}
+
+export interface LayerMetadata {
+    query?: ValidationMetadata;
+    body?: ValidationMetadata;
+    param?: ValidationMetadata;
+    file?: MetadataFile;
+    entity?: Ctor[];
+    provider?: Ctor[];
+    returnType?: Ctor;
+    contentType?: string;
+    exception?: HttpException;
+    statusCode?: number;
+    statusMessage?: string;
+    exceptionCapture?: HttpExceptionConstructor;
+    response?: { index: number };
+    request?: { index: number };
 }

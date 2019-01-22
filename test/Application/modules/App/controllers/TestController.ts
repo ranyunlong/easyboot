@@ -21,6 +21,6 @@ export class TestController {
     @ContentType('html')
     @ExceptionCapture(HttpException)
     public test(@RequestParam params: any): string {
-        return 'test'
+        return params
     }
 }

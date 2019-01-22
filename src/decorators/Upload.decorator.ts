@@ -5,8 +5,8 @@
  * @license MIT
  */
 
-import { UploadOptions } from '../services/BodyParserService';
 import { CONTROLLER } from '../constants/metadata.constant';
+import { MetadataFile } from '../core/ServiceMetadata';
 
 /**
  * Upload decorator
@@ -32,7 +32,7 @@ import { CONTROLLER } from '../constants/metadata.constant';
  * }
  * ```
  */
-export function Upload(options: UploadOptions): MethodDecorator;
+export function Upload(options: MetadataFile): MethodDecorator;
 export function Upload<T>(target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void;
 export function Upload(...args: any[]): any {
     if (args.length === 1) {

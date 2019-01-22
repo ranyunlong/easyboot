@@ -1,8 +1,3 @@
-import { ValidationMetadata, Validation } from './Validation';
-import { Validator } from './validators';
-import { Ctor } from '../types/index.api';
-import { BASE } from '../constants/metadata.constant';
-
 /**
  * @module toValidate
  * @author ranyunlong<549510622@qq.com>
@@ -10,7 +5,18 @@ import { BASE } from '../constants/metadata.constant';
  * @license MIT
  */
 
-function validate(key: string, value: string, validations: Validation | Validator | Array<Validation | Validator>) {
+import { ValidationMetadata, Validation } from './Validation';
+import { Validator } from './validators';
+import { Ctor } from '../types/index.api';
+import { BASE } from '../constants/metadata.constant';
+
+ /**
+  * validate
+  * @param key
+  * @param value
+  * @param validations
+  */
+function validate(key: string, value: string, validations: Validation | Validator | Array<Validation | Validator>): any {
     if (Array.isArray(validations)) {
         validations.forEach((validator) => {
             if (typeof validator === 'function') {
@@ -26,6 +32,12 @@ function validate(key: string, value: string, validations: Validation | Validato
     }
 }
 
+/**
+ * validateEntity
+ * validate entity
+ * @param originData
+ * @param Entity
+ */
 function validateEntity(originData: { [key: string]: any }, Entity?: Ctor) {
     const rules = Reflect.getMetadata(BASE.VALIDATE, Entity)
     const result: any = {}
@@ -36,14 +48,21 @@ function validateEntity(originData: { [key: string]: any }, Entity?: Ctor) {
     return result
 }
 
-export function toValidate(originData: { [key: string]: any }, metadata: ValidationMetadata, entity?: Ctor) {
+/**
+ * toValidate
+ * validate entity or validations
+ * @param originData
+ * @param metadata
+ * @param Entity
+ */
+export function toValidate(originData: { [key: string]: any }, metadata: ValidationMetadata, Entity?: Ctor) {
     const result: any = {}
-    if (Array.isArray(entity)) return validateEntity(originData, entity[0])
+    if (Reflect.getMetadata(BASE.ENTITY, Entity)) return validateEntity(originData, Entity)
     const { key, validations, rules } = metadata
     if (key && validations) {
-        const value = result[key] = originData[key]
+        const value = originData[key]
         validate(key, value, validations)
-        return result;
+        return value;
     } else if (rules) {
         Object.keys(rules).forEach((key) => {
             const value = result[key] = originData[key]
