@@ -69,7 +69,7 @@ export class Servlet extends EventEmitter {
         this.registerProvider(new ServletQueryParseService('query'))
         this.registerProvider(new ServletParamParseService('param'))
         this.registerProvider(new ServletStaticService({
-            root: resolve('test', 'public')
+            root:  this.options.staticDir || resolve('public')
         }))
         if (typeof this.bootstrap === 'function') {
             this.bootstrap()
