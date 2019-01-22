@@ -22,7 +22,7 @@
   },
   "repository": "ranyunlong/core",
   "dependencies": {
-    "@easyboot/core": "^1.0.0-alpha.5"
+    "@easyboot/core": "1.0.0-alpha.7"
   },
   "devDependencies": {}
 }
