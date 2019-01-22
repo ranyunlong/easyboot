@@ -18,9 +18,10 @@ const packageTpl = {
     version: '1.0.0',
     main: '',
     license: 'MIT',
+    description: '',
     scripts: {
-        dev: 'easyboot dev --project ./tsconfig.json ./src/index.ts',
-        start: 'easyboot start --project ./tsconfig.json ./src/index.ts'
+        dev: 'easyboot dev ./tsconfig.json ./src/index.ts',
+        start: 'easyboot start ./tsconfig.json ./src/index.ts'
     },
     keywords: '',
     author: '',
@@ -41,12 +42,6 @@ program
         process.exit();
     });
     spinner.succeed('Temlate download succeed!');
-    const { isInstall } = await inquirer.prompt({
-        type: 'confirm',
-        name: 'isInstall',
-        message: 'Do you need to install dependencies?',
-        default: true
-    });
     const addName = async () => {
         const { name } = await inquirer.prompt({
             type: 'input',
@@ -79,6 +74,25 @@ program
     };
     await addName();
     await addVersion();
+    const { description } = await inquirer.prompt({
+        type: 'input',
+        name: 'description',
+        message: `Description:`
+    });
+    packageTpl.description = description;
+    const { main } = await inquirer.prompt({
+        type: 'input',
+        name: 'main',
+        message: `Entry point:`,
+        default: './dist/index.js'
+    });
+    packageTpl.main = main;
+    const { keywords } = await inquirer.prompt({
+        type: 'input',
+        name: 'keywords',
+        message: `Keywords:`
+    });
+    packageTpl.keywords = keywords;
     const { license } = await inquirer.prompt({
         type: 'input',
         name: 'license',
@@ -94,6 +108,12 @@ program
     });
     packageTpl.author = author;
     fs_1.writeFileSync(path.resolve(value, 'package.json'), JSON.stringify(packageTpl, null, 4));
+    const { isInstall } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'isInstall',
+        message: 'Do you need to install dependencies?',
+        default: true
+    });
     if (isInstall) {
         const { select } = await inquirer.prompt({
             type: 'list',
