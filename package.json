@@ -4,7 +4,8 @@
   "main": "./dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node-dev --project ./tsconfig.json ./src/index.ts"
+    "start": "easyboot start ./tsconfig.json ./src/index.ts",
+    "dev": "easyboot dev ./tsconfig.json ./src/index.ts"
   },
   "keywords": [
     "easyboot",
