@@ -14,14 +14,15 @@ easyboot.js is a framework for building efficient, scalable Node.js server-side 
 
 ### Create project
 
+> shell easyboot init `<your-project>`
+
 ```shell
-shell easyboot init <your-project>
 > easyboot init myapp
 ```
 
-### Api docs
+### Api
 
-- [https://easyboot.ranyunlong.com]
+- [Api docs](https://easyboot.ranyunlong.com)
 
 ### Issues
 
