@@ -4,47 +4,24 @@
 
 ### Introduction
 
-@easyboot/core is a framework for building efficient, scalable Node.js server-side applications. It uses progressive JavaScript, is built with TypeScript (preserves compatibility with pure JavaScript) and combines elements of OOP (Object Oriented Programming), FP (Functional Programming), and FRP (Functional Reactive Programming).
+easyboot.js is a framework for building efficient, scalable Node.js server-side applications., is built with TypeScript 。
 
 ### Installation
 
 ```shell
-> yarn add @easyboot/core
+> npm i -g @easyboot/cli
 ```
 
-or
+### Create project
 
 ```shell
-> npm install @easyboot/core
+shell easyboot init <your-project>
+> easyboot init myapp
 ```
 
-Server(options: Options)
+### Api docs
 
-#### 1. options
-- port?: number;
-- host?: string;
-- keys?: Keygrip | string[]; 
-- env?: Env;   
-- proxy?: boolean; defalut false
-- subdomainOffset?: number; defalut 2
-- silent?: boolean;
-
-### Api 
-- listen
-
-listen(port?: number, hostname?: string, backlog?: number, listeningListener?: () => void): this;
-listen(port: number, hostname?: string, listeningListener?: () => void): this;
-listen(port: number, backlog?: number, listeningListener?: () => void): this;
-listen(port: number, listeningListener?: () => void): this;
-listen(path: string, backlog?: number, listeningListener?: () => void): this;
-listen(path: string, listeningListener?: () => void): this;
-listen(options: ListenOptions, listeningListener?: () => void): this;
-listen(handle: any, backlog?: number, listeningListener?: () => void): this;
-listen(handle: any, listeningListener?: () => void): this;
-
-- callback
-return (request: IncomingMessage, response: ServerResponse): this;
-
+- [https://easyboot.ranyunlong.com]
 
 ### Issues
 
