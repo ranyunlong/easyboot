@@ -31,13 +31,14 @@ const packageTpl = {
 }
 
 const VERSION = require('../package').version
-
+let isAction: boolean;
 program.version(VERSION, '-v, --version')
 
 program
     .command('init <project>')
     .description('generate a new project from a template')
-    .action(async (value) => {
+    .action(async (value: string) => {
+        isAction = true
         const spinner = ora('Loading download template').start();
         await download('ranyunlong/easyboot', path.resolve(value)).catch((err) => {
             spinner.fail('Template download failed!')
@@ -116,10 +117,21 @@ program
         const { author } = await inquirer.prompt<{ author: string }>({
             type: 'input',
             name: 'author',
-            message: `Author (${whoami})`,
+            message: `Author`,
             default: whoami
         })
         packageTpl.author = author
+
+        const { isOk } = await inquirer.prompt<{isOk: boolean}>({
+            type: 'confirm',
+            name: 'isOk',
+            message: 'Is ok',
+            default: true
+        })
+
+        if (!isOk) {
+            process.exit()
+        }
 
         writeFileSync(path.resolve(value, 'package.json'), JSON.stringify(packageTpl, null, 4))
 
@@ -134,22 +146,29 @@ program
             const { select } = await inquirer.prompt<{ select: 'use yarn install' | 'use npm install' }>({
                 type: 'list',
                 message: 'Choose what way to install?',
-                choices: ['use yarn install', 'use npm install'],
+                choices: ['use yarn install', 'use npm install', 'No, I will handle that myself'],
                 default: 0,
                 name: 'select'
             })
 
             if (select === 'use npm install') {
                 install('npm', value)
-            } else {
+            } else if (select === 'use yarn install') {
                 install('yarn', value)
+            } else {
+                console.log('\nTo get started:\n')
+                console.log(chalk.yellow(`cd ${value}`))
+                console.log(chalk.yellow(`npm install`))
+                console.log(chalk.yellow(`npm start`))
+                console.log(chalk.yellow(`docs in ${chalk.green(`https://github.com/ranyunlong/easyboot`)}`))
             }
         }
     })
 
 program
     .command('dev <tsconfig-path> <entry-file-path>')
-    .action((confitPath, entryFilePath) => {
+    .action((confitPath: string, entryFilePath: string) => {
+        isAction = true
         const child = fork(path.resolve('node_modules', 'ts-node-dev', 'bin', 'ts-node-dev'), ['--project', confitPath, entryFilePath], {
             cwd: path.resolve()
         })
@@ -164,7 +183,8 @@ program
 
 program
     .command('start <tsconfig-path> <entry-file-path>')
-    .action((confitPath, entryFilePath) => {
+    .action((confitPath: string, entryFilePath: string) => {
+        isAction = true
         const child = fork(path.resolve('node_modules', 'ts-node', 'dist', 'bin'), ['--project', confitPath, entryFilePath], {
             cwd: path.resolve()
         })
@@ -179,8 +199,8 @@ program
 
 program.parse(process.argv)
 
-if (process.argv.length <= 2) {
-    program.outputHelp((cb) => {
+if (!process.argv.slice(2).length || !isAction) {
+    program.outputHelp((cb: string) => {
         return chalk.green(cb)
-    })
+    });
 }

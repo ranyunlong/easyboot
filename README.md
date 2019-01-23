@@ -20,9 +20,9 @@ easyboot.js is a framework for building efficient, scalable Node.js server-side 
 > easyboot init myapp
 ```
 
-### Api
+### Documentation
 
-- [Api docs](https://easyboot.ranyunlong.com)
+Api docs [https://easyboot.ranyunlong.com](https://easyboot.ranyunlong.com)
 
 ### Issues
 
