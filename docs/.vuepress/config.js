@@ -4,7 +4,7 @@ module.exports = {
     // 网页描述
     description: 'Easyboot framework',
     // 输出目录
-    dest: '.vuepress/dist',
+    dest: './docs/.vuepress/dist',
     // 多语言配置
     locales: {
         '/': {
@@ -13,12 +13,12 @@ module.exports = {
             label: '中文简体',
             description: 'Easyboot.js framework'
         },
-        '/en/': {
-            lang: 'en-US',
-            title: 'Eayboot.js',
-            label: 'English',
-            description: 'Easyboot.js framework'
-        }
+        // '/en/': {
+        //     lang: 'en-US',
+        //     title: 'Eayboot.js',
+        //     label: 'English',
+        //     description: 'Easyboot.js framework'
+        // }
     },
     // 部署站点的基础路径
     base: '/',
@@ -47,6 +47,7 @@ module.exports = {
                 },
                 nav: [
                     { text: '首页', link: '/' },
+                    { text: '指南', link: '/guide/' },
                     { text: 'API文档', link: '/api/' }
                 ],
                 sidebar: {
@@ -61,11 +62,10 @@ module.exports = {
                             ]
                         },
                         {
-                            title: 'API',
+                            title: '装饰器',
                             collapsable: false,
                             children: [
-                                ['/api/decorators/', '装饰器'],
-                                ['/api/configuration/', '配置模板类']
+                                ['/decorators/', '基础装饰器']
                             ]
                         }
                     ]
